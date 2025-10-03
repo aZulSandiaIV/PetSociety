@@ -1,0 +1,1 @@
+ - [ ] Google maps API ahora tiene un limite de 10k de llamadas por semana/mes
