@@ -73,8 +73,5 @@ document.addEventListener('DOMContentLoaded', ()=>{
     }
   }
 
-  const logoutBtn = document.getElementById('logout-profile');
-  if(logoutBtn) logoutBtn.addEventListener('click', ()=>{ localStorage.removeItem('ps_current'); window.location.href = 'index.html'; });
-  const logoutBtn2 = document.getElementById('logout-profile-2');
-  if(logoutBtn2) logoutBtn2.addEventListener('click', ()=>{ localStorage.removeItem('ps_current'); window.location.href = 'index.html'; });
+  document.getElementById('logout-profile').addEventListener('click', ()=>{ localStorage.removeItem('ps_current'); window.location.href = 'index.html'; });
 });
