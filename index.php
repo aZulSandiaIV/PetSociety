@@ -9,7 +9,6 @@ require_once "config.php";
 
 <?php
 // --- LÓGICA ---
-
 // 1. Manejar el filtro de búsqueda
 $filtro_estado = $_GET['filtro'] ?? 'Todos';
 $allowed_status_filters = ['En Adopción', 'Hogar Temporal', 'Perdido'];
