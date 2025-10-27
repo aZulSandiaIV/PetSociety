@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mapa de Ubicación</title>
+    
+    <!-- 1. CSS de Leaflet -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+     integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+     crossorigin=""/>
+    
+    <style>
+        /* Estilos básicos para el mapa */
+        #mapa { 
+            height: 500px; /* ¡Importante! El mapa necesita una altura. */
+            width: 100%;
+        }
+        .alert-mapa {
+            padding: 20px;
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Tu Ubicación Actual</h1>
+    <p>Buscando tu ubicación para mostrarla en el mapa...</p>
+
+    <!-- 2. Contenedor para el mapa -->
+    <div id="mapa"></div>
+
+    <!-- 3. JS de Leaflet -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+     crossorigin=""></script>
+
+    <!-- 4. Tu script de geolocalización -->
+    <script src="geolocalizacion.js"></script>
+
+    <script>
+        // Inicia el proceso para obtener la ubicación cuando la página carga
+        window.onload = function() {
+            // Sobrescribimos EXITO para que llame a PONER_EN_MAPA
+            EXITO = function(position) {
+                PONER_EN_MAPA(position.coords.latitude, position.coords.longitude);
+            };
+            OBTENER_POSICION_ACTUAL();
+        };
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,122 @@
+<?php
+session_start();
+if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
+    header("location: login.php");
+    exit;
+}
+?>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Publicar un Animal - PetSociety</title>
+    <link rel="stylesheet" href="estilos.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div id="branding"><h1><a href="index.php">PetSociety</a></h1></div>
+            <nav><ul><li><a href="index.php">Volver</a></li><li><a href="logout.php">Cerrar Sesión</a></li></ul></nav>
+        </div>
+    </header>
+    <div class="form-container">
+        <h2>Datos de la Publicación</h2>
+        <form action="procesar_publicacion.php" method="post" enctype="multipart/form-data">
+            <div class="form-group">
+                <label>Título de la Publicación</label>
+                <input type="text" name="titulo" required>
+            </div>
+            <div class="form-group">
+                <label>Tipo de Publicación</label>
+                <select name="tipo_publicacion" id="tipo_publicacion" required>
+                    <option value="Adopción">Dar en Adopción</option>
+                    <option value="Hogar Temporal">Buscar Hogar Temporal</option>
+                    <option value="Perdido">Reportar como Perdido</option>
+                    <option value="Encontrado">Reportar como Encontrado</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Descripción de la Publicación</label>
+                <textarea name="contenido" rows="5" required></textarea>
+            </div>
+
+            <div id="campos_perdido" style="display: none;">
+                <div class="form-group">
+                    <label>Última ubicación donde fue visto</label>
+                    <input type="text" name="ultima_ubicacion_vista" placeholder="Ej: Cerca del parque central, Calle Falsa 123">
+                    <button type="button" id="usar-ubicacion-actual" class="btn" style="width: auto; margin-top: 5px; background-color: #97BC62;">Usar mi ubicación actual</button>
+                    <!-- Campos ocultos para las coordenadas -->
+                    <input type="hidden" name="latitud" id="latitud">
+                    <input type="hidden" name="longitud" id="longitud">
+                </div>
+                <label>Características distintivas (opcional)</label>
+                <textarea name="caracteristicas_distintivas" rows="3" placeholder="Ej: Collar rojo, una mancha en el ojo derecho, cojea un poco"></textarea>
+            </div>
+            
+            <h2>Datos del Animal</h2>
+            <div class="form-group">
+                <label>Nombre del Animal</label>
+                <input type="text" name="nombre_animal" required>
+            </div>
+            <div class="form-group">
+                <label>Especie</label>
+                <input type="text" name="especie" placeholder="Ej: Perro, Gato" required>
+            </div>
+            <div class="form-group">
+                <label>Raza</label>
+                <input type="text" name="raza" placeholder="Ej: Mestizo, Labrador">
+            </div>
+            <div class="form-group">
+                <label>Género</label>
+                <select name="genero" required>
+                    <option value="Macho">Macho</option>
+                    <option value="Hembra">Hembra</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Foto del Animal</label>
+                <input type="file" name="foto_animal" accept="image/jpeg, image/png, image/gif">
+            </div>
+            <div class="form-group">
+                <input type="submit" class="btn" value="Crear Publicación">
+            </div>
+        </form>
+    </div>
+
+    <!-- Incluimos Leaflet y tu script de geolocalización -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="Geolocalizacion.js"></script>
+
+    <script>
+        document.getElementById('tipo_publicacion').addEventListener('change', function() {
+            var camposPerdido = document.getElementById('campos_perdido');
+            var ubicacionInput = camposPerdido.querySelector('input[name="ultima_ubicacion_vista"]');
+
+            if (this.value === 'Perdido') {
+                camposPerdido.style.display = 'block';
+                ubicacionInput.required = true;
+            } else {
+                camposPerdido.style.display = 'none';
+                ubicacionInput.required = false;
+            }
+        });
+
+        // Lógica para el botón "Usar mi ubicación actual"
+        document.getElementById('usar-ubicacion-actual').addEventListener('click', function() {
+            this.textContent = 'Obteniendo...';
+            this.disabled = true;
+
+            // Sobrescribimos la función EXITO para rellenar los campos del formulario
+            EXITO = function(position) {
+                const { latitude, longitude } = position.coords;
+                document.getElementById('latitud').value = latitude;
+                document.getElementById('longitud').value = longitude;
+                document.querySelector('input[name="ultima_ubicacion_vista"]').value = `Ubicación aproximada: ${latitude.toFixed(4)}, ${longitude.toFixed(4)}`;
+                document.getElementById('usar-ubicacion-actual').textContent = '¡Ubicación Obtenida!';
+            };
+            OBTENER_POSICION_ACTUAL();
+        });
+
+    </script>
+</body>
+</html>

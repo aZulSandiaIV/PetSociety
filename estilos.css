@@ -1,0 +1,132 @@
+/* Paleta de colores sugerida:
+   - #2C5F2D (Verde Bosque Oscuro): Para cabeceras, botones principales.
+   - #97BC62 (Verde Claro): Para acentos, enlaces.
+   - #FFFDE7 (Crema): Fondo principal, para una sensación cálida.
+   - #555555 (Gris Oscuro): Para texto principal, buena legibilidad.
+   - #E57373 (Rojo Suave): Para mensajes de error o alertas.
+*/
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #FFFDE7;
+    color: #555555;
+    margin: 0;
+    padding: 0;
+    line-height: 1.6;
+}
+
+.container {
+    width: 80%;
+    margin: auto;
+    overflow: hidden;
+    padding: 20px 0;
+}
+
+/* --- Cabecera y Navegación --- */
+header {
+    background: #2C5F2D;
+    color: #FFFDE7;
+    padding: 1rem 0;
+    border-bottom: #97BC62 3px solid;
+}
+
+header a {
+    color: #FFFDE7;
+    text-decoration: none;
+    text-transform: uppercase;
+    font-size: 16px;
+}
+
+header .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+header #branding h1 {
+    margin: 0;
+}
+
+header nav ul {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+}
+
+header nav ul li {
+    display: inline;
+    margin-left: 20px;
+}
+
+header nav a:hover {
+    color: #97BC62;
+    transition: color 0.3s ease;
+}
+
+/* --- Formularios --- */
+.form-container {
+    background: #ffffff;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    max-width: 500px;
+    margin: 40px auto;
+}
+
+.form-container h2 {
+    color: #2C5F2D;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-sizing: border-box; /* Importante para que el padding no afecte el ancho total */
+}
+
+.form-container a {
+    color: #2C5F2D;
+    text-decoration: none;
+}
+
+.btn {
+    display: inline-block;
+    background: #2C5F2D;
+    color: #ffffff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    text-decoration: none;
+    font-size: 15px;
+    width: 100%;
+}
+
+.btn:hover {
+    background: #97BC62;
+}
+
+/* --- Alertas y Errores --- */
+.alert {
+    padding: 15px;
+    margin-bottom: 20px;
+    border: 1px solid transparent;
+    border-radius: 5px;
+    color: #721c24; /* Un rojo más oscuro para el texto */
+    background-color: #f8d7da; /* Un fondo rojo más suave */
+    border-color: #f5c6cb; /* Un borde que combine */
+}
