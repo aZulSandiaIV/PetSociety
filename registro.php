@@ -36,11 +36,11 @@ if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true) {
             </div>
             <div class="form-group">
                 <label>Contraseña</label>
-                <input type="password" name="password" required>
+                <input type="password" name="password" required minlength="6">
             </div>
             <div class="form-group">
                 <label>Confirmar Contraseña</label>
-                <input type="password" name="confirm_password" required>
+                <input type="password" name="confirm_password" required minlenght="6">
             </div>
             <div class="form-group">
                 <label for="es_refugio" style="display: flex; align-items: center; gap: 10px;">
