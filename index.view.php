@@ -14,12 +14,14 @@
         }
         .animal-card {
             background: #fff;
-            border-radius: 8px;
+            border-radius: 10px;
+           color: red;
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
             overflow: hidden; /* Para que la imagen no se salga de los bordes redondeados */
             display: flex;
             flex-direction: column;
             transition: transform 0.2s ease-in-out;
+            font-family: 'Roboto', sans-serif;
         }
         .animal-card:hover {
             transform: translateY(-5px);
@@ -30,21 +32,24 @@
             object-fit: cover; /* Asegura que la imagen cubra el espacio sin deformarse */
         }
         .animal-card-content {
-            padding: 15px;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.95);
         }
         .animal-card h3 {
-            margin-top: 0;
-            margin-bottom: 10px;
-            color: #2C5F2D;
+            color: #2c3e50;
+            font-size: 1.3rem;
+            margin-bottom: 1px;
+            font-weight: bold;
         }
         .animal-card p {
-            margin-bottom: 5px;
-            font-size: 0.9em;
+            color: #555;
+            font-size: 0.95rem;
+            margin-bottom: 10px;
+            line-height: 1.5;
         }
         .animal-card .details {
-            font-size: 0.8em;
-            color: #777;
-            margin-bottom: 15px;
+            color: #666;
+            font-size: 0.9rem;
         }
         .animal-card .contact-btn {
             margin-top: auto; /* Empuja el botón al final de la tarjeta */
@@ -70,6 +75,42 @@
         #mapa-avistamientos {
             height: 500px; width: 100%; margin-bottom: 30px; border-radius: 8px;
         }
+
+        /*------banner--------*/
+        .banner {
+    
+    
+                background-size: contain;
+                background-position: center;
+                background-repeat: no-repeat;    
+                color: white;
+                background-color: #f2f3ee; 
+                padding-top: 100px;
+                text-align: center;
+                min-height:650px;  /* Cambia de 500px a 600px o más */
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                list-style: none;
+                
+    ...
+        }
+          body 
+       {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+            font-size: 16px;
+        }
+         h1, h2, h3, h4, h5, h6
+         {
+             font-family: 'Montserrat', sans-serif;
+         }
+
+        button, .btn, a.button , ul,li
+        {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+        }
     </style>
 </head>
 <body>
@@ -83,9 +124,9 @@
                 <ul>
                     <li>Hola, <strong><?php echo htmlspecialchars($_SESSION["nombre"]); ?></strong></li>
                     <?php if (isset($_SESSION['is_admin']) && $_SESSION['is_admin'] == 1): ?>
-                        <li><a href="admin/index.php" style="color: #97BC62;">Panel Admin</a></li>
+                        <li><a href="admin/index.php" style="color: #b91414ff;">Panel Admin</a></li>
                     <?php endif; ?>
-                    <li><a href="mis_publicaciones.php">Mis Publicaciones</a></li>
+                    <li><a href="mis_publicaciones.php">Mi Perfil</a></li>
                     <li><a href="buzon.php">Buzón</a></li>
                     <li><a href="publicar.php">Publicar Animal</a></li>
                     <li><a href="logout.php">Cerrar Sesión</a></li>
@@ -93,6 +134,15 @@
             </nav>
         </div>
     </header>
+
+<div class="banner" style="background-image: url('img/download.png');">
+        <h1>
+            ¿Perdiste o Encontraste?
+            <br>
+            ¿Quieres dar en adopcion?
+        </h1>
+        <li><a href="publicar.php" class="banner-button">Publicar ahora</a></li>
+</div>
 
     <div class="container">
         <!-- SECCIÓN DEL MAPA DE AVISTAMIENTOS -->
