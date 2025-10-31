@@ -1,0 +1,239 @@
+﻿/* Estilos específicos para la página de perfil - PetSociety */
+
+.profile-section {
+    background: #fff;
+    padding: 25px;
+    margin-bottom: 30px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.profile-info {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 20px;
+    align-items: start;
+}
+
+.user-details h3 {
+    color: #2C5F2D;
+    margin-top: 0;
+    margin-bottom: 20px;
+}
+
+.field-group {
+    margin-bottom: 15px;
+}
+
+.field-group label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #333;
+}
+
+.field-group input[type="text"], 
+.field-group input[type="email"] {
+    width: 100%;
+    max-width: 300px;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    transition: border-color 0.3s ease;
+}
+
+.field-group input[type="text"]:focus, 
+.field-group input[type="email"]:focus {
+    outline: none;
+    border-color: #97BC62;
+    box-shadow: 0 0 0 2px rgba(151, 188, 98, 0.2);
+}
+
+.field-group input[readonly] {
+    background-color: #f5f5f5;
+    color: #666;
+    cursor: default;
+}
+
+.field-group small {
+    display: block;
+    margin-top: 3px;
+    font-size: 12px;
+    color: #666;
+}
+
+.edit-button, 
+.save-button, 
+.cancel-button {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    margin-right: 10px;
+    transition: background-color 0.3s ease;
+    display: inline-block;
+}
+
+.edit-button,
+.save-button {
+    background-color: #2C5F2D;
+    color: white;
+}
+
+.edit-button:hover,
+.save-button:hover {
+    background-color: #1e4020;
+}
+
+.cancel-button {
+    background-color: #ccc;
+    color: #333;
+}
+
+.cancel-button:hover {
+    background-color: #bbb;
+}
+
+.edit-form {
+    display: none;
+}
+
+.mensaje {
+    padding: 10px;
+    margin-bottom: 15px;
+    border-radius: 4px;
+    font-weight: 500;
+}
+
+.mensaje.success {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.mensaje.error {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+.pub-card {
+    background: #fff;
+    padding: 20px;
+    margin-bottom: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: box-shadow 0.3s ease;
+}
+
+.pub-card:hover {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.pub-info h3 {
+    margin: 0 0 10px;
+    color: #2C5F2D;
+}
+
+.pub-info span {
+    background: #eee;
+    padding: 3px 8px;
+    border-radius: 10px;
+    font-size: 0.8em;
+}
+
+.pub-actions .btn {
+    width: auto;
+    margin-left: 10px;
+}
+
+.estado-adoptado,
+.estado-encontrado {
+    background-color: #97BC62 !important;
+    color: white;
+}
+
+.no-publications {
+    text-align: center;
+    padding: 40px 20px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.no-publications h3 {
+    color: #2C5F2D;
+    margin-bottom: 15px;
+    font-size: 1.3rem;
+}
+
+.no-publications p {
+    color: #666;
+    margin-bottom: 25px;
+    line-height: 1.5;
+}
+
+.no-publications .btn {
+    background-color: #2C5F2D;
+    padding: 12px 24px;
+    font-size: 16px;
+}
+
+.nueva-publicacion-btn {
+    background-color: #2C5F2D !important;
+    color: white !important;
+    padding: 12px 20px !important;
+    font-size: 16px !important;
+    text-decoration: none !important;
+    border-radius: 5px !important;
+    transition: background-color 0.3s ease !important;
+}
+
+.nueva-publicacion-btn:hover {
+    background-color: #1e4020 !important;
+}
+
+@media (max-width: 768px) {
+    .profile-info {
+        grid-template-columns: 1fr;
+    }
+    
+    .field-group input[type="text"], 
+    .field-group input[type="email"] {
+        max-width: 100%;
+    }
+    
+    .pub-card {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+    
+    .pub-actions {
+        width: 100%;
+    }
+    
+    .pub-actions .btn {
+        margin-left: 0;
+        margin-right: 10px;
+        margin-bottom: 5px;
+    }
+}
+
+@media (max-width: 480px) {
+    .profile-section {
+        padding: 15px;
+    }
+    
+    .edit-button, 
+    .save-button, 
+    .cancel-button {
+        display: block;
+        width: 100%;
+        margin-bottom: 10px;
+        margin-right: 0;
+    }
+}

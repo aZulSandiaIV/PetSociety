@@ -59,16 +59,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                 header("location: index.php");
                             }
                         } else {
-                            // Mostrar un error si la contraseña no es válida
-                            echo "La contraseña que ingresaste no es válida.";
+                            // Contraseña incorrecta
+                            $_SESSION['login_error'] = "Datos incorrectos, revise su información";
+                            $_SESSION['login_email'] = $email;
+                            header("location: login.php");
+                            exit;
                         }
                     }
                 } else {
-                    // Mostrar un error si el email no existe
-                    echo "No se encontró ninguna cuenta con ese email.";
+                    // Email no existe
+                    $_SESSION['login_error'] = "Datos incorrectos, revise su información";
+                    $_SESSION['login_email'] = $email;
+                    header("location: login.php");
+                    exit;
                 }
             } else {
-                echo "¡Ups! Algo salió mal. Por favor, inténtalo de nuevo más tarde.";
+                $_SESSION['login_error'] = "¡Ups! Algo salió mal. Por favor, inténtalo de nuevo más tarde.";
+                header("location: login.php");
+                exit;
             }
             $stmt->close();
         }

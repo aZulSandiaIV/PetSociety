@@ -7,7 +7,7 @@ require_once "config.php";
 // --- LÓGICA ---
 // 1. Manejar el filtro de búsqueda
 $filtro_estado = $_GET['filtro'] ?? 'Todos';
-$allowed_status_filters = ['En Adopción', 'Hogar Temporal', 'Perdido'];
+$allowed_status_filters = ['En Adopción', 'Hogar Temporal', 'Perdido', 'Encontrado', 'Adoptado'];
 $where_clause = "";
 
 if (in_array($filtro_estado, $allowed_status_filters)) {
@@ -15,8 +15,8 @@ if (in_array($filtro_estado, $allowed_status_filters)) {
 } elseif ($filtro_estado == 'Refugio') {
     $where_clause = "WHERE u.es_refugio = 1";
 } else {
-    // Si el filtro es 'Todos' o un valor no válido, mostramos todos los estados relevantes.
-    $where_clause = "WHERE a.estado IN ('En Adopción', 'Hogar Temporal', 'Perdido')";
+    // Si el filtro es 'Todos', mostramos TODAS las publicaciones sin filtro de estado
+    $where_clause = "";
 }
 
 // 1. Preparar la consulta para obtener las publicaciones

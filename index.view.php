@@ -63,7 +63,7 @@
         .refugio-tag {
             position: absolute;
             top: 10px;
-            left: 10px;
+            right: 10px;
             background-color: #2C5F2D;
             color: white;
             padding: 3px 8px;
@@ -77,8 +77,6 @@
 
         /*------banner--------*/
         .banner {
-    
-    
                 background-size: contain;
                 background-position: center;
                 background-repeat: no-repeat;    
@@ -115,7 +113,7 @@
     <header>
         <div class="container">
             <div id="branding">
-                <h1><a href="index.php">PetSociety</a></h1>
+                <h1><a href="index.php"><img src="img/logo1.png" alt="PetSociety Logo" class="header-logo"></a><a href="index.php">PetSociety</a></h1>
             </div>
             <nav>
                 <ul>
@@ -133,6 +131,15 @@
                         <li><a href="registro.php">Registrarse</a></li>
                         <li><a href="publicar.php" class="btn" style="color:white;padding:5px 10px;">Publicar Animal</a></li>
                     <?php endif; ?>
+                    <li>Hola, <strong><?php echo htmlspecialchars($_SESSION["nombre"]); ?></strong></li>
+                    <?php if (isset($_SESSION['is_admin']) && $_SESSION['is_admin'] == 1): ?>
+                        <li><a href="admin/index.php" class="admin-panel-link">Panel Admin</a></li>
+                    <?php endif; ?>
+                    <li><a href="index.php">Inicio</a></li>
+                    <li><a href="mis_publicaciones.php">Mi Perfil</a></li>
+                    <li><a href="buzon.php">Buzón</a></li>
+                    <li><a href="publicar.php">Publicar Animal</a></li>
+                    <li><a href="logout.php">Cerrar Sesión</a></li>
                 </ul>
             </nav>
         </div>
@@ -156,15 +163,17 @@
             <div id="mapa-avistamientos"></div>
         </div>
 
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;" id="seccion-publicaciones">
             <h2>Publicaciones Recientes</h2>
             <form action="index.php" method="get" style="display: flex; align-items: center; gap: 10px;">
                 <label for="filtro">Filtrar por:</label>
-                <select name="filtro" id="filtro" onchange="this.form.submit()" class="form-group" style="margin-bottom: 0; padding: 8px;">
+                <select name="filtro" id="filtro" onchange="aplicarFiltroYMantenerPosicion()" class="form-group" style="margin-bottom: 0; padding: 8px;">
                     <option value="Todos" <?php if ($filtro_estado == 'Todos') echo 'selected'; ?>>Todos</option>
                     <option value="En Adopción" <?php if ($filtro_estado == 'En Adopción') echo 'selected'; ?>>En Adopción</option>
                     <option value="Hogar Temporal" <?php if ($filtro_estado == 'Hogar Temporal') echo 'selected'; ?>>Hogar Temporal</option>
                     <option value="Perdido" <?php if ($filtro_estado == 'Perdido') echo 'selected'; ?>>Perdido</option>
+                    <option value="Encontrado" <?php if ($filtro_estado == 'Encontrado') echo 'selected'; ?>>Encontrado</option>
+                    <option value="Adoptado" <?php if ($filtro_estado == 'Adoptado') echo 'selected'; ?>>Adoptado</option>
                     <option value="Refugio" <?php if ($filtro_estado == 'Refugio') echo 'selected'; ?>>Solo Refugios</option>
                 </select>
                 <a href="reportar_avistamiento_mapa.php" class="btn" style="background-color: #E57373; width: auto;">Reportar Callejero</a>
@@ -285,6 +294,24 @@
             };
 
             OBTENER_POSICION_ACTUAL();
+        });
+
+        // Función para aplicar filtro y mantener posición
+        function aplicarFiltroYMantenerPosicion() {
+            const filtro = document.getElementById('filtro').value;
+            const url = new URL(window.location);
+            url.searchParams.set('filtro', filtro);
+            url.hash = 'seccion-publicaciones'; // Agregamos un hash para volver a esta sección
+            window.location.href = url.toString();
+        }
+
+        // Si hay un hash en la URL, hacer scroll a esa sección
+        window.addEventListener('load', function() {
+            if (window.location.hash === '#seccion-publicaciones') {
+                document.getElementById('seccion-publicaciones').scrollIntoView({
+                    behavior: 'smooth'
+                });
+            }
         });
     </script>
 
