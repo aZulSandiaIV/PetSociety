@@ -251,5 +251,15 @@
         });
     </script>
 
+    <script>
+        fetch('solicitar_publicaciones_10.php')
+            .then(response => response.json())
+            .then(data => {
+                console.log('Datos recibidos:', data);
+            })
+            .catch(error => {
+                console.error('Error al obtener los datos:', error);
+            });
+    </script>
 </body>
 </html>
