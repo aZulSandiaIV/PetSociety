@@ -1,6 +1,6 @@
 <?php
 session_start();
-$email_sugerido = isset($_SESSION["loggedin"]) && isset($_SESSION["email"]) ? $_SESSION["email"] : '';
+$email_sugerido = (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true && isset($_SESSION["email"])) ? $_SESSION["email"] : '';
 ?>
 <!DOCTYPE html>
 <html lang="es">

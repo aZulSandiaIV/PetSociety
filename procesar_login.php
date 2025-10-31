@@ -48,6 +48,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             $_SESSION["loggedin"] = true;
                             $_SESSION["id_usuario"] = $id;
                             $_SESSION["nombre"] = $nombre;
+                            $_SESSION["email"] = $email;
                             $_SESSION["is_admin"] = $is_admin;
                             $_SESSION["es_refugio"] = $es_refugio;
                             

@@ -5,7 +5,7 @@ session_start(); // Iniciamos sesión para saber si el usuario está logueado
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Reportar un Avistamiento - PetSociety</title>
+    <title>Reportar Animal Callejero - PetSociety</title>
     <link rel="stylesheet" href="estilos.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 </head>
@@ -17,8 +17,8 @@ session_start(); // Iniciamos sesión para saber si el usuario está logueado
         </div>
     </header>
     <div class="form-container">
-        <h2>Reportar Avistamiento de Animal Perdido</h2>
-        <p>Sube una foto del animal que viste. Usaremos tu ubicación actual para marcarlo en el mapa.</p>
+        <h2>Reportar Animal Callejero</h2>
+        <p>¿Viste un animal que parece no tener hogar? Sube una foto y usa tu ubicación para marcarlo en el mapa y que otros puedan verlo.</p>
         
         <form action="procesar_avistamiento_mapa.php" method="post" enctype="multipart/form-data" id="form-avistamiento">
             <div class="form-group">

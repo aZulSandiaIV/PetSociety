@@ -70,15 +70,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $stmt_animal->close();
 
             // --- 2. Insertar la publicación en la tabla `publicaciones` ---
-            $sql_pub = "INSERT INTO publicaciones (id_animal, id_usuario_publicador, titulo, contenido, tipo_publicacion) VALUES (?, ?, ?, ?, ?)";
+            $sql_pub = "INSERT INTO publicaciones (id_animal, id_usuario_publicador, titulo, contenido, tipo_publicacion, latitud, longitud) VALUES (?, ?, ?, ?, ?, ?, ?)";
 
             if ($stmt_pub = $conexion->prepare($sql_pub)) {
-                $stmt_pub->bind_param("iisss",
+                // Usamos 'd' para los decimales (latitud y longitud)
+                $lat = !empty($_POST['latitud']) ? $_POST['latitud'] : null;
+                $lon = !empty($_POST['longitud']) ? $_POST['longitud'] : null;
+
+                $stmt_pub->bind_param("iisssdd",
                     $id_animal_nuevo,
                     $_SESSION['id_usuario'],
                     $_POST['titulo'],
                     $_POST['contenido'],
-                    $_POST['tipo_publicacion']
+                    $_POST['tipo_publicacion'],
+                    $lat,
+                    $lon
                 );
 
                 $stmt_pub->execute();
@@ -89,21 +95,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             // --- 3. (Opcional) Insertar en la tabla `reportes_perdidos` ---
             if ($_POST['tipo_publicacion'] == 'Perdido') {
-                // Validar que la ubicación no esté vacía para reportes de perdidos
-                if (empty(trim($_POST['ultima_ubicacion_vista']))) {
-                    throw new Exception("La última ubicación vista es obligatoria para reportar un animal perdido.");
-                }
-
                 $sql_perdido = "INSERT INTO reportes_perdidos (id_animal, id_usuario_reportador, ultima_ubicacion_vista, caracteristicas_distintivas, latitud, longitud) VALUES (?, ?, ?, ?, ?, ?)";
                 if ($stmt_perdido = $conexion->prepare($sql_perdido)) {
                     // Usamos 'd' para los decimales (latitud y longitud)
                     $lat = !empty($_POST['latitud']) ? $_POST['latitud'] : null;
                     $lon = !empty($_POST['longitud']) ? $_POST['longitud'] : null;
 
-                    $stmt_perdido->bind_param("iissdd",
+                    $stmt_perdido->bind_param("iissdd", // El tipo de dato para lat y lon es 'd' (double)
                         $id_animal_nuevo,
                         $_SESSION['id_usuario'],
-                        $_POST['ultima_ubicacion_vista'],
+                        $_POST['ubicacion_texto'], // Usamos el nuevo nombre del campo
                         $_POST['caracteristicas_distintivas'],
                         $lat,
                         $lon

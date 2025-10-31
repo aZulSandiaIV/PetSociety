@@ -29,7 +29,8 @@ if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true) {
             <div class="form-group">
                 <input type="submit" class="btn" value="Login">
             </div>
-            <p>¿No tienes una cuenta? <a href="registro.php">Regístrate ahora</a>.</p>
+            <p style="text-align: center;"><a href="recuperar_contraseña.php">¿Olvidaste tu contraseña?</a></p>
+            <p style="text-align: center;">¿No tienes una cuenta? <a href="registro.php">Regístrate ahora</a>.</p>
         </form>
     </div>
 </body>

@@ -10,6 +10,23 @@ if (!isset($_GET['id_animal']) || empty($_GET['id_animal'])) {
     die("Error: No se especificó un animal.");
 }
 $id_animal = intval($_GET['id_animal']);
+$id_usuario_actual = $_SESSION['id_usuario'];
+
+// --- Comprobación de seguridad: Verificar que el usuario es el dueño de la publicación ---
+$sql_check_owner = "SELECT p.id_publicacion FROM publicaciones p WHERE p.id_animal = ? AND p.id_usuario_publicador = ?";
+$es_dueño = false;
+if ($stmt_check = $conexion->prepare($sql_check_owner)) {
+    $stmt_check->bind_param("ii", $id_animal, $id_usuario_actual);
+    $stmt_check->execute();
+    $stmt_check->store_result();
+    if ($stmt_check->num_rows > 0) {
+        $es_dueño = true;
+    }
+    $stmt_check->close();
+}
+if (!$es_dueño) {
+    die("Acceso denegado. No tienes permiso para ver los reportes de esta mascota.");
+}
 
 // --- Obtener los reportes de avistamiento para este animal ---
 $sql = "SELECT r.ultima_ubicacion_vista, r.caracteristicas_distintivas, r.fecha_reporte, u.nombre AS nombre_reportador

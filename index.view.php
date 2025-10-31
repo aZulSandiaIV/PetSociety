@@ -15,7 +15,6 @@
         .animal-card {
             background: #fff;
             border-radius: 10px;
-           color: red;
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
             overflow: hidden; /* Para que la imagen no se salga de los bordes redondeados */
             display: flex;
@@ -93,8 +92,6 @@
                 justify-content: center;
                 align-items: center;
                 list-style: none;
-                
-    ...
         }
           body 
        {
@@ -122,14 +119,20 @@
             </div>
             <nav>
                 <ul>
-                    <li>Hola, <strong><?php echo htmlspecialchars($_SESSION["nombre"]); ?></strong></li>
-                    <?php if (isset($_SESSION['is_admin']) && $_SESSION['is_admin'] == 1): ?>
-                        <li><a href="admin/index.php" style="color: #b91414ff;">Panel Admin</a></li>
+                    <?php if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true): ?>
+                        <li>Hola, <strong><?php echo htmlspecialchars($_SESSION["nombre"]); ?></strong></li>
+                        <?php if (isset($_SESSION['is_admin']) && $_SESSION['is_admin'] == 1): ?>
+                            <li><a href="admin/index.php" style="color: #b91414ff;">Panel Admin</a></li>
+                        <?php endif; ?>
+                        <li><a href="mis_publicaciones.php">Mi Perfil</a></li>
+                        <li><a href="buzon.php">Buzón</a></li>
+                        <li><a href="publicar.php">Publicar Animal</a></li>
+                        <li><a href="logout.php">Cerrar Sesión</a></li>
+                    <?php else: ?>
+                        <li><a href="login.php">Iniciar Sesión</a></li>
+                        <li><a href="registro.php">Registrarse</a></li>
+                        <li><a href="publicar.php" class="btn" style="color:white;padding:5px 10px;">Publicar Animal</a></li>
                     <?php endif; ?>
-                    <li><a href="mis_publicaciones.php">Mi Perfil</a></li>
-                    <li><a href="buzon.php">Buzón</a></li>
-                    <li><a href="publicar.php">Publicar Animal</a></li>
-                    <li><a href="logout.php">Cerrar Sesión</a></li>
                 </ul>
             </nav>
         </div>
@@ -164,6 +167,7 @@
                     <option value="Perdido" <?php if ($filtro_estado == 'Perdido') echo 'selected'; ?>>Perdido</option>
                     <option value="Refugio" <?php if ($filtro_estado == 'Refugio') echo 'selected'; ?>>Solo Refugios</option>
                 </select>
+                <a href="reportar_avistamiento_mapa.php" class="btn" style="background-color: #E57373; width: auto;">Reportar Callejero</a>
             </form>
         </div>
 
@@ -179,14 +183,18 @@
                             <h3><?php echo $animal['titulo']; ?></h3>
                             <p class="details"><strong><?php echo $animal['nombre']; ?></strong> - <?php echo $animal['especie']; ?> (<?php echo $animal['raza']; ?>)</p>
                             <p><?php echo $animal['contenido_corto']; ?>...</p>
-                            <?php if ($animal['id_publicador'] != $_SESSION['id_usuario']): ?>
+                            <?php if (isset($_SESSION['id_usuario']) && $animal['id_publicador'] == $_SESSION['id_usuario']): ?>
+                                <span class="btn own-post-indicator">Es tu publicación</span>
+                            <?php else: ?>
                                 <?php if ($animal['estado'] == 'Perdido'): ?>
                                     <a href="reportar_avistamiento.php?id_animal=<?php echo $animal['id_animal']; ?>" class="btn contact-btn" style="background-color: #E57373;">Reportar Avistamiento</a>
                                 <?php else: ?>
-                                    <a href="enviar_mensaje.php?id_publicacion=<?php echo $animal['id_publicacion']; ?>" class="btn contact-btn">Contactar al Publicador</a>
+                                    <?php if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true): ?>
+                                        <a href="enviar_mensaje.php?id_publicacion=<?php echo $animal['id_publicacion']; ?>" class="btn contact-btn">Contactar al Publicador</a>
+                                    <?php else: ?>
+                                        <a href="login.php" class="btn contact-btn">Inicia sesión para contactar</a>
+                                    <?php endif; ?>
                                 <?php endif; ?>
-                            <?php else: ?>
-                                <span class="btn own-post-indicator">Es tu publicación</span>
                             <?php endif; ?>
                         </div>
                     </div>
@@ -203,16 +211,17 @@
     <script>
         // --- Lógica del Mapa ---
         // La variable 'mapa' ahora es global (declarada en geolocalizacion.js)
-        mapa = L.map('mapa-avistamientos').setView([-34.60, -58.38], 5);
+        mapa = L.map('mapa-avistamientos').setView([-34.60, -58.38], 12); // Zoom inicial más apropiado
 
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(mapa);
 
         // --- Marcadores de Avistamientos (huella) ---
+        // Icono personalizado para avistamientos
         const huellaIcon = L.icon({
             iconUrl: 'https://cdn-icons-png.flaticon.com/512/12/12195.png',
-            iconSize:     [32, 32],
+            iconSize:     [28, 28],
             iconAnchor:   [16, 32],
             popupAnchor:  [0, -32]
         });
@@ -224,9 +233,10 @@
         });
 
         // --- Marcadores de Animales Perdidos (alerta) ---
+        // Icono personalizado para animales perdidos
         const alertaIcon = L.icon({
             iconUrl: 'https://cdn-icons-png.flaticon.com/512/753/753345.png',
-            iconSize:     [32, 32],
+            iconSize:     [28, 28],
             iconAnchor:   [16, 32],
             popupAnchor:  [0, -32]
         });
@@ -237,14 +247,41 @@
                 .bindPopup(perdido.popup_html);
         });
 
+        // --- Marcadores de Publicaciones (Adopción, Hogar Temporal, Refugios) ---
+        const adopcionIcon = L.icon({
+            iconUrl: 'https://cdn-icons-png.flaticon.com/512/1077/1077035.png', // Icono de corazón
+            iconSize:     [28, 28],
+            iconAnchor:   [16, 32],
+            popupAnchor:  [0, -32]
+        });
+        const refugioIcon = L.icon({
+            iconUrl: 'https://cdn-icons-png.flaticon.com/512/619/619153.png', // Icono de casa
+            iconSize:     [28, 28],
+            iconAnchor:   [16, 32],
+            popupAnchor:  [0, -32]
+        });
+
+        const publicaciones = <?php echo $publicaciones_json; ?>;
+        publicaciones.forEach(pub => {
+            // Elegir el icono: si es refugio, el de refugio, si no, el de adopción
+            const icon = pub.es_refugio ? refugioIcon : adopcionIcon;
+
+            L.marker([pub.latitud, pub.longitud], {icon: icon})
+                .addTo(mapa)
+                .bindPopup(pub.popup_html);
+        });
+
+
         // --- Lógica para mostrar la ubicación del usuario ---
         document.getElementById('ver-mi-ubicacion').addEventListener('click', function() {
             this.textContent = 'Buscando...';
             this.disabled = true;
 
-            // Sobrescribimos la función EXITO para que llame a PONER_EN_MAPA
+            // Sobrescribimos la función EXITO para que llame a la función correcta 'ponerEnMapa'
+            // que está definida en geolocalizacion.js
             EXITO = function(position) {
-                PONER_EN_MAPA(position.coords.latitude, position.coords.longitude);
+                ponerEnMapa(position.coords.latitude, position.coords.longitude);
+                document.getElementById('ver-mi-ubicacion').textContent = 'Mostrar mi ubicación';
             };
 
             OBTENER_POSICION_ACTUAL();
