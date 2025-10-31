@@ -3,10 +3,10 @@
     include "config.php";
     
     $where_clause = "";
-    if (in_array($filtro_estado, $allowed_status_filters)) {
-        $where_clause = "WHERE a.estado = '" . $conexion->real_escape_string($filtro_estado) . "'";
+    if (in_array($_GET['Filtro'], $allowed_status_filters)) {
+        $where_clause = "WHERE a.estado = '" . $_GET['Filtro'] . "'";
 
-    } elseif ($filtro_estado == 'Refugio') {
+    } elseif ($_GET['Filtro'] == 'Refugio') {
         $where_clause = "WHERE u.es_refugio = 1";
 
     } else {

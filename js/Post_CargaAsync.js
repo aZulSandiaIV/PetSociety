@@ -6,7 +6,10 @@ var botton = document.getElementById("cargar-mas");
 
 async function cargar_publicaciones() {
     try {
-        const response = await fetch('solicitar_publicaciones_10.php?CargarApartirDe='+CargarApartirDe);
+        const response = await fetch('solicitar_publicaciones_10.php?' +
+           'CargarApartirDe='+ CargarApartirDe +
+           '&Filtro=' + document.getElementById('filtro').value
+        );
         
         if (response.status === 204) {
             document.getElementById('cargar-mas').innerHTML = "<p>No hay más publicaciones para cargar.</p>";
