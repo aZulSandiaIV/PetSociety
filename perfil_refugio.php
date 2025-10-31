@@ -81,7 +81,7 @@ $conexion->close();
     <header>
         <div class="container">
             <div id="branding">
-                <h1><a href="index.php"><img src="img/logo4.png" alt="PetSociety Logo" class="header-logo"></a><a href="index.php">PetSociety</a></h1>
+                <h1><a href="index.php"><img src="img/logo1.png" alt="PetSociety Logo" class="header-logo"></a><a href="index.php">PetSociety</a></h1>
             </div>
             <nav>
                 <ul>
