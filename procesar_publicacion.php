@@ -43,24 +43,28 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
 
         // --- 1. Insertar el animal en la tabla `animales` ---
-        $sql_animal = "INSERT INTO animales (nombre, especie, raza, imagen_url, estado, genero, descripcion) VALUES (?, ?, ?, ?, ?, ?, 'Descripción pendiente')";
+        $sql_animal = "INSERT INTO animales (nombre, especie, raza, imagen_url, estado, genero, descripcion) VALUES (?, ?, ?, ?, ?, ?, ?)";
         
         if ($stmt_animal = $conexion->prepare($sql_animal)) {
             // Determinar el estado inicial del animal basado en el tipo de publicación
-            $estado_animal = 'En Adopción'; // Por defecto
-            if ($_POST['tipo_publicacion'] == 'Hogar Temporal') {
+            if ($_POST['tipo_publicacion'] == 'Adopción') {
+                $estado_animal = 'En Adopción';
+            } elseif ($_POST['tipo_publicacion'] == 'Hogar Temporal') {
                 $estado_animal = 'Hogar Temporal';
             } elseif ($_POST['tipo_publicacion'] == 'Perdido') {
                 $estado_animal = 'Perdido';
+            } elseif ($_POST['tipo_publicacion'] == 'Encontrado') {
+                $estado_animal = 'Encontrado';
             }
 
-            $stmt_animal->bind_param("ssssss", 
+            $stmt_animal->bind_param("sssssss", 
                 $_POST['nombre_animal'], 
                 $_POST['especie'], 
                 $_POST['raza'],
                 $imagen_url,
                 $estado_animal,
-                $_POST['genero']
+                $_POST['genero'],
+                $_POST['contenido'] // Usamos el contenido de la publicación como descripción inicial
             );
 
             $stmt_animal->execute();

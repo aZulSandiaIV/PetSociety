@@ -39,8 +39,23 @@ $conexion->close();
 <body>
     <header>
         <div class="container">
-            <div id="branding"><h1><a href="index.php">PetSociety</a></h1></div>
-            <nav><ul><li><a href="index.php">Inicio</a></li><li><a href="reportar_avistamiento_mapa.php" class="btn" style="color:white;padding:5px 10px;">Reportar Avistamiento</a></li></ul></nav>
+            <div id="branding">
+                <h1><a href="index.php"><img src="img/logo4.png" alt="PetSociety Logo" class="header-logo"></a><a href="index.php">PetSociety</a></h1>
+            </div>
+            <nav>
+                <ul>
+                    <li>Hola, <?php echo htmlspecialchars($_SESSION["nombre"]); ?></li>
+                    <?php if (isset($_SESSION['is_admin']) && $_SESSION['is_admin'] == 1): ?>
+                        <li><a href="admin/index.php" class="admin-panel-link">Panel Admin</a></li>
+                    <?php endif; ?>
+                    <li><a href="index.php">Inicio</a></li>
+                    <li><a href="mis_publicaciones.php">Mi Perfil</a></li>
+                    <li><a href="buzon.php">Buzón</a></li>
+                    <li><a href="publicar.php">Publicar Animal</a></li>
+                    <li><a href="reportar_avistamiento_mapa.php" class="btn" style="color:white;padding:5px 10px;">Reportar Avistamiento</a></li>
+                    <li><a href="logout.php">Cerrar Sesión</a></li>
+                </ul>
+            </nav>
         </div>
     </header>
 
