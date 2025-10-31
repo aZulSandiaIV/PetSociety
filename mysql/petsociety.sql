@@ -146,7 +146,13 @@ INSERT INTO `publicaciones` (`id_publicacion`, `id_animal`, `id_usuario_publicad
 (7, 7, 2, 'Caniche perdido', 'se perdio el lunes 13/10/2025', 'Perdido', '2025-10-17 14:21:29'),
 (8, 8, 3, 'Se busca familia responsable', 'Somos un refugio de animales, buscamos adopcion responsable para ramoncito', 'Adopción', '2025-10-17 14:22:50'),
 (9, 9, 2, 'Gato perdido', 'Se perdio ayer por la tarde en villa luzuriaga', 'Perdido', '2025-10-26 16:12:37');
-
+--jeje
+(10, 5, 2, 'Dalma busca familia con patio', 'Dalma es muy activa y necesita espacio para correr. Ideal para familia con patio y tiempo para paseos.', 'Adopción', '2025-10-20 10:00:00'),
+(11, 6, 1, 'Sofi necesita hogar temporal por vacaciones', 'Busco hogar temporal por 2 semanas mientras viajo. Sofi es tranquila y está esterilizada.', 'Hogar Temporal', '2025-10-21 09:30:00'),
+(12, 8, 3, 'Ramoncito busca familia responsable (refugio)', 'Ramoncito está en excelente estado de salud, se entrega con vacunas al día y control veterinario.', 'Adopción', '2025-10-22 08:45:00'),
+(13, 2, 2, 'Gato encontrado en barrio centro', 'Se encontró un gato cerca de la plaza. Tiene collar azul pero sin identificación. Busca su hogar.', 'Encontrado', '2025-10-23 19:15:00'),
+(14, 9, 1, 'Colo perdido en Villa Luzuriaga', 'Colo se perdió ayer por la tarde. Responde al nombre y es muy manso. Recompensa pequeña.', 'Perdido', '2025-10-26 16:20:00'),
+(15, 1, 3, 'Cartucho listo para adopción definitiva', 'Cartucho es muy cariñoso, sociable con otros perros y ya está listo para encontrar su familia.', 'Adopción', '2025-10-27 11:00:00');
 -- --------------------------------------------------------
 
 --

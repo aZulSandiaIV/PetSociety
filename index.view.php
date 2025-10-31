@@ -168,38 +168,23 @@
         </div>
 
         <div class="feed-container">
-            <?php if (!empty($animales)): ?>
-                <?php foreach ($animales as $animal): ?>
-                    <div class="animal-card" style="position: relative;">
-                        <?php if ($animal['es_refugio']): ?>
-                            <span class="refugio-tag">REFUGIO</span>
-                        <?php endif; ?>
-                        <img src="<?php echo $animal['imagen']; ?>" alt="Foto de <?php echo $animal['nombre']; ?>">
-                        <div class="animal-card-content" style="display: flex; flex-direction: column; flex-grow: 1;">
-                            <h3><?php echo $animal['titulo']; ?></h3>
-                            <p class="details"><strong><?php echo $animal['nombre']; ?></strong> - <?php echo $animal['especie']; ?> (<?php echo $animal['raza']; ?>)</p>
-                            <p><?php echo $animal['contenido_corto']; ?>...</p>
-                            <?php if ($animal['id_publicador'] != $_SESSION['id_usuario']): ?>
-                                <?php if ($animal['estado'] == 'Perdido'): ?>
-                                    <a href="reportar_avistamiento.php?id_animal=<?php echo $animal['id_animal']; ?>" class="btn contact-btn" style="background-color: #E57373;">Reportar Avistamiento</a>
-                                <?php else: ?>
-                                    <a href="enviar_mensaje.php?id_publicacion=<?php echo $animal['id_publicacion']; ?>" class="btn contact-btn">Contactar al Publicador</a>
-                                <?php endif; ?>
-                            <?php else: ?>
-                                <span class="btn own-post-indicator">Es tu publicación</span>
-                            <?php endif; ?>
-                        </div>
-                    </div>
-                <?php endforeach; ?>
-            <?php else: ?>
-                <p>No hay animales publicados en este momento.</p>
-            <?php endif; ?>
+            <!-- Aquí se cargarán las publicaciones vía JavaScript -->
         </div>
+        <div style="text-align: center; margin: 20px 0;"> <!-- Esperando un terminado mejor, usar ID cargar-mas -->
+            <button id="cargar-mas" class="btn">Cargar más publicaciones</button>
+        </div>
+
     </div>
 
     <!-- Scripts para el mapa -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="geolocalizacion.js"></script>
+
+    <script src="js/Post_CargaAsync.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', mostrar_publicaciones);
+    </script>
+    
     <script>
         // --- Lógica del Mapa ---
         // La variable 'mapa' ahora es global (declarada en geolocalizacion.js)
@@ -251,15 +236,5 @@
         });
     </script>
 
-    <script>
-        fetch('solicitar_publicaciones_10.php')
-            .then(response => response.json())
-            .then(data => {
-                console.log('Datos recibidos:', data);
-            })
-            .catch(error => {
-                console.error('Error al obtener los datos:', error);
-            });
-    </script>
 </body>
 </html>

@@ -5,57 +5,10 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
     exit;
 }
 require_once "config.php";
+require_once "config_view_post.php";
 ?>
 
 <?php
-// --- LÓGICA ---
-// 1. Manejar el filtro de búsqueda
-$filtro_estado = $_GET['filtro'] ?? 'Todos';
-$allowed_status_filters = ['En Adopción', 'Hogar Temporal', 'Perdido'];
-$where_clause = "";
-
-if (in_array($filtro_estado, $allowed_status_filters)) {
-    $where_clause = "WHERE a.estado = '" . $conexion->real_escape_string($filtro_estado) . "'";
-} elseif ($filtro_estado == 'Refugio') {
-    $where_clause = "WHERE u.es_refugio = 1";
-} else {
-    // Si el filtro es 'Todos' o un valor no válido, mostramos todos los estados relevantes.
-    $where_clause = "WHERE a.estado IN ('En Adopción', 'Hogar Temporal', 'Perdido')";
-}
-
-// 1. Preparar la consulta para obtener las publicaciones
-$sql = "SELECT a.id_animal, a.nombre, a.especie, a.raza, a.imagen_url, a.estado,
-               p.id_publicacion, p.id_usuario_publicador, p.titulo, p.contenido,
-               u.es_refugio
-        FROM publicaciones p 
-        JOIN animales a ON p.id_animal = a.id_animal 
-        JOIN usuarios u ON p.id_usuario_publicador = u.id_usuario
-        $where_clause
-        ORDER BY p.fecha_publicacion DESC";
-
-// 2. Ejecutar la consulta y procesar los resultados en un array
-$animales = [];
-if ($result = $conexion->query($sql)) {
-    if ($result->num_rows > 0) {
-        while ($row = $result->fetch_assoc()) {
-            // Preparamos los datos para la vista
-            $animales[] = [
-                'id_animal' => $row['id_animal'],
-                'id_publicacion' => $row['id_publicacion'],
-                'id_publicador' => $row['id_usuario_publicador'],
-                'es_refugio' => $row['es_refugio'],
-                'imagen' => $row['imagen_url'] ? htmlspecialchars($row['imagen_url']) : 'https://via.placeholder.com/300x200.png?text=Sin+Foto',
-                'nombre' => htmlspecialchars($row['nombre']),
-                'titulo' => htmlspecialchars($row['titulo']),
-                'estado' => htmlspecialchars($row['estado']),
-                'especie' => htmlspecialchars($row['especie']),
-                'raza' => htmlspecialchars($row['raza']),
-                'contenido_corto' => nl2br(htmlspecialchars(substr($row['contenido'], 0, 100)))
-            ];
-        }
-    }
-    $result->free();
-}
 
 // --- LÓGICA PARA EL MAPA DE AVISTAMIENTOS ---
 $sql_avistamientos = "SELECT latitud, longitud, imagen_url, descripcion, fecha_avistamiento 
