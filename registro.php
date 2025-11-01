@@ -31,7 +31,7 @@ if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true) {
     <div class="form-container">
         <h2>Crear una Cuenta</h2>
         <p>Completa este formulario para registrarte.</p>
-        <form action="procesar_registro.php" method="post">
+        <form action="procesar_registro.php" method="post" enctype="multipart/form-data">
             <div class="form-group">
                 <label>Nombre Completo</label>
                 <input type="text" name="nombre" required>
@@ -55,6 +55,11 @@ if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true) {
             <div class="form-group">
                 <label>Confirmar Contraseña</label>
                 <input type="password" name="confirm_password" required minlenght="6">
+            </div>
+            <div class="form-group">
+                <label>Foto de Perfil (Opcional)</label>
+                <input type="file" name="foto_perfil" accept="image/jpeg, image/png, image/gif">
+                <small>Sube una imagen para tu perfil. No es obligatorio.</small>
             </div>
             <div class="form-group">
                 <label for="es_refugio" style="display: flex; align-items: center; gap: 10px;">

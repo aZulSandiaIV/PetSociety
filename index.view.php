@@ -118,28 +118,20 @@
             <nav>
                 <ul>
                     <?php if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true): ?>
+                        <li><a href="index.php">Inicio</a></li>
                         <li>Hola, <strong><?php echo htmlspecialchars($_SESSION["nombre"]); ?></strong></li>
                         <?php if (isset($_SESSION['is_admin']) && $_SESSION['is_admin'] == 1): ?>
                             <li><a href="admin/index.php" style="color: #b91414ff;">Panel Admin</a></li>
                         <?php endif; ?>
                         <li><a href="mis_publicaciones.php">Mi Perfil</a></li>
                         <li><a href="buzon.php">Buzón</a></li>
-                        <li><a href="publicar.php">Publicar Animal</a></li>
+                        <li><a href="publicar.php" class="btn" style="color:white;padding:5px 10px;">Publicar Animal</a></li>
                         <li><a href="logout.php">Cerrar Sesión</a></li>
                     <?php else: ?>
                         <li><a href="login.php">Iniciar Sesión</a></li>
                         <li><a href="registro.php">Registrarse</a></li>
                         <li><a href="publicar.php" class="btn" style="color:white;padding:5px 10px;">Publicar Animal</a></li>
                     <?php endif; ?>
-                    <li>Hola, <strong><?php echo htmlspecialchars($_SESSION["nombre"]); ?></strong></li>
-                    <?php if (isset($_SESSION['is_admin']) && $_SESSION['is_admin'] == 1): ?>
-                        <li><a href="admin/index.php" class="admin-panel-link">Panel Admin</a></li>
-                    <?php endif; ?>
-                    <li><a href="index.php">Inicio</a></li>
-                    <li><a href="mis_publicaciones.php">Mi Perfil</a></li>
-                    <li><a href="buzon.php">Buzón</a></li>
-                    <li><a href="publicar.php">Publicar Animal</a></li>
-                    <li><a href="logout.php">Cerrar Sesión</a></li>
                 </ul>
             </nav>
         </div>
@@ -159,58 +151,113 @@
         <div style="margin-bottom: 30px;">
             <h2>Mapa de Avistamientos Recientes</h2>
             <p>Estos son los últimos avistamientos reportados. Haz clic en un marcador para ver los detalles o usa el botón para ver tu posición.</p>
-            <button id="ver-mi-ubicacion" class="btn" style="margin-bottom: 15px; width: auto;">Mostrar mi ubicación</button>
+            <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                <button id="ver-mi-ubicacion" class="btn" style="width: auto;">Mostrar mi ubicación</button>
+                <a href="reportar_avistamiento_mapa.php" class="btn" style="width: auto; background-color: #E57373;">Reportar Callejero</a>
+            </div>
             <div id="mapa-avistamientos"></div>
         </div>
 
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;" id="seccion-publicaciones">
-            <h2>Publicaciones Recientes</h2>
-            <form action="index.php" method="get" style="display: flex; align-items: center; gap: 10px;">
-                <label for="filtro">Filtrar por:</label>
-                <select name="filtro" id="filtro" onchange="aplicarFiltroYMantenerPosicion()" class="form-group" style="margin-bottom: 0; padding: 8px;">
-                    <option value="Todos" <?php if ($filtro_estado == 'Todos') echo 'selected'; ?>>Todos</option>
-                    <option value="En Adopción" <?php if ($filtro_estado == 'En Adopción') echo 'selected'; ?>>En Adopción</option>
-                    <option value="Hogar Temporal" <?php if ($filtro_estado == 'Hogar Temporal') echo 'selected'; ?>>Hogar Temporal</option>
-                    <option value="Perdido" <?php if ($filtro_estado == 'Perdido') echo 'selected'; ?>>Perdido</option>
-                    <option value="Encontrado" <?php if ($filtro_estado == 'Encontrado') echo 'selected'; ?>>Encontrado</option>
-                    <option value="Adoptado" <?php if ($filtro_estado == 'Adoptado') echo 'selected'; ?>>Adoptado</option>
-                    <option value="Refugio" <?php if ($filtro_estado == 'Refugio') echo 'selected'; ?>>Solo Refugios</option>
-                </select>
-                <a href="reportar_avistamiento_mapa.php" class="btn" style="background-color: #E57373; width: auto;">Reportar Callejero</a>
-            </form>
+        <div id="seccion-publicaciones">
+            <h2>Encuentra a tu próximo compañero</h2>
         </div>
 
-        <div class="feed-container">
-            <?php if (!empty($animales)): ?>
-                <?php foreach ($animales as $animal): ?>
-                    <div class="animal-card" style="position: relative;">
-                        <?php if ($animal['es_refugio']): ?>
-                            <span class="refugio-tag">REFUGIO</span>
-                        <?php endif; ?>
-                        <img src="<?php echo $animal['imagen']; ?>" alt="Foto de <?php echo $animal['nombre']; ?>">
-                        <div class="animal-card-content" style="display: flex; flex-direction: column; flex-grow: 1;">
-                            <h3><?php echo $animal['titulo']; ?></h3>
-                            <p class="details"><strong><?php echo $animal['nombre']; ?></strong> - <?php echo $animal['especie']; ?> (<?php echo $animal['raza']; ?>)</p>
-                            <p><?php echo $animal['contenido_corto']; ?>...</p>
-                            <?php if (isset($_SESSION['id_usuario']) && $animal['id_publicador'] == $_SESSION['id_usuario']): ?>
-                                <span class="btn own-post-indicator">Es tu publicación</span>
-                            <?php else: ?>
-                                <?php if ($animal['estado'] == 'Perdido'): ?>
-                                    <a href="reportar_avistamiento.php?id_animal=<?php echo $animal['id_animal']; ?>" class="btn contact-btn" style="background-color: #E57373;">Reportar Avistamiento</a>
-                                <?php else: ?>
-                                    <?php if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true): ?>
-                                        <a href="enviar_mensaje.php?id_publicacion=<?php echo $animal['id_publicacion']; ?>" class="btn contact-btn">Contactar al Publicador</a>
-                                    <?php else: ?>
-                                        <a href="login.php" class="btn contact-btn">Inicia sesión para contactar</a>
-                                    <?php endif; ?>
-                                <?php endif; ?>
-                            <?php endif; ?>
-                        </div>
+        <div class="main-content-wrapper">
+            <!-- INICIO DE LA BARRA LATERAL DE FILTROS -->
+            <aside class="filters-sidebar">
+                <form action="index.php#seccion-publicaciones" method="get" id="filter-form">
+                    <div class="filters-header">
+                        <h3>Filtros</h3>
+                        <a href="index.php#seccion-publicaciones" class="clear-filters-btn">Limpiar</a>
                     </div>
-                <?php endforeach; ?>
-            <?php else: ?>
-                <p>No hay animales publicados en este momento.</p>
-            <?php endif; ?>
+
+                    <div class="filter-group">
+                        <input type="text" name="q" class="form-group" placeholder="Buscar por palabra clave..." value="<?php echo htmlspecialchars($filtros['q']); ?>" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box;">
+                    </div>
+
+                    <div class="filter-group">
+                        <h4>Estado</h4>
+                        <?php $estados = ['En Adopción', 'Hogar Temporal', 'Perdido']; ?>
+                        <?php foreach ($estados as $estado): ?>
+                            <label>
+                                <input type="checkbox" name="estado[]" value="<?php echo $estado; ?>" <?php if (in_array($estado, $filtros['estado'])) echo 'checked'; ?>>
+                                <span><?php echo $estado; ?></span>
+                            </label>
+                        <?php endforeach; ?>
+                    </div>
+
+                    <div class="filter-group">
+                        <h4>Especie</h4>
+                        <?php $especies = ['Perro', 'Gato', 'Otro']; ?>
+                        <?php foreach ($especies as $especie): ?>
+                            <label>
+                                <input type="checkbox" name="especie[]" value="<?php echo $especie; ?>" <?php if (in_array($especie, $filtros['especie'])) echo 'checked'; ?>>
+                                <span><?php echo $especie; ?></span>
+                            </label>
+                        <?php endforeach; ?>
+                    </div>
+
+                    <div class="filter-group">
+                        <h4>Tamaño</h4>
+                        <?php $tamaños = ['Pequeño', 'Mediano', 'Grande']; ?>
+                        <?php foreach ($tamaños as $tamaño): ?>
+                            <label>
+                                <input type="checkbox" name="tamaño[]" value="<?php echo $tamaño; ?>" <?php if (in_array($tamaño, $filtros['tamaño'])) echo 'checked'; ?>>
+                                <span><?php echo $tamaño; ?></span>
+                            </label>
+                        <?php endforeach; ?>
+                    </div>
+
+                    <button type="submit" class="btn" style="width: 100%;">Aplicar Filtros</button>
+                </form>
+            </aside>
+            <!-- FIN DE LA BARRA LATERAL DE FILTROS -->
+
+            <!-- INICIO DEL CONTENIDO PRINCIPAL (FEED) -->
+            <main class="content-main">
+                <div class="feed-container">
+                    <?php if (!empty($animales)): ?>
+                        <?php foreach ($animales as $animal): ?>
+                            <div class="animal-card" style="position: relative;">
+                                <?php if ($animal['es_refugio']): ?>
+                                    <span class="refugio-tag">REFUGIO</span>
+                                <?php endif; ?>
+                                <img src="<?php echo $animal['imagen']; ?>" alt="Foto de <?php echo $animal['nombre']; ?>">
+                                <div class="animal-card-content" style="display: flex; flex-direction: column; flex-grow: 1;">
+                                    <h3><?php echo $animal['titulo']; ?></h3>
+                                    <p class="details"><strong><?php echo $animal['nombre']; ?></strong> - <?php echo $animal['especie']; ?> (<?php echo $animal['raza']; ?>)</p>
+                                    <p class="details">
+                                        <?php echo $animal['tamaño']; ?>
+                                        <?php if($animal['tamaño'] && $animal['edad']) echo ' | '; ?>
+                                        <?php echo $animal['edad']; ?>
+                                    </p>
+                                    <p><?php echo $animal['contenido_corto']; ?>...</p>
+                                    <?php if (isset($_SESSION['id_usuario']) && $animal['id_publicador'] == $_SESSION['id_usuario']): ?>
+                                        <span class="btn own-post-indicator">Es tu publicación</span>
+                                    <?php else: ?>
+                                        <?php if ($animal['estado'] == 'Perdido'): ?>
+                                            <a href="reportar_avistamiento.php?id_animal=<?php echo $animal['id_animal']; ?>" class="btn contact-btn" style="background-color: #E57373;">Reportar Avistamiento</a>
+                                        <?php else: ?>
+                                            <?php if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true): ?>
+                                                <a href="enviar_mensaje.php?id_publicacion=<?php echo $animal['id_publicacion']; ?>" class="btn contact-btn">Contactar al Publicador</a>
+                                            <?php else: ?>
+                                                <a href="login.php" class="btn contact-btn">Inicia sesión para contactar</a>
+                                            <?php endif; ?>
+                                        <?php endif; ?>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <div style="text-align: center; grid-column: 1 / -1; padding: 40px; background: #fff; border-radius: 8px;">
+                            <h3>No se encontraron resultados</h3>
+                            <p>Prueba a cambiar o limpiar los filtros para ver más publicaciones.</p>
+                            <a href="index.php#seccion-publicaciones" class="btn">Limpiar Filtros</a>
+                        </div>
+                    <?php endif; ?>
+                </div>
+            </main>
+             <!-- FIN DEL CONTENIDO PRINCIPAL (FEED) -->
         </div>
     </div>
 
@@ -289,21 +336,12 @@
             // Sobrescribimos la función EXITO para que llame a la función correcta 'ponerEnMapa'
             // que está definida en geolocalizacion.js
             EXITO = function(position) {
-                ponerEnMapa(position.coords.latitude, position.coords.longitude);
+                PONER_EN_MAPA(position.coords.latitude, position.coords.longitude);
                 document.getElementById('ver-mi-ubicacion').textContent = 'Mostrar mi ubicación';
             };
 
             OBTENER_POSICION_ACTUAL();
         });
-
-        // Función para aplicar filtro y mantener posición
-        function aplicarFiltroYMantenerPosicion() {
-            const filtro = document.getElementById('filtro').value;
-            const url = new URL(window.location);
-            url.searchParams.set('filtro', filtro);
-            url.hash = 'seccion-publicaciones'; // Agregamos un hash para volver a esta sección
-            window.location.href = url.toString();
-        }
 
         // Si hay un hash en la URL, hacer scroll a esa sección
         window.addEventListener('load', function() {

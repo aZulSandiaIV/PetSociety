@@ -43,8 +43,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
 
         // --- 1. Insertar el animal en la tabla `animales` ---
-        $sql_animal = "INSERT INTO animales (nombre, especie, raza, imagen_url, estado, genero, descripcion) VALUES (?, ?, ?, ?, ?, ?, ?)";
-        
+        $sql_animal = "INSERT INTO animales (nombre, especie, raza, tamaño, color, edad, imagen_url, estado, genero, descripcion) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
         if ($stmt_animal = $conexion->prepare($sql_animal)) {
             // Determinar el estado inicial del animal basado en el tipo de publicación
             if ($_POST['tipo_publicacion'] == 'Adopción') {
@@ -53,14 +53,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $estado_animal = 'Hogar Temporal';
             } elseif ($_POST['tipo_publicacion'] == 'Perdido') {
                 $estado_animal = 'Perdido';
-            } elseif ($_POST['tipo_publicacion'] == 'Encontrado') {
-                $estado_animal = 'Encontrado';
             }
 
-            $stmt_animal->bind_param("sssssss", 
-                $_POST['nombre_animal'], 
-                $_POST['especie'], 
+            $stmt_animal->bind_param("ssssssssss",
+                $_POST['nombre_animal'],
+                $_POST['especie'],
                 $_POST['raza'],
+                $_POST['tamaño'],
+                $_POST['color'],
+                $_POST['edad'],
                 $imagen_url,
                 $estado_animal,
                 $_POST['genero'],
@@ -74,18 +75,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $stmt_animal->close();
 
             // --- 2. Insertar la publicación en la tabla `publicaciones` ---
-            $sql_pub = "INSERT INTO publicaciones (id_animal, id_usuario_publicador, titulo, contenido, tipo_publicacion, latitud, longitud) VALUES (?, ?, ?, ?, ?, ?, ?)";
+            $sql_pub = "INSERT INTO publicaciones (id_animal, id_usuario_publicador, titulo, contenido, ubicacion_texto, tipo_publicacion, latitud, longitud) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
             if ($stmt_pub = $conexion->prepare($sql_pub)) {
                 // Usamos 'd' para los decimales (latitud y longitud)
                 $lat = !empty($_POST['latitud']) ? $_POST['latitud'] : null;
                 $lon = !empty($_POST['longitud']) ? $_POST['longitud'] : null;
+                
+                // Combinamos la zona manual con la ubicación del mapa para una búsqueda más robusta
+                $ubicacion_completa = trim($_POST['zona'] . ' ' . $_POST['ubicacion_texto']);
 
-                $stmt_pub->bind_param("iisssdd",
+                $stmt_pub->bind_param("iisssssd",
                     $id_animal_nuevo,
                     $_SESSION['id_usuario'],
                     $_POST['titulo'],
                     $_POST['contenido'],
+                    $ubicacion_completa,
                     $_POST['tipo_publicacion'],
                     $lat,
                     $lon

@@ -8,7 +8,7 @@ require_once "config.php";
 $id_usuario = $_SESSION['id_usuario'];
 
 // --- Obtener datos del usuario ---
-$sql_usuario = "SELECT nombre, email, telefono, dni FROM usuarios WHERE id_usuario = ?";
+$sql_usuario = "SELECT nombre, email, telefono, dni, foto_perfil_url FROM usuarios WHERE id_usuario = ?";
 $usuario = null;
 if ($stmt_usuario = $conexion->prepare($sql_usuario)) {
     $stmt_usuario->bind_param("i", $id_usuario);
@@ -57,6 +57,24 @@ $conexion->close();
     <title>Mis Publicaciones - PetSociety</title>
     <link rel="stylesheet" href="estilos.css">
     <link rel="stylesheet" href="perfil.css">
+    <style>
+        .profile-info {
+            display: flex;
+            align-items: flex-start;
+            gap: 30px;
+        }
+        .profile-picture {
+            flex-shrink: 0;
+        }
+        .profile-picture img {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #fff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+    </style>
 </head>
 <body>
     <header>
@@ -94,6 +112,10 @@ $conexion->close();
         <!-- Sección de Información Personal -->
         <div class="profile-section">
             <div class="profile-info">
+                <div class="profile-picture">
+                    <img src="<?php echo !empty($usuario['foto_perfil_url']) ? htmlspecialchars($usuario['foto_perfil_url']) : 'img/perfil_default.png'; ?>" alt="Foto de perfil">
+                </div>
+
                 <div class="user-details">
                     <h3>Mi Información Personal</h3>
                     

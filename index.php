@@ -5,22 +5,67 @@ require_once "config.php";
 
 <?php
 // --- LÓGICA ---
-// 1. Manejar el filtro de búsqueda
-$filtro_estado = $_GET['filtro'] ?? 'Todos';
-$allowed_status_filters = ['En Adopción', 'Hogar Temporal', 'Perdido', 'Encontrado', 'Adoptado'];
-$where_clause = "";
+// 1. Recoger todos los posibles filtros desde GET. Ahora los filtros pueden ser arrays.
+$filtros = [
+    'estado' => $_GET['estado'] ?? [],
+    'especie' => $_GET['especie'] ?? [],
+    'q' => $_GET['q'] ?? '', // Búsqueda por texto (zona, etc.)
+    'tamaño' => $_GET['tamaño'] ?? [],
+    'edad' => $_GET['filtro_edad'] ?? '',
+    'color' => $_GET['filtro_color'] ?? '',
+    'fecha' => $_GET['filtro_fecha'] ?? ''
+];
 
-if (in_array($filtro_estado, $allowed_status_filters)) {
-    $where_clause = "WHERE a.estado = '" . $conexion->real_escape_string($filtro_estado) . "'";
-} elseif ($filtro_estado == 'Refugio') {
-    $where_clause = "WHERE u.es_refugio = 1";
-} else {
-    // Si el filtro es 'Todos', mostramos TODAS las publicaciones sin filtro de estado
-    $where_clause = "";
+$where_conditions = [];
+$params = [];
+$types = '';
+
+// 2. Construir la cláusula WHERE dinámicamente
+// Filtro de estado
+if (!empty($filtros['estado'])) {
+    $placeholders = implode(',', array_fill(0, count($filtros['estado']), '?'));
+    $where_conditions[] = "a.estado IN ($placeholders)";
+    $params = array_merge($params, $filtros['estado']);
+    $types .= str_repeat('s', count($filtros['estado']));
 }
 
-// 1. Preparar la consulta para obtener las publicaciones
-$sql = "SELECT a.id_animal, a.nombre, a.especie, a.raza, a.imagen_url, a.estado,
+// Filtro de especie
+if (!empty($filtros['especie'])) {
+    $placeholders = implode(',', array_fill(0, count($filtros['especie']), '?'));
+    $where_conditions[] = "a.especie IN ($placeholders)";
+    $params = array_merge($params, $filtros['especie']);
+    $types .= str_repeat('s', count($filtros['especie']));
+}
+
+// Búsqueda por texto (zona, título, descripción)
+if (!empty($filtros['q'])) {
+    $where_conditions[] = "(LOWER(p.titulo) LIKE ? OR LOWER(p.contenido) LIKE ? OR LOWER(p.ubicacion_texto) LIKE ?)";
+    $query_param = "%" . strtolower($filtros['q']) . "%";
+    array_push($params, $query_param, $query_param, $query_param);
+    $types .= 'sss';
+}
+
+// Filtros de animal
+if (!empty($filtros['tamaño'])) {
+    $placeholders = implode(',', array_fill(0, count($filtros['tamaño']), '?'));
+    $where_conditions[] = "a.tamaño IN ($placeholders)";
+    $params = array_merge($params, $filtros['tamaño']);
+    $types .= str_repeat('s', count($filtros['tamaño']));
+}
+if (!empty($filtros['edad'])) { $where_conditions[] = "a.edad LIKE ?"; $params[] = "%" . $filtros['edad'] . "%"; $types .= 's'; }
+if (!empty($filtros['color'])) { $where_conditions[] = "a.color LIKE ?"; $params[] = "%" . $filtros['color'] . "%"; $types .= 's'; }
+
+// Filtro de fecha
+if (!empty($filtros['fecha'])) {
+    $where_conditions[] = "p.fecha_publicacion >= DATE_SUB(NOW(), INTERVAL ? DAY)";
+    $params[] = intval($filtros['fecha']);
+    $types .= 'i';
+}
+
+$where_clause = !empty($where_conditions) ? "WHERE " . implode(" AND ", $where_conditions) : "";
+
+// 3. Preparar la consulta para obtener las publicaciones
+$sql = "SELECT a.id_animal, a.nombre, a.especie, a.raza, a.imagen_url, a.estado, a.tamaño, a.edad, a.color,
                p.id_publicacion, p.id_usuario_publicador, p.titulo, p.contenido, p.latitud, p.longitud,
                u.es_refugio
         FROM publicaciones p 
@@ -29,9 +74,15 @@ $sql = "SELECT a.id_animal, a.nombre, a.especie, a.raza, a.imagen_url, a.estado,
         $where_clause
         ORDER BY p.fecha_publicacion DESC";
 
-// 2. Ejecutar la consulta y procesar los resultados en un array
+// 4. Ejecutar la consulta con sentencias preparadas y procesar los resultados
 $animales = [];
-if ($result = $conexion->query($sql)) {
+if ($stmt = $conexion->prepare($sql)) {
+    if (!empty($params)) {
+        $stmt->bind_param($types, ...$params);
+    }
+    $stmt->execute();
+    $result = $stmt->get_result();
+
     if ($result->num_rows > 0) {
         while ($row = $result->fetch_assoc()) {
             // Preparamos los datos para la vista
@@ -46,6 +97,9 @@ if ($result = $conexion->query($sql)) {
                 'estado' => htmlspecialchars($row['estado']),
                 'especie' => htmlspecialchars($row['especie']),
                 'raza' => htmlspecialchars($row['raza']),
+                'tamaño' => htmlspecialchars($row['tamaño'] ?? ''),
+                'edad' => htmlspecialchars($row['edad'] ?? ''),
+                'color' => htmlspecialchars($row['color'] ?? ''),
                 'contenido_corto' => nl2br(htmlspecialchars(substr($row['contenido'], 0, 100)))
             ];
             // Añadir latitud y longitud si existen
@@ -55,7 +109,7 @@ if ($result = $conexion->query($sql)) {
             }
         }
     }
-    $result->free();
+    $stmt->close();
 }
 
 // --- LÓGICA PARA EL MAPA DE AVISTAMIENTOS ---

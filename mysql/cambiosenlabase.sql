@@ -15,3 +15,16 @@ CREATE TABLE contacto (
 ALTER TABLE `avistamientos`
 ADD COLUMN `estado` ENUM('Visto', 'Ya no está') NOT NULL DEFAULT 'Visto' AFTER `id_usuario_reporta`,
 ADD INDEX `idx_avistamientos_estado` (`estado`);
+
+-- Añadir columnas de tamaño, edad y color a la tabla 'animales'
+ALTER TABLE `animales`
+ADD COLUMN `tamaño` ENUM('Pequeño', 'Mediano', 'Grande') NULL DEFAULT NULL AFTER `raza`,
+ADD COLUMN `color` VARCHAR(50) NULL DEFAULT NULL AFTER `tamaño`,
+CHANGE COLUMN `edad` `edad` VARCHAR(50) NULL DEFAULT NULL COMMENT 'Edad aproximada (ej: Cachorro, 3 años)';
+
+-- Añadir columna de texto para la ubicación en 'publicaciones' para facilitar la búsqueda
+ALTER TABLE `publicaciones`
+ADD COLUMN `ubicacion_texto` VARCHAR(255) NULL DEFAULT NULL AFTER `contenido`;
+
+-- Añadir columna para la foto de perfil en 'usuarios'
+ALTER TABLE `usuarios` ADD `foto_perfil_url` VARCHAR(255) NULL DEFAULT NULL AFTER `direccion`;

@@ -373,3 +373,135 @@ header #branding h1 {
     max-width: calc(100vw - 320px);
   }
 }
+
+/* --- NUEVOS ESTILOS PARA FILTROS --- */
+.main-content-wrapper {
+  display: flex;
+  gap: 25px;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.filters-sidebar {
+  width: 260px;
+  background: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  position: sticky;
+  top: 20px;
+  max-height: calc(100vh - 40px);
+  overflow-y: auto;
+  flex-shrink: 0;
+}
+
+.content-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.filters-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+  padding-bottom: 15px;
+  border-bottom: 2px solid #f0f0f0;
+}
+
+.filters-header h3 {
+  color: #2c5f2d;
+  margin: 0;
+  font-size: 1.4rem;
+  font-weight: bold;
+}
+
+.clear-filters-btn {
+  background-color: #E57373;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 5px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  text-decoration: none;
+}
+
+.clear-filters-btn:hover {
+  background-color: #d32f2f;
+}
+
+/* FILTROS ACTIVOS */
+.active-filters {
+  background-color: #f8f9fa;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 25px;
+  border-left: 4px solid #97BC62;
+}
+
+.active-filters h4 {
+  color: #2c5f2d;
+  margin: 0 0 10px 0;
+  font-size: 1rem;
+  font-weight: bold;
+}
+
+.active-filter-tag {
+  display: inline-flex;
+  align-items: center;
+  background-color: #97BC62;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 15px;
+  font-size: 0.8rem;
+  margin: 3px;
+  gap: 6px;
+}
+
+.filter-group {
+  margin-bottom: 25px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #eee;
+}
+
+.filter-group:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+}
+
+.filter-group h4 {
+  color: #2c5f2d;
+  margin: 0 0 15px 0;
+  font-size: 1.1rem;
+  font-weight: bold;
+}
+
+.filter-group label {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 6px;
+  transition: background-color 0.2s ease;
+  color: #555;
+  font-size: 0.95rem;
+}
+
+.filter-group label:hover {
+  background-color: #f8f9fa;
+}
+
+.filter-group input[type="checkbox"] {
+  margin-right: 10px;
+  transform: scale(1.1);
+  accent-color: #97BC62;
+}
+
+.filter-group input[type="checkbox"]:checked + span {
+  font-weight: bold;
+  color: #2c5f2d;
+}
+}
