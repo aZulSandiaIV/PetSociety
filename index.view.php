@@ -91,20 +91,24 @@
                 align-items: center;
                 list-style: none;
         }
-          body 
-       {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
-            font-size: 16px;
-        }
          h1, h2, h3, h4, h5, h6
          {
              font-family: 'Montserrat', sans-serif;
          }
 
-        button, .btn, a.button , ul,li
+        button, .btn, a.button
         {
             font-family: 'Montserrat', sans-serif;
             font-weight: 600;
+        }
+        
+        /* Evitar movimiento del header */
+        header nav {
+            min-width: 600px;
+        }
+        
+        header nav ul li {
+            white-space: nowrap;
         }
     </style>
 </head>
@@ -118,16 +122,15 @@
             <nav>
                 <ul>
                     <?php if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true): ?>
-                        <li><a href="index.php">Inicio</a></li>
                         <li>Hola, <strong><?php echo htmlspecialchars($_SESSION["nombre"]); ?></strong></li>
                         <?php if (isset($_SESSION['is_admin']) && $_SESSION['is_admin'] == 1): ?>
-                            <li><a href="admin/index.php" style="color: #b91414ff;">Panel Admin</a></li>
+                            <li><a href="admin/index.php" class="admin-panel-link">Panel Admin</a></li>
                         <?php endif; ?>
                         <li><a href="index.php">Inicio</a></li>
                         <li><a href="refugios.php">Refugios</a></li>
                         <li><a href="mis_publicaciones.php">Mi Perfil</a></li>
                         <li><a href="buzon.php">Buzón</a></li>
-                        <li><a href="publicar.php" class="btn" style="color:white;padding:5px 10px;">Publicar Animal</a></li>
+                        <li><a href="publicar.php">Publicar Animal</a></li>
                         <li><a href="logout.php">Cerrar Sesión</a></li>
                     <?php else: ?>
                         <li><a href="login.php">Iniciar Sesión</a></li>
