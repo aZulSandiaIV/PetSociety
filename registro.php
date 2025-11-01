@@ -23,6 +23,7 @@ if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true) {
                 <ul>
                     <li><a href="login.php">Iniciar Sesión</a></li>
                     <li><a href="registro.php">Registrarse</a></li>
+                    <li><a href="refugios.php">Refugios</a></li>
                 </ul>
             </nav>
         </div>

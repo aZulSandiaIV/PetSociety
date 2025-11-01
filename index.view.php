@@ -122,6 +122,8 @@
                         <?php if (isset($_SESSION['is_admin']) && $_SESSION['is_admin'] == 1): ?>
                             <li><a href="admin/index.php" style="color: #b91414ff;">Panel Admin</a></li>
                         <?php endif; ?>
+                        <li><a href="index.php">Inicio</a></li>
+                        <li><a href="refugios.php">Refugios</a></li>
                         <li><a href="mis_publicaciones.php">Mi Perfil</a></li>
                         <li><a href="buzon.php">Buzón</a></li>
                         <li><a href="publicar.php">Publicar Animal</a></li>
@@ -129,17 +131,9 @@
                     <?php else: ?>
                         <li><a href="login.php">Iniciar Sesión</a></li>
                         <li><a href="registro.php">Registrarse</a></li>
-                        <li><a href="publicar.php" class="btn" style="color:white;padding:5px 10px;">Publicar Animal</a></li>
+                        <li><a href="refugios.php">Refugios</a></li>
+                        <li><a href="publicar.php">Publicar Animal</a></li>
                     <?php endif; ?>
-                    <li>Hola, <strong><?php echo htmlspecialchars($_SESSION["nombre"]); ?></strong></li>
-                    <?php if (isset($_SESSION['is_admin']) && $_SESSION['is_admin'] == 1): ?>
-                        <li><a href="admin/index.php" class="admin-panel-link">Panel Admin</a></li>
-                    <?php endif; ?>
-                    <li><a href="index.php">Inicio</a></li>
-                    <li><a href="mis_publicaciones.php">Mi Perfil</a></li>
-                    <li><a href="buzon.php">Buzón</a></li>
-                    <li><a href="publicar.php">Publicar Animal</a></li>
-                    <li><a href="logout.php">Cerrar Sesión</a></li>
                 </ul>
             </nav>
         </div>

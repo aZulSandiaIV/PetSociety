@@ -59,6 +59,23 @@ if (isset($_GET['reply_to']) && !empty($_GET['reply_to'])) {
         }
         $stmt->close();
     }
+
+// CASO 3: Es un mensaje directo a un usuario específico
+} elseif (isset($_GET['id_destinatario']) && !empty($_GET['id_destinatario'])) {
+    $destinatario_id = intval($_GET['id_destinatario']);
+    $sql = "SELECT nombre FROM usuarios WHERE id_usuario = ?";
+    if ($stmt = $conexion->prepare($sql)) {
+        $stmt->bind_param("i", $destinatario_id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        if ($row = $result->fetch_assoc()) {
+            $nombre_publicador = $row['nombre'];
+            $asunto_sugerido = "Mensaje para " . htmlspecialchars($row['nombre']);
+        } else {
+            die("Error: Destinatario no encontrado.");
+        }
+        $stmt->close();
+    }
 } else {
     die("Error: No se especificó una publicación o un destinatario.");
 }
@@ -88,6 +105,7 @@ if ($destinatario_id == $_SESSION['id_usuario']) {
                         <li><a href="admin/index.php" class="admin-panel-link">Panel Admin</a></li>
                     <?php endif; ?>
                     <li><a href="index.php">Inicio</a></li>
+                    <li><a href="refugios.php">Refugios</a></li>
                     <li><a href="mis_publicaciones.php">Mi Perfil</a></li>
                     <li><a href="buzon.php">Buzón</a></li>
                     <li><a href="publicar.php">Publicar Animal</a></li>
