@@ -1,5 +1,140 @@
 ﻿/* Estilos específicos para la página de perfil - PetSociety */
 
+/* === ESTILOS PARA FOTO DE PERFIL === */
+.profile-picture {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+}
+
+.profile-picture-container {
+    position: relative;
+    width: 120px;
+    height: 120px;
+}
+
+.profile-picture img {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid #97BC62;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.profile-avatar {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 36px;
+    font-weight: bold;
+    color: white;
+    border: 4px solid #97BC62;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.profile-picture-upload {
+    text-align: center;
+}
+
+.upload-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+}
+
+.file-input-wrapper {
+    position: relative;
+    overflow: hidden;
+    display: inline-block;
+    cursor: pointer;
+    background-color: #2C5F2D;
+    color: white;
+    padding: 10px 16px;
+    border-radius: 5px;
+    font-size: 14px;
+    transition: background-color 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.file-input-wrapper:hover {
+    background-color: #1e4020;
+    border-color: #97BC62;
+}
+
+.file-input-wrapper input[type="file"] {
+    position: absolute;
+    left: -9999px;
+}
+
+.upload-btn {
+    background-color: #97BC62;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s ease;
+}
+
+.upload-btn:hover {
+    background-color: #7a9a4f;
+}
+
+.upload-btn:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+.delete-btn {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s ease;
+}
+
+.delete-btn:hover {
+    background-color: #c82333;
+}
+
+/* === ESTILOS PARA AVATARES EN PERFILES DE REFUGIO === */
+.refugio-profile-picture {
+    width: 80px;
+    height: 80px;
+}
+
+.refugio-profile-picture img {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #97BC62;
+}
+
+.refugio-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    font-weight: bold;
+    color: white;
+    border: 3px solid #97BC62;
+}
+
+/* === RESTO DE ESTILOS EXISTENTES === */
 .profile-section {
     background: #fff;
     padding: 25px;
@@ -10,8 +145,8 @@
 
 .profile-info {
     display: grid;
-    grid-template-columns: 1fr auto;
-    gap: 20px;
+    grid-template-columns: auto 1fr;
+    gap: 30px;
     align-items: start;
 }
 

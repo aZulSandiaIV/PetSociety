@@ -102,9 +102,15 @@
             font-weight: 600;
         }
         
-        /* Evitar movimiento del header */
-        header nav {
-            min-width: 600px;
+        /* Evitar que el header se rompa en múltiples líneas */
+        header .container {
+            flex-wrap: nowrap;
+        }
+        
+        header nav ul {
+            display: flex;
+            align-items: center;
+            flex-wrap: nowrap;
         }
         
         header nav ul li {
@@ -133,9 +139,10 @@
                         <li><a href="publicar.php">Publicar Animal</a></li>
                         <li><a href="logout.php">Cerrar Sesión</a></li>
                     <?php else: ?>
+                        <li><a href="index.php">Inicio</a></li>
+                        <li><a href="refugios.php">Refugios</a></li>
                         <li><a href="login.php">Iniciar Sesión</a></li>
                         <li><a href="registro.php">Registrarse</a></li>
-                        <li><a href="refugios.php">Refugios</a></li>
                         <li><a href="publicar.php">Publicar Animal</a></li>
                     <?php endif; ?>
                 </ul>

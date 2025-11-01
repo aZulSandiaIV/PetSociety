@@ -5,6 +5,7 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
     exit;
 }
 require_once "config.php";
+require_once "funciones.php";
 $id_usuario = $_SESSION['id_usuario'];
 
 // --- Obtener datos del usuario ---
@@ -114,7 +115,40 @@ $conexion->close();
         <div class="profile-section">
             <div class="profile-info">
                 <div class="profile-picture">
-                    <img src="<?php echo !empty($usuario['foto_perfil_url']) ? htmlspecialchars($usuario['foto_perfil_url']) : 'img/perfil_default.png'; ?>" alt="Foto de perfil">
+                    <?php 
+                    $foto_perfil = obtenerFotoPerfil($usuario['foto_perfil_url'], $usuario['nombre'], $id_usuario);
+                    if ($foto_perfil['tipo'] === 'foto'): 
+                    ?>
+                        <div class="profile-picture-container">
+                            <img src="<?php echo htmlspecialchars($foto_perfil['url']); ?>" alt="Foto de perfil">
+                        </div>
+                    <?php else: ?>
+                        <div class="profile-picture-container">
+                            <div class="profile-avatar" style="background-color: <?php echo $foto_perfil['color']; ?>">
+                                <?php echo htmlspecialchars($foto_perfil['iniciales']); ?>
+                            </div>
+                        </div>
+                    <?php endif; ?>
+                    
+                    <div class="profile-picture-upload">
+                        <form action="actualizar_foto_perfil.php" method="post" enctype="multipart/form-data" class="upload-form" id="upload-form">
+                            <div class="file-input-wrapper" onclick="document.getElementById('foto_perfil').click()">
+                                <input type="file" name="foto_perfil" id="foto_perfil" accept="image/*" required style="display: none;">
+                                📷 Seleccionar foto
+                            </div>
+                            <div id="file-selected" style="font-size: 12px; color: #666; margin: 5px 0; display: none;"></div>
+                            <button type="submit" class="upload-btn" id="upload-btn" disabled>Actualizar Foto</button>
+                        </form>
+                        
+                        <?php if (!empty($usuario['foto_perfil_url'])): ?>
+                            <form action="actualizar_foto_perfil.php" method="post" style="margin-top: 10px;">
+                                <input type="hidden" name="eliminar_foto" value="1">
+                                <button type="submit" class="delete-btn" onclick="return confirm('¿Estás seguro de que quieres eliminar tu foto de perfil?')">
+                                    🗑️ Eliminar Foto
+                                </button>
+                            </form>
+                        <?php endif; ?>
+                    </div>
                 </div>
 
                 <div class="user-details">
@@ -224,6 +258,30 @@ $conexion->close();
             document.getElementById('edit-form').style.display = 'none';
             document.querySelector('.edit-button').style.display = 'inline-block';
         }
+
+        // Manejar selección de archivo para foto de perfil
+        document.getElementById('foto_perfil').addEventListener('change', function() {
+            const fileSelected = document.getElementById('file-selected');
+            const uploadBtn = document.getElementById('upload-btn');
+            
+            if (this.files.length > 0) {
+                const fileName = this.files[0].name;
+                const fileSize = (this.files[0].size / 1024 / 1024).toFixed(2); // MB
+                fileSelected.textContent = `Archivo: ${fileName} (${fileSize} MB)`;
+                fileSelected.style.display = 'block';
+                uploadBtn.disabled = false;
+            } else {
+                fileSelected.style.display = 'none';
+                uploadBtn.disabled = true;
+            }
+        });
+
+        // Manejar envío del formulario
+        document.getElementById('upload-form').addEventListener('submit', function(e) {
+            const uploadBtn = document.getElementById('upload-btn');
+            uploadBtn.textContent = 'Subiendo...';
+            uploadBtn.disabled = true;
+        });
     </script>
 </body>
 </html>
