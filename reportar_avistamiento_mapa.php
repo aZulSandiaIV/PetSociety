@@ -23,6 +23,7 @@ session_start(); // Iniciamos sesión para saber si el usuario está logueado
                             <li><a href="admin/index.php" class="admin-panel-link">Panel Admin</a></li>
                         <?php endif; ?>
                         <li><a href="index.php">Inicio</a></li>
+                        <li><a href="refugios.php">Refugios</a></li>
                         <li><a href="mis_publicaciones.php">Mi Perfil</a></li>
                         <li><a href="buzon.php">Buzón</a></li>
                         <li><a href="publicar.php">Publicar Animal</a></li>
@@ -30,6 +31,7 @@ session_start(); // Iniciamos sesión para saber si el usuario está logueado
                     <?php else: ?>
                         <li><a href="login.php">Iniciar Sesión</a></li>
                         <li><a href="registro.php">Registrarse</a></li>
+                        <li><a href="refugios.php">Refugios</a></li>
                     <?php endif; ?>
                 </ul>
             </nav>

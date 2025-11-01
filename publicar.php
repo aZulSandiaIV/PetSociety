@@ -29,6 +29,7 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
                         <li><a href="admin/index.php" class="admin-panel-link">Panel Admin</a></li>
                     <?php endif; ?>
                     <li><a href="index.php">Inicio</a></li>
+                    <li><a href="refugios.php">Refugios</a></li>
                     <li><a href="mis_publicaciones.php">Mi Perfil</a></li>
                     <li><a href="buzon.php">Buzón</a></li>
                     <li><a href="publicar.php">Publicar Animal</a></li>
