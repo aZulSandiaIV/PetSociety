@@ -41,13 +41,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     // Usar la función global para enviar el mensaje
     if (enviarMensaje($conexion, $id_remitente, $id_destinatario, $asunto, $contenido)) {
-        echo "<div style='text-align: center; padding: 50px; font-family: Arial, sans-serif;'>";
-        echo "<h2>¡Mensaje enviado con éxito!</h2>";
-        echo "<p>Tu mensaje ha sido enviado correctamente.</p>";
-        echo "<p>Serás redirigido en 3 segundos...</p>";
-        echo "<a href='index.php'>Ir al inicio ahora</a>";
-        echo "</div>";
-        header("refresh:3;url=index.php");
+        // redirigir al buzon
+        header("location: buzon.php?conversacion=" . $id_destinatario);
+        exit;
     } else {
         echo "<div style='text-align: center; padding: 50px; font-family: Arial, sans-serif; color: red;'>";
         echo "<h2>Error al enviar el mensaje</h2>";

@@ -84,17 +84,38 @@ $conexion->close();
                 <h1><a href="index.php"><img src="img/logo1.png" alt="PetSociety Logo" class="header-logo"></a><a href="index.php">PetSociety</a></h1>
             </div>
             <nav>
-                <ul>
-                    <li>Hola, <strong><?php echo htmlspecialchars($_SESSION["nombre"]); ?></strong></li>
-                    <?php if (isset($_SESSION['is_admin']) && $_SESSION['is_admin'] == 1): ?>
-                        <li><a href="admin/index.php" class="admin-panel-link">Panel Admin</a></li>
+                <button class="mobile-menu-toggle" aria-label="Toggle menu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+                <ul class="nav-menu">
+                    <?php if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true): ?>
+                        <li><a href="index.php">Inicio</a></li>
+                        <li><a href="refugios.php">Refugios</a></li>
+                        <li><a href="buzon.php">Mensajes</a></li>
+                    <?php else: ?>
+                        <li><a href="login.php">Iniciar Sesión</a></li>
+                        <li><a href="registro.php">Registrarse</a></li>
+                        <li><a href="refugios.php">Refugios</a></li>
                     <?php endif; ?>
-                    <li><a href="index.php">Inicio</a></li>
-                    <li><a href="refugios.php">Refugios</a></li>
-                    <li><a href="mis_publicaciones.php">Mi Perfil</a></li>
-                    <li><a href="buzon.php">Buzón</a></li>
-                    <li><a href="publicar.php">Publicar Animal</a></li>
-                    <li><a href="logout.php">Cerrar Sesión</a></li>
+                    <?php if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true): ?>
+                        <li class="user-menu mobile-user-menu">
+                            <span class="user-menu-trigger">
+                                <span class="user-icon"></span>
+                                <span class="user-name"><?php echo htmlspecialchars($_SESSION["nombre"]); ?></span>
+                            </span>
+                            <div class="dropdown-menu">
+                                <ul>
+                                    <?php if (isset($_SESSION['is_admin']) && $_SESSION['is_admin'] == 1): ?>
+                                        <li><a href="admin/index.php" class="admin-panel-link">Panel Admin</a></li>
+                                    <?php endif; ?>
+                                    <li><a href="mis_publicaciones.php">Mi Perfil</a></li>
+                                    <li><a href="logout.php">Cerrar Sesión</a></li>
+                                </ul>
+                            </div>
+                        </li>
+                    <?php endif; ?>
                 </ul>
             </nav>
         </div>
@@ -115,7 +136,7 @@ $conexion->close();
         <div class="profile-section">
             <div class="profile-info">
                 <div class="profile-picture">
-                    <?php 
+<?php 
                     $foto_perfil = obtenerFotoPerfil($usuario['foto_perfil_url'], $usuario['nombre'], $id_usuario);
                     if ($foto_perfil['tipo'] === 'foto'): 
                     ?>
@@ -258,29 +279,46 @@ $conexion->close();
             document.getElementById('edit-form').style.display = 'none';
             document.querySelector('.edit-button').style.display = 'inline-block';
         }
-
-        // Manejar selección de archivo para foto de perfil
-        document.getElementById('foto_perfil').addEventListener('change', function() {
-            const fileSelected = document.getElementById('file-selected');
-            const uploadBtn = document.getElementById('upload-btn');
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
+            const navMenu = document.querySelector('.nav-menu');
+            const mobileUserMenu = document.querySelector('.mobile-user-menu');
             
-            if (this.files.length > 0) {
-                const fileName = this.files[0].name;
-                const fileSize = (this.files[0].size / 1024 / 1024).toFixed(2); // MB
-                fileSelected.textContent = `Archivo: ${fileName} (${fileSize} MB)`;
-                fileSelected.style.display = 'block';
-                uploadBtn.disabled = false;
-            } else {
-                fileSelected.style.display = 'none';
-                uploadBtn.disabled = true;
-            }
-        });
+            if (mobileMenuToggle && navMenu) {
+                mobileMenuToggle.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    navMenu.classList.toggle('active');
+                    mobileMenuToggle.classList.toggle('active');
+                });
 
-        // Manejar envío del formulario
-        document.getElementById('upload-form').addEventListener('submit', function(e) {
-            const uploadBtn = document.getElementById('upload-btn');
-            uploadBtn.textContent = 'Subiendo...';
-            uploadBtn.disabled = true;
+                document.addEventListener('click', function(event) {
+                    if (!navMenu.contains(event.target) && !mobileMenuToggle.contains(event.target)) {
+                        navMenu.classList.remove('active');
+                        mobileMenuToggle.classList.remove('active');
+                    }
+                });
+
+                const navLinks = navMenu.querySelectorAll('a');
+                navLinks.forEach(link => {
+                    link.addEventListener('click', function() {
+                        navMenu.classList.remove('active');
+                        mobileMenuToggle.classList.remove('active');
+                    });
+                });
+            }
+
+            if (mobileUserMenu) {
+                const userMenuTrigger = mobileUserMenu.querySelector('.user-menu-trigger');
+                if (userMenuTrigger) {
+                    userMenuTrigger.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        mobileUserMenu.classList.toggle('active');
+                    });
+                }
+            }
         });
     </script>
 </body>

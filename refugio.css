@@ -16,12 +16,12 @@
 
 .refugio-card h3 {
     margin-top: 0;
-    color: #333;
+    color: #404040;
 }
 
 .refugio-card p {
     flex-grow: 1;
-    color: #666;
+    color: #8C8C8C;
 }
 
 .refugio-actions {
@@ -39,21 +39,21 @@
 }
 
 .refugio-actions .btn:first-child {
-    background-color: #97BC62;
+    background-color: #8C8C8C;
     color: white;
 }
 
 .refugio-actions .btn:first-child:hover {
-    background-color: #86a855;
+    background-color: #595959;
 }
 
 .refugio-actions .btn:last-child {
-    background-color: #3498db;
+    background-color: #8C8C8C;
     color: white;
 }
 
 .refugio-actions .btn:last-child:hover {
-    background-color: #2980b9;
+    background-color: #595959;
 }
 
 /* ===== ESTILOS PARA PERFIL DE REFUGIO ===== */
@@ -64,10 +64,10 @@
 }
 
 .refugio-profile-card {
-    background: linear-gradient(135deg, #97BC62 0%, #7BA04B 100%);
+    background: linear-gradient(135deg, #8C8C8C 0%, #595959 100%);
     border-radius: 20px;
     padding: 40px;
-    box-shadow: 0 10px 30px rgba(151, 188, 98, 0.3);
+    box-shadow: 0 10px 30px rgba(64, 64, 64, 0.3);
     color: white;
     display: flex;
     justify-content: space-between;
@@ -126,7 +126,7 @@
 
 .refugio-actions .btn-primary {
     background: white;
-    color: #97BC62;
+    color: #404040;
     border: none;
     padding: 15px 30px;
     border-radius: 50px;
@@ -143,7 +143,7 @@
 .refugio-actions .btn-primary:hover {
     transform: translateY(-2px);
     box-shadow: 0 8px 25px rgba(0,0,0,0.15);
-    background: #f8f9fa;
+    background: #F2F2F2;
 }
 
 /* Sección de publicaciones */
@@ -153,17 +153,17 @@
 
 .publications-title {
     font-size: 2rem;
-    color: #2c3e50;
+    color: #404040;
     margin-bottom: 30px;
     display: flex;
     align-items: center;
     gap: 15px;
-    border-bottom: 3px solid #97BC62;
+    border-bottom: 3px solid #8C8C8C;
     padding-bottom: 10px;
 }
 
 .publications-title i {
-    color: #97BC62;
+    color: #8C8C8C;
 }
 
 /* Estilos para las tarjetas de animales (igual que en la página de inicio) */
@@ -200,33 +200,37 @@
 }
 
 .animal-card h3 {
-    color: #2c3e50;
+    color: #404040;
     font-size: 1.3rem;
     margin-bottom: 1px;
     font-weight: bold;
 }
 
 .animal-card p {
-    color: #555;
+    color: #595959;
     font-size: 0.95rem;
     margin-bottom: 10px;
     line-height: 1.5;
 }
 
 .animal-card .details {
-    color: #666;
+    color: #8C8C8C;
     font-size: 0.9rem;
 }
 
 .animal-card .contact-btn {
     margin-top: auto;
-    background-color: #97BC62;
+    background-color: #6B8E9F;
     text-align: center;
+}
+
+.animal-card .contact-btn:hover {
+    background-color: #5A7A8A;
 }
 
 .animal-card .own-post-indicator {
     margin-top: auto;
-    background-color: #ccc;
+    background-color: #D9D9D9;
     cursor: default;
 }
 
@@ -234,7 +238,7 @@
     position: absolute;
     top: 10px;
     right: 10px;
-    background-color: #2C5F2D;
+    background-color: #404040;
     color: white;
     padding: 3px 8px;
     border-radius: 4px;
@@ -244,20 +248,20 @@
 .no-publications {
     text-align: center;
     padding: 60px 20px;
-    background: #f8f9fa;
+    background: #F2F2F2;
     border-radius: 15px;
-    border: 2px dashed #dee2e6;
+    border: 2px dashed #D9D9D9;
 }
 
 .no-publications i {
     font-size: 3rem;
-    color: #6c757d;
+    color: #8C8C8C;
     margin-bottom: 15px;
 }
 
 .no-publications p {
     font-size: 1.2rem;
-    color: #6c757d;
+    color: #8C8C8C;
     margin: 0;
 }
 
