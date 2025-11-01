@@ -372,7 +372,7 @@
 
         <!-- SECCIÓN DEL MAPA DE AVISTAMIENTOS -->
         <div style="margin-bottom: 30px; margin-top: 40px;">
-            <h2>¿Encontraste a un animal perdido?</h2>
+            <h2>Has visto a un animal perdido?</h2>
             <p>Explora el mapa para ver los últimos avistamientos y animales perdidos en tu zona. Cada marcador te muestra información importante para ayudar a reunirlos con sus familias.</p>
             <div style="display: flex; gap: 10px; margin-bottom: 15px;">
                 <button id="ver-mi-ubicacion" class="btn" style="width: auto;">Mostrar mi ubicación</button>
