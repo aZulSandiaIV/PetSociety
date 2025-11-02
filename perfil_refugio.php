@@ -1,6 +1,7 @@
 <?php
 session_start();
 require_once "config.php";
+require_once "funciones.php";
 
 if (!isset($_GET['id']) || empty($_GET['id'])) {
     header("location: index.php");
@@ -10,7 +11,7 @@ if (!isset($_GET['id']) || empty($_GET['id'])) {
 $id_refugio = intval($_GET['id']);
 
 // --- Obtener datos del refugio ---
-$sql_refugio = "SELECT nombre, email, telefono FROM usuarios WHERE id_usuario = ? AND es_refugio = 1";
+$sql_refugio = "SELECT nombre, email, telefono, foto_perfil_url FROM usuarios WHERE id_usuario = ? AND es_refugio = 1";
 $refugio = null;
 if ($stmt_refugio = $conexion->prepare($sql_refugio)) {
     $stmt_refugio->bind_param("i", $id_refugio);
@@ -93,7 +94,7 @@ $conexion->close();
                                     <?php if (isset($_SESSION['is_admin']) && $_SESSION['is_admin'] == 1): ?>
                                         <li><a href="admin/index.php" class="admin-panel-link">Panel Admin</a></li>
                                     <?php endif; ?>
-                                    <li><a href="mis_publicaciones.php">Mi Perfil</a></li>
+                                    <li><a href="mi_perfil.php">Mi Perfil</a></li>
                                     <li><a href="logout.php">Cerrar Sesión</a></li>
                                 </ul>
                             </div>
@@ -110,7 +111,15 @@ $conexion->close();
             <div class="refugio-profile-card">
                 <div class="refugio-profile-info">
                     <div class="refugio-icon">
-                        <i class="fas fa-home"></i>
+                        <?php 
+                        $foto_perfil = obtenerFotoPerfil($refugio['foto_perfil_url'], $refugio['nombre'], $id_refugio);
+                        if ($foto_perfil['tipo'] === 'foto'): ?>
+                            <img src="<?php echo htmlspecialchars($foto_perfil['url']); ?>" alt="Foto de perfil de <?php echo htmlspecialchars($refugio['nombre']); ?>" class="refugio-profile-image">
+                        <?php else: ?>
+                            <div class="refugio-profile-avatar" style="background-color: <?php echo $foto_perfil['color']; ?>">
+                                <?php echo htmlspecialchars($foto_perfil['iniciales']); ?>
+                            </div>
+                        <?php endif; ?>
                     </div>
                     <div class="refugio-details">
                         <h1 class="refugio-name"><?php echo htmlspecialchars($refugio['nombre']); ?></h1>

@@ -42,7 +42,7 @@ session_start(); // Iniciamos sesión para saber si el usuario está logueado
                                     <?php if (isset($_SESSION['is_admin']) && $_SESSION['is_admin'] == 1): ?>
                                         <li><a href="admin/index.php" class="admin-panel-link">Panel Admin</a></li>
                                     <?php endif; ?>
-                                    <li><a href="mis_publicaciones.php">Mi Perfil</a></li>
+                                    <li><a href="mi_perfil.php">Mi Perfil</a></li>
                                     <li><a href="logout.php">Cerrar Sesión</a></li>
                                 </ul>
                             </div>

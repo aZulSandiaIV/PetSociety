@@ -62,6 +62,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $conexion->close();
 }
 
-header("location: mis_publicaciones.php");
+header("location: mi_perfil.php");
 exit;
 ?>

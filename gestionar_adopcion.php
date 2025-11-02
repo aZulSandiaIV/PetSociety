@@ -94,7 +94,7 @@ if ($stmt = $conexion->prepare($sql_interesados)) {
                                     <?php if (isset($_SESSION['is_admin']) && $_SESSION['is_admin'] == 1): ?>
                                         <li><a href="admin/index.php" class="admin-panel-link">Panel Admin</a></li>
                                     <?php endif; ?>
-                                    <li><a href="mis_publicaciones.php">Mi Perfil</a></li>
+                                    <li><a href="mi_perfil.php">Mi Perfil</a></li>
                                     <li><a href="logout.php">Cerrar Sesión</a></li>
                                 </ul>
                             </div>
@@ -128,7 +128,7 @@ if ($stmt = $conexion->prepare($sql_interesados)) {
             <p>Aún no has recibido mensajes de usuarios interesados en esta publicación.</p>
         <?php endif; ?>
         
-        <a href="mis_publicaciones.php">Volver a mis publicaciones</a>
+        <a href="mi_perfil.php">Volver a mi perfil</a>
     </div>
     <script>
         document.addEventListener('DOMContentLoaded', function() {

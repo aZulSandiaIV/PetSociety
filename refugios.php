@@ -1,9 +1,10 @@
 <?php
 session_start();
 require_once "config.php";
+require_once "funciones.php";
 
 // --- Obtener todos los refugios ---
-$sql = "SELECT id_usuario, nombre, email, telefono, (SELECT GROUP_CONCAT(p.titulo SEPARATOR ', ') FROM publicaciones p WHERE p.id_usuario_publicador = u.id_usuario) AS publicaciones FROM usuarios u WHERE es_refugio = 1";
+$sql = "SELECT id_usuario, nombre, email, telefono, foto_perfil_url, (SELECT GROUP_CONCAT(p.titulo SEPARATOR ', ') FROM publicaciones p WHERE p.id_usuario_publicador = u.id_usuario) AS publicaciones FROM usuarios u WHERE es_refugio = 1";
 $refugios = [];
 if ($result = $conexion->query($sql)) {
     while ($row = $result->fetch_assoc()) {
@@ -20,6 +21,7 @@ $conexion->close();
     <title>Refugios - PetSociety</title>
     <link rel="stylesheet" href="estilos.css">
     <link rel="stylesheet" href="refugio.css">
+    
 </head>
 <body>
     <header>
@@ -54,7 +56,7 @@ $conexion->close();
                                     <?php if (isset($_SESSION['is_admin']) && $_SESSION['is_admin'] == 1): ?>
                                         <li><a href="admin/index.php" class="admin-panel-link">Panel Admin</a></li>
                                     <?php endif; ?>
-                                    <li><a href="mis_publicaciones.php">Mi Perfil</a></li>
+                                    <li><a href="mi_perfil.php">Mi Perfil</a></li>
                                     <li><a href="logout.php">Cerrar Sesión</a></li>
                                 </ul>
                             </div>
@@ -73,13 +75,25 @@ $conexion->close();
             <?php if (!empty($refugios)): ?>
                 <?php foreach ($refugios as $refugio): ?>
                     <div class="refugio-card">
+                        <?php 
+                        $foto_perfil = obtenerFotoPerfil($refugio['foto_perfil_url'], $refugio['nombre'], $refugio['id_usuario']);
+                        ?>
+                        <div class="refugio-profile-pic">
+                            <?php if ($foto_perfil['tipo'] === 'foto'): ?>
+                                <img src="<?php echo htmlspecialchars($foto_perfil['url']); ?>" alt="Foto de perfil de <?php echo htmlspecialchars($refugio['nombre']); ?>">
+                            <?php else: ?>
+                                <div class="refugio-avatar" style="background-color: <?php echo $foto_perfil['color']; ?>">
+                                    <?php echo htmlspecialchars($foto_perfil['iniciales']); ?>
+                                </div>
+                            <?php endif; ?>
+                        </div>
                         <h3><?php echo htmlspecialchars($refugio['nombre']); ?></h3>
                         <p><strong>Email:</strong> <?php echo htmlspecialchars($refugio['email']); ?></p>
                         <p><strong>Teléfono:</strong> <?php echo htmlspecialchars($refugio['telefono'] ?? 'No especificado'); ?></p>
                         <p><strong>Publicaciones:</strong> <?php echo htmlspecialchars($refugio['publicaciones'] ?? 'Sin publicaciones'); ?></p>
                         <div class="refugio-actions">
-                            <a href="perfil_refugio.php?id=<?php echo $refugio['id_usuario']; ?>" class="btn">Ver Perfil</a>
-                            <a href="enviar_mensaje.php?id_destinatario=<?php echo $refugio['id_usuario']; ?>" class="btn">Enviar Mensaje</a>
+                            <a href="perfil_refugio.php?id=<?php echo $refugio['id_usuario']; ?>" class="btn btn-ver-perfil">Ver Perfil</a>
+                            <a href="enviar_mensaje.php?id_destinatario=<?php echo $refugio['id_usuario']; ?>" class="btn btn-enviar-mensaje">📩 Enviar Mensaje</a>
                         </div>
                     </div>
                 <?php endforeach; ?>

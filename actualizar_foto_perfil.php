@@ -46,7 +46,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
         
         $conexion->close();
-        header("location: mis_publicaciones.php");
+        header("location: mi_perfil.php");
         exit;
     }
 
@@ -56,7 +56,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (!isset($_FILES["foto_perfil"])) {
         $_SESSION['mensaje'] = "No se recibió ningún archivo. Error en el formulario.";
         $_SESSION['tipo_mensaje'] = "error";
-        header("location: mis_publicaciones.php");
+        header("location: mi_perfil.php");
         exit;
     }
 
@@ -77,7 +77,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         
         $_SESSION['mensaje'] = "Error al subir archivo: " . $error_msg;
         $_SESSION['tipo_mensaje'] = "error";
-        header("location: mis_publicaciones.php");
+        header("location: mi_perfil.php");
         exit;
     }
 
@@ -91,7 +91,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (!in_array($tipo_archivo, $tipos_permitidos)) {
         $_SESSION['mensaje'] = "Solo se permiten archivos de imagen (JPG, JPEG, PNG, GIF).";
         $_SESSION['tipo_mensaje'] = "error";
-        header("location: mis_publicaciones.php");
+        header("location: mi_perfil.php");
         exit;
     }
     
@@ -99,7 +99,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if ($archivo["size"] > 5 * 1024 * 1024) {
         $_SESSION['mensaje'] = "El archivo es demasiado grande. Máximo 5MB.";
         $_SESSION['tipo_mensaje'] = "error";
-        header("location: mis_publicaciones.php");
+        header("location: mi_perfil.php");
         exit;
     }
     
@@ -154,11 +154,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
     
     $conexion->close();
-    header("location: mis_publicaciones.php");
+    header("location: mi_perfil.php");
     exit;
     
 } else {
-    header("location: mis_publicaciones.php");
+    header("location: mi_perfil.php");
     exit;
 }
 ?>
