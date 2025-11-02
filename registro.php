@@ -73,5 +73,7 @@ if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true) {
             <p>¿Ya tienes una cuenta? <a href="login.php">Inicia sesión aquí</a>.</p>
         </form>
     </div>
+    
+    <?php include 'footer.php'; ?>
 </body>
 </html>

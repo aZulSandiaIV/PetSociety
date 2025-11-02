@@ -59,5 +59,7 @@ if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true) {
             <p style="text-align: center;">¿No tienes una cuenta? <a href="registro.php">Regístrate ahora</a>.</p>
         </form>
     </div>
+    
+    <?php include 'footer.php'; ?>
 </body>
 </html>
