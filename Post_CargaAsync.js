@@ -6,9 +6,9 @@ var botton = document.getElementById("cargar-mas");
 
 async function cargar_publicaciones() {
     try {
-        const response = await fetch('solicitar_publicaciones_10.php?' +
-           'CargarApartirDe='+ CargarApartirDe +
-           '&Filtro=' + document.getElementById('filtro').value
+        const response = await fetch('solicitar_publicaciones.php?'
+            + 'cargar_apartir=' + CargarApartirDe
+            + '&cargar_cantidad=' + CargarIncremento
         );
         
         if (response.status === 204) {

@@ -180,7 +180,7 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="geolocalizacion.js"></script>
 
-    <script src="js/Post_CargaAsync.js"></script>
+    <script src="Post_CargaAsync.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', mostrar_publicaciones);
     </script>
