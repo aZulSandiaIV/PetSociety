@@ -134,6 +134,9 @@ $conexion->close();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mensajes - PetSociety</title>
     <link rel="stylesheet" href="estilos.css">
+    <?php if (isset($_SESSION['is_admin']) && $_SESSION['is_admin'] == 1): ?>
+        <link rel="stylesheet" href="admin/admin.css">
+    <?php endif; ?>
     <style>
         .messaging-container {
             display: flex;
@@ -394,6 +397,17 @@ $conexion->close();
                         <li><a href="index.php">Inicio</a></li>
                         <li><a href="refugios.php">Refugios</a></li>
                         <li><a href="buzon.php">Mensajes</a></li>
+                        <?php if (isset($_SESSION['is_admin']) && $_SESSION['is_admin'] == 1): ?>
+                            <li class="admin-panel-dropdown">
+                                <span class="admin-panel-trigger">Panel de Administrador</span>
+                                <div class="admin-submenu">
+                                    <ul>
+                                        <li><a href="admin/statistics.php">Estadísticas</a></li>
+                                        <li><a href="admin/manage_publications.php">Administrar Publicaciones</a></li>
+                                    </ul>
+                                </div>
+                            </li>
+                        <?php endif; ?>
                     <?php else: ?>
                         <li><a href="login.php">Iniciar Sesión</a></li>
                         <li><a href="registro.php">Registrarse</a></li>
@@ -407,9 +421,6 @@ $conexion->close();
                             </span>
                             <div class="dropdown-menu">
                                 <ul>
-                                    <?php if (isset($_SESSION['is_admin']) && $_SESSION['is_admin'] == 1): ?>
-                                        <li><a href="admin/index.php" class="admin-panel-link">Panel Admin</a></li>
-                                    <?php endif; ?>
                                     <li><a href="mi_perfil.php">Mi Perfil</a></li>
                                     <li><a href="logout.php">Cerrar Sesión</a></li>
                                 </ul>

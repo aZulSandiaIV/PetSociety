@@ -95,4 +95,46 @@ function obtenerFotoPerfil(?string $foto_perfil_url, string $nombre, int $id_usu
         'color' => generarColorAvatar($nombre . $id_usuario)
     ];
 }
+
+/**
+ * Verifica si un usuario es administrador consultando la base de datos
+ *
+ * @param mysqli $conexion Objeto de conexión a la base de datos
+ * @param int $id_usuario ID del usuario a verificar
+ * @return bool true si el usuario es administrador (is_admin = 1), false en caso contrario
+ */
+function esAdministrador(mysqli $conexion, int $id_usuario): bool
+{
+    $sql = "SELECT is_admin FROM usuarios WHERE id_usuario = ?";
+    
+    if ($stmt = $conexion->prepare($sql)) {
+        $stmt->bind_param("i", $id_usuario);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        
+        if ($row = $result->fetch_assoc()) {
+            $stmt->close();
+            return (bool)$row['is_admin'];
+        }
+        $stmt->close();
+    }
+    
+    return false;
+}
+
+/**
+ * Actualiza la sesión con el estado de administrador del usuario
+ * 
+ * @param mysqli $conexion Objeto de conexión a la base de datos
+ * @param int $id_usuario ID del usuario
+ * @return void
+ */
+function actualizarSesionAdmin(mysqli $conexion, int $id_usuario): void
+{
+    if (esAdministrador($conexion, $id_usuario)) {
+        $_SESSION['is_admin'] = 1;
+    } else {
+        $_SESSION['is_admin'] = 0;
+    }
+}
 ?>
