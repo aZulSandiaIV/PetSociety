@@ -290,51 +290,70 @@
         <div class="main-content-wrapper">
             <!-- INICIO DE LA BARRA LATERAL DE FILTROS -->
             <aside class="filters-sidebar">
-                <form action="index.php#seccion-publicaciones" method="get" id="filter-form">
+                <form method="get" id="filter-form">
                     <div class="filters-header">
                         <h3>Filtros</h3>
                         <a href="index.php#seccion-publicaciones" class="clear-filters-btn">Limpiar</a>
                     </div>
 
                     <div class="filter-group">
-                        <input type="text" name="q" class="form-group" placeholder="Buscar por palabra clave..." value="<?php echo htmlspecialchars($filtros['q']); ?>" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box;">
+                        <input type="text" name="search" class="form-group" placeholder="Buscar por palabra clave..." style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box;">
                     </div>
 
                     <div class="filter-group">
                         <h4>Estado</h4>
-                        <?php $estados = ['En Adopción', 'Hogar Temporal', 'Perdido']; ?>
-                        <?php foreach ($estados as $estado): ?>
                             <label>
-                                <input type="checkbox" name="estado[]" value="<?php echo $estado; ?>" <?php if (in_array($estado, $filtros['estado'])) echo 'checked'; ?>>
-                                <span><?php echo $estado; ?></span>
+                                <input type="checkbox" name="En Adopción" value="En Adopción">
+                                <span>En Adopción</span>
                             </label>
-                        <?php endforeach; ?>
+                            <label>
+                                <input type="checkbox" name="Hogar Temporal" value="Hogar Temporal">
+                                <span>Hogar Temporal</span>
+                            </label>
+                            <label>
+                                <input type="checkbox" name="Perdido" value="Perdido">
+                                <span>Perdido</span>
+                            </label>
                     </div>
 
                     <div class="filter-group">
                         <h4>Especie</h4>
-                        <?php $especies = ['Perro', 'Gato', 'Otro']; ?>
-                        <?php foreach ($especies as $especie): ?>
                             <label>
-                                <input type="checkbox" name="especie[]" value="<?php echo $especie; ?>" <?php if (in_array($especie, $filtros['especie'])) echo 'checked'; ?>>
-                                <span><?php echo $especie; ?></span>
+                                <input type="checkbox" name="Perro" value="Perro">
+                                <span>Perro</span>
                             </label>
-                        <?php endforeach; ?>
+                            <label>
+                                <input type="checkbox" name="Gato" value="Gato">
+                                <span>Gato</span>
+                            </label>
+                            <label>
+                                <input type="checkbox" name="Otro" value="Otro">
+                                <span>Otro</span>
+                            </label>
                     </div>
 
                     <div class="filter-group">
                         <h4>Tamaño</h4>
-                        <?php $tamaños = ['Pequeño', 'Mediano', 'Grande']; ?>
-                        <?php foreach ($tamaños as $tamaño): ?>
                             <label>
-                                <input type="checkbox" name="tamaño[]" value="<?php echo $tamaño; ?>" <?php if (in_array($tamaño, $filtros['tamaño'])) echo 'checked'; ?>>
-                                <span><?php echo $tamaño; ?></span>
+                                <input type="checkbox" name="Pequeño" value="Pequeño">
+                                <span>Pequeño</span>
                             </label>
-                        <?php endforeach; ?>
+                            <label>
+                                <input type="checkbox" name="Mediano" value="Mediano">
+                                <span>Mediano</span>
+                            </label>
+                            <label>
+                                <input type="checkbox" name="Grande" value="Grande">
+                                <span>Grande</span>
+                            </label>
                     </div>
+                </form>
+            </aside>
 
         <div class="feed-container">
+            <!-- Las publicaciones se cargarán aquí dinámicamente -->
         </div>
+        <button id="cargar-mas" class="btn">Cargar Más</button>
 
     </div>
 
