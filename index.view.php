@@ -350,7 +350,75 @@
 
     <script src="Post_CargaAsync.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', mostrar_publicaciones_index);
+
+        let CargarIncremento = 5;
+        let CargarApartirDe = 0;
+        const container = document.getElementsByClassName('feed-container')[0];
+
+        function renderCard(animal){
+            return `
+            <div class="animal-card" style="position: relative;">
+                ${animal.es_refugio == 1 ? '<span class="refugio-tag">REFUGIO</span>' : ''}
+                <img src="${animal.imagen}" alt="Foto de ${animal.nombre}">
+                <div class="animal-card-content" style="display: flex; flex-direction: column; flex-grow: 1;">
+                    <h3>${animal.titulo}</h3>
+                    <p class="details"><strong>${animal.nombre}</strong> - ${animal.especie} (${animal.raza})</p>
+                    <p class="details">
+                        ${animal.tamano ? animal.tamano : ''}
+                        ${animal.tamano && animal.edad ? ' | ' : ''}
+                        ${animal.edad ? animal.edad : ''}
+                    </p>
+                    <p>${animal.contenido_corto}...</p>
+                    ${ (sessionData && sessionData.loggedin && sessionData.user && sessionData.user.id_usuario === animal.id_publicador)
+                        ? '<span class="btn own-post-indicator">Es tu publicación</span>'
+                        : (animal.estado === 'Perdido'
+                            ? `<a href="reportar_avistamiento.php?id_animal=${animal.id_animal}" class="btn contact-btn report-btn">Reportar Avistamiento</a>`
+                            : (sessionData && sessionData.loggedin
+                                ? `<a href="enviar_mensaje.php?id_publicacion=${animal.id_publicacion}" class="btn contact-btn">Contactar al Publicador</a>`
+                                : `<a href="login.php" class="btn contact-btn">Inicia sesión para contactar</a>`))
+                    }
+                </div>
+            </div>
+
+            `;
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            filtro = `?cargar_apartir=${CargarApartirDe}&cargar_cantidad=${CargarIncremento}`;
+            CargarApartirDe += CargarIncremento;
+            
+            mostrar_publicaciones(renderCard, container);
+        });
+
+        const button = document.getElementById("cargar-mas");
+        button.addEventListener("click", function(){
+            filtro = `?cargar_apartir=${CargarApartirDe}&cargar_cantidad=${CargarIncremento}`;
+            CargarApartirDe += CargarIncremento;
+            
+            mostrar_publicaciones(renderCard, container)
+
+            
+        });
+        
+        function modificar_filtros() {
+
+            const form = document.getElementById('filter-form');
+            const formData = new FormData(form);
+            const params = new URLSearchParams();
+
+            console.log(formData.especie);
+
+            filtro = '&' + params.toString();
+            CargarApartirDe = 0;
+            document.getElementsByClassName('feed-container')[0].innerHTML = '';
+            
+            console.log('Aplicando filtros:', filtro);
+            mostrar_publicaciones_index(filtro);
+        }
+
+
+        
+
     </script>
     
     <script>
