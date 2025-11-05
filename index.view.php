@@ -297,13 +297,13 @@
                     </div>
 
                     <div class="filter-group">
-                        <input type="text" name="search" class="form-group" placeholder="Buscar por palabra clave..." style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box;">
+                        <input type="text" name="search" id="search-filter" class="form-group" placeholder="Buscar por palabra clave..." style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box;">
                     </div>
 
                     <div class="filter-group">
                         <h4>Estado</h4>
                             <label>
-                                <input type="checkbox" name="En Adopción" value="En Adopción">
+                                <input type="checkbox" name="En Adopción" id="" value="En Adopción">
                                 <span>En Adopción</span>
                             </label>
                             <label>
@@ -349,13 +349,25 @@
                     </div>
                 </form>
             </aside>
-
-        <div class="feed-container">
-            <!-- Las publicaciones se cargarán aquí dinámicamente -->
+        <div>
+            <div class="feed-container">
+                <!-- Las publicaciones se cargarán aquí dinámicamente -->
+            </div>
+            <button id="cargar-mas" class="btn">Cargar Más</button>
         </div>
-        <button id="cargar-mas" class="btn">Cargar Más</button>
+
 
     </div>
+
+    <!-- SECCIÓN DEL MAPA DE AVISTAMIENTOS -->
+    <div style="margin-bottom: 30px;">
+        <h2>Mapa de Avistamientos Recientes</h2>
+        <p>Estos son los últimos avistamientos reportados. Haz clic en un marcador para ver los detalles o usa el botón para ver tu posición.</p>
+        <button id="ver-mi-ubicacion" class="btn" style="margin-bottom: 15px; width: auto;">Mostrar mi ubicación</button>
+        <div id="mapa-avistamientos"></div>
+    </div>
+
+    <?php include 'footer.php'; ?>
 
     <!-- Scripts para el mapa -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -363,7 +375,7 @@
 
     <script src="Post_CargaAsync.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', mostrar_publicaciones);
+        document.addEventListener('DOMContentLoaded', mostrar_publicaciones_index);
     </script>
     
     <script>
@@ -494,8 +506,6 @@
             }
         });
     </script>
-
-    <?php include 'footer.php'; ?>
 
 </body>
 </html>

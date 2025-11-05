@@ -96,7 +96,6 @@
     }
 
     while ($row = $result->fetch_assoc()) {
-        // Preparamos los datos para la vista
         $animales[] = [
             'id_animal' => $row['id_animal'],
             'id_publicacion' => $row['id_publicacion'],
@@ -113,7 +112,7 @@
             'color' => htmlspecialchars($row['color'] ?? ''),
             'contenido_corto' => nl2br(htmlspecialchars(substr($row['contenido'], 0, 100)))
         ];
-        // Añadir latitud y longitud si existen
+
         if (!empty($row['latitud']) && !empty($row['longitud'])) {
             $animales[count($animales)-1]['latitud'] = $row['latitud'];
             $animales[count($animales)-1]['longitud'] = $row['longitud'];

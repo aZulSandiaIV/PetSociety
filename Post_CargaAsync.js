@@ -2,8 +2,8 @@ let CargarIncremento = 5;
 let CargarApartirDe = 0;
 let sessionData = null;
 
-const botton = document.getElementById("cargar-mas");
-botton.addEventListener("click", mostrar_publicaciones);
+const botton = document.getElementById("cargar-mas"); //id para botones de cargar más
+botton.addEventListener("click", mostrar_publicaciones_index);
 
 // Exportar en caso de que se necesite en otro módulo
 (async () => {
@@ -21,16 +21,11 @@ botton.addEventListener("click", mostrar_publicaciones);
     }
 })();
 
-async function cargar_publicaciones() {
+async function cargar_publicaciones(filtro = '') {
     try {
-        const response = await fetch('solicitar_publicaciones.php?'
-            + 'cargar_apartir=' + CargarApartirDe
-            + '&cargar_cantidad=' + CargarIncremento
-        );
+        const response = await fetch('solicitar_publicaciones.php' + filtro);
         
         if (response.status === 204) {
-            document.getElementById('cargar-mas').innerHTML = "<p>No hay más publicaciones para cargar.</p>";
-            document.getElementById('cargar-mas').disabled = true;
             return null;
         }
 
@@ -51,11 +46,18 @@ async function cargar_publicaciones() {
     }
 }
 
-function mostrar_publicaciones() {
+function mostrar_publicaciones_index() {
     const container = document.getElementsByClassName('feed-container')[0];
 
-    cargar_publicaciones().then(data => {
-        if (!data || data.length === 0) return;
+    cargar_publicaciones(`
+                        ?cargar_apartir=${CargarApartirDe}&cargar_cantidad=${CargarIncremento}
+                        `).then(data => {
+
+        if (!data || data.length === 0){
+            document.getElementById('cargar-mas').innerHTML = "<p>No hay más publicaciones para cargar.</p>";
+            document.getElementById('cargar-mas').disabled = true;
+            return;
+        }
 
         data.forEach(animal => {
             
