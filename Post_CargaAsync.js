@@ -1,5 +1,6 @@
 let CargarIncremento = 5;
 let CargarApartirDe = 0;
+let filtro = '';
 let sessionData = null;
 
 const botton = document.getElementById("cargar-mas"); //id para botones de cargar más
@@ -20,6 +21,41 @@ botton.addEventListener("click", mostrar_publicaciones_index);
         console.error('Error fetching session_check.php:', err);
     }
 })();
+/*
+document.getElementById('filter-form').addEventListener('submit', function(event) {
+    event.preventDefault();
+    var formData = new FormData(this);
+    // Puedes usar un bucle o el método getAll() para obtener los valores
+    var email = formData.getAll('estado').length; // O formData.getAll('campo') para varios valores
+    // Realiza la acción deseada, como enviar con AJAX
+    console.log(email);
+});
+*/
+
+function modificar_filtros() {
+
+    const form = document.getElementById('filter-form');
+    const formData = new FormData(form);
+    const params = new URLSearchParams();
+    /*
+    for (const [key, value] of formData.entries()) {
+        if (params.has(key)) {
+            params.append(key, value);
+        } else {
+            params.set(key, value);
+        }
+    }
+    */
+
+    console.log(formData.especie);
+
+    filtro = '&' + params.toString();
+    CargarApartirDe = 0;
+    document.getElementsByClassName('feed-container')[0].innerHTML = '';
+    
+    console.log('Aplicando filtros:', filtro);
+    mostrar_publicaciones_index(filtro);
+}
 
 async function cargar_publicaciones(filtro = '') {
     try {
@@ -51,6 +87,7 @@ function mostrar_publicaciones_index() {
 
     cargar_publicaciones(`
                         ?cargar_apartir=${CargarApartirDe}&cargar_cantidad=${CargarIncremento}
+                        ${filtro}
                         `).then(data => {
 
         if (!data || data.length === 0){

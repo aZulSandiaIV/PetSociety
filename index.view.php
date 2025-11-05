@@ -290,7 +290,7 @@
         <div class="main-content-wrapper">
             <!-- INICIO DE LA BARRA LATERAL DE FILTROS -->
             <aside class="filters-sidebar">
-                <form method="get" id="filter-form">
+                <form method="get" id="filter-form" onsubmit="modificar_filtros(); return false;">
                     <div class="filters-header">
                         <h3>Filtros</h3>
                         <a href="index.php#seccion-publicaciones" class="clear-filters-btn">Limpiar</a>
@@ -302,51 +302,26 @@
 
                     <div class="filter-group">
                         <h4>Estado</h4>
-                            <label>
-                                <input type="checkbox" name="En Adopción" id="" value="En Adopción">
-                                <span>En Adopción</span>
-                            </label>
-                            <label>
-                                <input type="checkbox" name="Hogar Temporal" value="Hogar Temporal">
-                                <span>Hogar Temporal</span>
-                            </label>
-                            <label>
-                                <input type="checkbox" name="Perdido" value="Perdido">
-                                <span>Perdido</span>
-                            </label>
+                        <label for="estado-adopcion"><input id="estado-adopcion" type="checkbox" name="estado[]" value="En Adopción"> En Adopción</label>
+                        <label for="estado-temporal"><input id="estado-temporal" type="checkbox" name="estado[]" value="Hogar Temporal"> Hogar Temporal</label>
+                        <label for="estado-perdido"><input id="estado-perdido" type="checkbox" name="estado[]" value="Perdido"> Perdido</label>
                     </div>
 
                     <div class="filter-group">
                         <h4>Especie</h4>
-                            <label>
-                                <input type="checkbox" name="Perro" value="Perro">
-                                <span>Perro</span>
-                            </label>
-                            <label>
-                                <input type="checkbox" name="Gato" value="Gato">
-                                <span>Gato</span>
-                            </label>
-                            <label>
-                                <input type="checkbox" name="Otro" value="Otro">
-                                <span>Otro</span>
-                            </label>
+                        <label for="especie-perro"><input id="especie-perro" type="checkbox" name="especie[]" value="Perro"> Perro</label>
+                        <label for="especie-gato"><input id="especie-gato" type="checkbox" name="especie[]" value="Gato"> Gato</label>
+                        <label for="especie-otro"><input id="especie-otro" type="checkbox" name="especie[]" value="Otro"> Otro</label>
                     </div>
 
                     <div class="filter-group">
                         <h4>Tamaño</h4>
-                            <label>
-                                <input type="checkbox" name="Pequeño" value="Pequeño">
-                                <span>Pequeño</span>
-                            </label>
-                            <label>
-                                <input type="checkbox" name="Mediano" value="Mediano">
-                                <span>Mediano</span>
-                            </label>
-                            <label>
-                                <input type="checkbox" name="Grande" value="Grande">
-                                <span>Grande</span>
-                            </label>
+                        <label for="tamano-peq"><input id="tamano-peq" type="checkbox" name="tamano[]" value="Pequeño"> Pequeño</label>
+                        <label for="tamano-med"><input id="tamano-med" type="checkbox" name="tamano[]" value="Mediano"> Mediano</label>
+                        <label for="tamano-grande"><input id="tamano-grande" type="checkbox" name="tamano[]" value="Grande"> Grande</label>
                     </div>
+
+                    <input type="submit" value="Aplicar filtros">
                 </form>
             </aside>
         <div>
