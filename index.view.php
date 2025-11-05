@@ -335,12 +335,15 @@
     </div>
 
     <!-- SECCIÓN DEL MAPA DE AVISTAMIENTOS -->
-    <div style="margin-bottom: 30px;">
-        <h2>Mapa de Avistamientos Recientes</h2>
-        <p>Estos son los últimos avistamientos reportados. Haz clic en un marcador para ver los detalles o usa el botón para ver tu posición.</p>
-        <button id="ver-mi-ubicacion" class="btn" style="margin-bottom: 15px; width: auto;">Mostrar mi ubicación</button>
-        <div id="mapa-avistamientos"></div>
-    </div>
+    <div style="margin-bottom: 30px; margin-top: 40px;">
+            <h2>¿Has visto a un animal perdido?</h2>
+            <p>Explora el mapa para ver los últimos avistamientos y animales perdidos en tu zona. Cada marcador te muestra información importante para ayudar a reunirlos con sus familias.</p>
+            <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                <button id="ver-mi-ubicacion" class="btn" style="width: auto;">Mostrar mi ubicación</button>
+                <a href="reportar_avistamiento_mapa.php" class="btn" style="width: auto; background-color: #7A9BA8;">Reportar Callejero</a>
+            </div>
+            <div id="mapa-avistamientos"></div>
+        </div>
 
     <?php include 'footer.php'; ?>
 
