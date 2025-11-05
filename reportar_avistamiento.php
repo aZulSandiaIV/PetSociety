@@ -31,18 +31,71 @@ if ($stmt = $conexion->prepare($sql_animal)) {
 <head>
     <meta charset="UTF-8">
     <title>Reportar Avistamiento de <?php echo htmlspecialchars($nombre_animal); ?></title>
+    <!-- CSS de Leaflet para el mapa -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
     <link rel="stylesheet" href="estilos.css">
+    <!-- Estilo para el mapa -->
+    <style>#mapa-seleccion { height: 350px; margin-top: 15px; border-radius: 8px; z-index: 1; }</style>
 </head>
 <body>
+    <header>
+        <div class="container">
+            <div id="branding">
+                <h1><a href="index.php"><img src="img/logo1.png" alt="PetSociety Logo" class="header-logo"></a><a href="index.php">PetSociety</a></h1>
+            </div>
+            <nav>
+                <button class="mobile-menu-toggle" aria-label="Toggle menu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+                <ul class="nav-menu">
+                    <?php if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true): ?>
+                        <li><a href="index.php">Inicio</a></li>
+                        <li><a href="refugios.php">Refugios</a></li>
+                        <li><a href="buzon.php">Mensajes</a></li>
+                    <?php else: ?>
+                        <li><a href="login.php">Iniciar Sesión</a></li>
+                        <li><a href="registro.php">Registrarse</a></li>
+                        <li><a href="refugios.php">Refugios</a></li>
+                    <?php endif; ?>
+                    <?php if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true): ?>
+                        <li class="user-menu mobile-user-menu">
+                            <span class="user-menu-trigger">
+                                <span class="user-icon"></span>
+                                <span class="user-name"><?php echo htmlspecialchars($_SESSION["nombre"]); ?></span>
+                            </span>
+                            <div class="dropdown-menu">
+                                <ul>
+                                    <?php if (isset($_SESSION['is_admin']) && $_SESSION['is_admin'] == 1): ?>
+                                        <li><a href="admin/index.php" class="admin-panel-link">Panel Admin</a></li>
+                                    <?php endif; ?>
+                                    <li><a href="mi_perfil.php">Mi Perfil</a></li>
+                                    <li><a href="logout.php">Cerrar Sesión</a></li>
+                                </ul>
+                            </div>
+                        </li>
+                    <?php endif; ?>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
     <div class="form-container">
         <h2>Reportar Avistamiento de "<?php echo htmlspecialchars($nombre_animal); ?>"</h2>
         <p>Si crees que has visto a esta mascota, por favor, completa los siguientes datos para ayudar a su dueño.</p>
-        <form action="procesar_avistamiento.php" method="post">
+        <form action="procesar_avistamiento.php" method="post" id="form-avistamiento">
             <input type="hidden" name="id_animal" value="<?php echo $id_animal; ?>">
             <div class="form-group">
                 <label>Última ubicación donde fue visto</label>
-                <input type="text" name="ultima_ubicacion_vista" placeholder="Ej: Cerca del parque central, Calle Falsa 123" required>
+                <input type="text" name="ultima_ubicacion_vista" placeholder="Arrastra el marcador en el mapa o usa el botón" required>
+                <button type="button" id="usar-ubicacion-actual" class="btn" style="width: auto; margin-top: 5px; background-color: #97BC62;">Usar mi ubicación actual</button>
+                <!-- Campos ocultos para las coordenadas -->
+                <input type="hidden" name="latitud" id="latitud">
+                <input type="hidden" name="longitud" id="longitud">
             </div>
+            <!-- Contenedor para el mapa interactivo -->
+            <div id="mapa-seleccion"></div>
             <div class="form-group">
                 <label>Características distintivas o estado del animal (opcional)</label>
                 <textarea name="caracteristicas_distintivas" rows="4" placeholder="Ej: Llevaba un collar rojo, parecía asustado, cojeaba un poco..."></textarea>
@@ -53,5 +106,107 @@ if ($stmt = $conexion->prepare($sql_animal)) {
             <a href="index.php">Cancelar y volver</a>
         </form>
     </div>
+
+    <!-- Incluimos Leaflet y tu script de geolocalización -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="geolocalizacion.js"></script>
+
+    <script>
+        // --- LÓGICA DEL MAPA INTERACTIVO ---
+        const latitudInput = document.getElementById('latitud');
+        const longitudInput = document.getElementById('longitud');
+        const ubicacionTextoInput = document.querySelector('input[name="ultima_ubicacion_vista"]');
+
+        // 1. Inicializar el mapa
+        const mapaSeleccion = L.map('mapa-seleccion').setView([-34.60, -58.38], 12);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(mapaSeleccion);
+
+        // 2. Crear un marcador arrastrable
+        let marcador = L.marker(mapaSeleccion.getCenter(), { draggable: true }).addTo(mapaSeleccion);
+        marcador.bindPopup("Arrastra este marcador al lugar del avistamiento.").openPopup();
+
+        // Función para actualizar campos y dirección
+        function actualizarCampos(lat, lng) {
+            latitudInput.value = lat.toFixed(8);
+            longitudInput.value = lng.toFixed(8);
+            
+            // Geocodificación inversa para obtener la dirección
+            fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data && data.display_name) {
+                        ubicacionTextoInput.value = data.display_name;
+                    } else {
+                        ubicacionTextoInput.value = `Ubicación: ${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+                    }
+                })
+                .catch(err => {
+                    console.error("Error en geocodificación inversa:", err);
+                    ubicacionTextoInput.value = `Ubicación: ${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+                });
+        }
+
+        // 3. Actualizar campos cuando se arrastra el marcador
+        marcador.on('dragend', function(e) {
+            const latlng = e.target.getLatLng();
+            actualizarCampos(latlng.lat, latlng.lng);
+        });
+
+        // Lógica para el botón "Usar mi ubicación actual"
+        document.getElementById('usar-ubicacion-actual').addEventListener('click', function() {
+            this.textContent = 'Obteniendo...';
+            this.disabled = true;
+
+            EXITO = function(position) {
+                const { latitude, longitude } = position.coords;
+                mapaSeleccion.setView([latitude, longitude], 16);
+                marcador.setLatLng([latitude, longitude]);
+                document.getElementById('usar-ubicacion-actual').textContent = '¡Ubicación Obtenida!';
+                actualizarCampos(latitude, longitude);
+            };
+            OBTENER_POSICION_ACTUAL();
+        });
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
+            const navMenu = document.querySelector('.nav-menu');
+            const mobileUserMenu = document.querySelector('.mobile-user-menu');
+            
+            if (mobileMenuToggle && navMenu) {
+                mobileMenuToggle.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    navMenu.classList.toggle('active');
+                    mobileMenuToggle.classList.toggle('active');
+                });
+
+                document.addEventListener('click', function(event) {
+                    if (!navMenu.contains(event.target) && !mobileMenuToggle.contains(event.target)) {
+                        navMenu.classList.remove('active');
+                        mobileMenuToggle.classList.remove('active');
+                    }
+                });
+
+                const navLinks = navMenu.querySelectorAll('a');
+                navLinks.forEach(link => {
+                    link.addEventListener('click', function() {
+                        navMenu.classList.remove('active');
+                        mobileMenuToggle.classList.remove('active');
+                    });
+                });
+            }
+
+            if (mobileUserMenu) {
+                const userMenuTrigger = mobileUserMenu.querySelector('.user-menu-trigger');
+                if (userMenuTrigger) {
+                    userMenuTrigger.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        mobileUserMenu.classList.toggle('active');
+                    });
+                }
+            }
+        });
+    </script>
 </body>
 </html>

@@ -59,6 +59,23 @@ if (isset($_GET['reply_to']) && !empty($_GET['reply_to'])) {
         }
         $stmt->close();
     }
+
+// CASO 3: Es un mensaje directo a un usuario específico
+} elseif (isset($_GET['id_destinatario']) && !empty($_GET['id_destinatario'])) {
+    $destinatario_id = intval($_GET['id_destinatario']);
+    $sql = "SELECT nombre FROM usuarios WHERE id_usuario = ?";
+    if ($stmt = $conexion->prepare($sql)) {
+        $stmt->bind_param("i", $destinatario_id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        if ($row = $result->fetch_assoc()) {
+            $nombre_publicador = $row['nombre'];
+            $asunto_sugerido = "Mensaje para " . htmlspecialchars($row['nombre']);
+        } else {
+            die("Error: Destinatario no encontrado.");
+        }
+        $stmt->close();
+    }
 } else {
     die("Error: No se especificó una publicación o un destinatario.");
 }
@@ -76,6 +93,49 @@ if ($destinatario_id == $_SESSION['id_usuario']) {
     <link rel="stylesheet" href="estilos.css">
 </head>
 <body>
+    <header>
+        <div class="container">
+            <div id="branding">
+                <h1><a href="index.php"><img src="img/logo1.png" alt="PetSociety Logo" class="header-logo"></a><a href="index.php">PetSociety</a></h1>
+            </div>
+            <nav>
+                <button class="mobile-menu-toggle" aria-label="Toggle menu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+                <ul class="nav-menu">
+                    <?php if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true): ?>
+                        <li><a href="index.php">Inicio</a></li>
+                        <li><a href="refugios.php">Refugios</a></li>
+                        <li><a href="buzon.php">Mensajes</a></li>
+                    <?php else: ?>
+                        <li><a href="login.php">Iniciar Sesión</a></li>
+                        <li><a href="registro.php">Registrarse</a></li>
+                        <li><a href="refugios.php">Refugios</a></li>
+                    <?php endif; ?>
+                    <?php if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true): ?>
+                        <li class="user-menu mobile-user-menu">
+                            <span class="user-menu-trigger">
+                                <span class="user-icon"></span>
+                                <span class="user-name"><?php echo htmlspecialchars($_SESSION["nombre"]); ?></span>
+                            </span>
+                            <div class="dropdown-menu">
+                                <ul>
+                                    <?php if (isset($_SESSION['is_admin']) && $_SESSION['is_admin'] == 1): ?>
+                                        <li><a href="admin/index.php" class="admin-panel-link">Panel Admin</a></li>
+                                    <?php endif; ?>
+                                    <li><a href="mi_perfil.php">Mi Perfil</a></li>
+                                    <li><a href="logout.php">Cerrar Sesión</a></li>
+                                </ul>
+                            </div>
+                        </li>
+                    <?php endif; ?>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
     <div class="form-container">
         <h2>Enviar Mensaje a <?php echo htmlspecialchars($nombre_publicador); ?></h2>
         <?php if (!empty($titulo_publicacion)): ?>
@@ -89,5 +149,47 @@ if ($destinatario_id == $_SESSION['id_usuario']) {
             <a href="index.php">Cancelar y volver</a>
         </form>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
+            const navMenu = document.querySelector('.nav-menu');
+            const mobileUserMenu = document.querySelector('.mobile-user-menu');
+            
+            if (mobileMenuToggle && navMenu) {
+                mobileMenuToggle.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    navMenu.classList.toggle('active');
+                    mobileMenuToggle.classList.toggle('active');
+                });
+
+                document.addEventListener('click', function(event) {
+                    if (!navMenu.contains(event.target) && !mobileMenuToggle.contains(event.target)) {
+                        navMenu.classList.remove('active');
+                        mobileMenuToggle.classList.remove('active');
+                    }
+                });
+
+                const navLinks = navMenu.querySelectorAll('a');
+                navLinks.forEach(link => {
+                    link.addEventListener('click', function() {
+                        navMenu.classList.remove('active');
+                        mobileMenuToggle.classList.remove('active');
+                    });
+                });
+            }
+
+            if (mobileUserMenu) {
+                const userMenuTrigger = mobileUserMenu.querySelector('.user-menu-trigger');
+                if (userMenuTrigger) {
+                    userMenuTrigger.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        mobileUserMenu.classList.toggle('active');
+                    });
+                }
+            }
+        });
+    </script>
 </body>
 </html>

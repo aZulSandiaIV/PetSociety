@@ -10,13 +10,53 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
 <head>
     <meta charset="UTF-8">
     <title>Publicar un Animal - PetSociety</title>
+    <!-- CSS de Leaflet para el mapa -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
     <link rel="stylesheet" href="estilos.css">
+    <!-- Estilo para el mapa -->
+    <style>#mapa-seleccion { height: 400px; margin-top: 15px; border-radius: 8px; z-index: 1; }</style>
 </head>
 <body>
     <header>
         <div class="container">
-            <div id="branding"><h1><a href="index.php">PetSociety</a></h1></div>
-            <nav><ul><li><a href="index.php">Volver</a></li><li><a href="logout.php">Cerrar Sesión</a></li></ul></nav>
+            <div id="branding">
+                <h1><a href="index.php"><img src="img/logo1.png" alt="PetSociety Logo" class="header-logo"></a><a href="index.php">PetSociety</a></h1>
+            </div>
+            <nav>
+                <button class="mobile-menu-toggle" aria-label="Toggle menu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+                <ul class="nav-menu">
+                    <?php if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true): ?>
+                        <li><a href="index.php">Inicio</a></li>
+                        <li><a href="refugios.php">Refugios</a></li>
+                        <li><a href="buzon.php">Mensajes</a></li>
+                    <?php else: ?>
+                        <li><a href="login.php">Iniciar Sesión</a></li>
+                        <li><a href="registro.php">Registrarse</a></li>
+                        <li><a href="refugios.php">Refugios</a></li>
+                    <?php endif; ?>
+                    <?php if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true): ?>
+                        <li class="user-menu mobile-user-menu">
+                            <span class="user-menu-trigger">
+                                <span class="user-icon"></span>
+                                <span class="user-name"><?php echo htmlspecialchars($_SESSION["nombre"]); ?></span>
+                            </span>
+                            <div class="dropdown-menu">
+                                <ul>
+                                    <?php if (isset($_SESSION['is_admin']) && $_SESSION['is_admin'] == 1): ?>
+                                        <li><a href="admin/index.php" class="admin-panel-link">Panel Admin</a></li>
+                                    <?php endif; ?>
+                                    <li><a href="mi_perfil.php">Mi Perfil</a></li>
+                                    <li><a href="logout.php">Cerrar Sesión</a></li>
+                                </ul>
+                            </div>
+                        </li>
+                    <?php endif; ?>
+                </ul>
+            </nav>
         </div>
     </header>
     <div class="form-container">
@@ -35,21 +75,29 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
                     <option value="Encontrado">Reportar como Encontrado</option>
                 </select>
             </div>
+
             <div class="form-group">
                 <label>Descripción de la Publicación</label>
                 <textarea name="contenido" rows="5" required></textarea>
             </div>
 
-            <div id="campos_perdido" style="display: none;">
+            <div id="campos_ubicacion" style="display: block;"> <!-- Cambiado para ser visible por defecto -->
                 <div class="form-group">
-                    <label>Última ubicación donde fue visto</label>
-                    <input type="text" name="ultima_ubicacion_vista" placeholder="Ej: Cerca del parque central, Calle Falsa 123">
+                    <label>Zona / Barrio</label>
+                    <input type="text" name="zona" placeholder="Ej: Palermo, Caballito, La Plata Centro" required>
+                    <small>Escribe el barrio, localidad o una referencia simple para la búsqueda.</small>
+                </div>
+                <div class="form-group">
+                    <label>Ubicación Exacta (Mapa)</label>
+                    <input type="text" name="ubicacion_texto" placeholder="Arrastra el marcador en el mapa o usa el botón" required readonly>
                     <button type="button" id="usar-ubicacion-actual" class="btn" style="width: auto; margin-top: 5px; background-color: #97BC62;">Usar mi ubicación actual</button>
                     <!-- Campos ocultos para las coordenadas -->
                     <input type="hidden" name="latitud" id="latitud">
                     <input type="hidden" name="longitud" id="longitud">
                 </div>
-                <label>Características distintivas (opcional)</label>
+                <!-- Contenedor para el mapa interactivo -->
+                <div id="mapa-seleccion"></div>
+                <label id="label_caracteristicas">Características distintivas (opcional)</label>
                 <textarea name="caracteristicas_distintivas" rows="3" placeholder="Ej: Collar rojo, una mancha en el ojo derecho, cojea un poco"></textarea>
             </div>
             
@@ -65,6 +113,23 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
             <div class="form-group">
                 <label>Raza</label>
                 <input type="text" name="raza" placeholder="Ej: Mestizo, Labrador">
+            </div>
+            <div class="form-group">
+                <label>Edad Aproximada</label>
+                <input type="text" name="edad" placeholder="Ej: Cachorro, 2 años, Senior">
+            </div>
+            <div class="form-group">
+                <label>Tamaño</label>
+                <select name="tamaño">
+                    <option value="">-- No especificado --</option>
+                    <option value="Pequeño">Pequeño</option>
+                    <option value="Mediano">Mediano</option>
+                    <option value="Grande">Grande</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Color Principal</label>
+                <input type="text" name="color" placeholder="Ej: Negro, Marrón y blanco">
             </div>
             <div class="form-group">
                 <label>Género</label>
@@ -85,21 +150,64 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
 
     <!-- Incluimos Leaflet y tu script de geolocalización -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script src="Geolocalizacion.js"></script>
+    <script src="geolocalizacion.js"></script>
 
     <script>
         document.getElementById('tipo_publicacion').addEventListener('change', function() {
-            var camposPerdido = document.getElementById('campos_perdido');
-            var ubicacionInput = camposPerdido.querySelector('input[name="ultima_ubicacion_vista"]');
+            const camposUbicacion = document.getElementById('campos_ubicacion');
+            const ubicacionInput = camposUbicacion.querySelector('input[name="ubicacion_texto"]');
+            const labelCaracteristicas = document.getElementById('label_caracteristicas');
 
-            if (this.value === 'Perdido') {
-                camposPerdido.style.display = 'block';
-                ubicacionInput.required = true;
-            } else {
-                camposPerdido.style.display = 'none';
-                ubicacionInput.required = false;
-            }
+            // Los campos de ubicación siempre están visibles ahora.
+            // Solo cambiamos el texto de la etiqueta si es un animal perdido.
+            labelCaracteristicas.textContent = (this.value === 'Perdido') 
+                ? 'Características distintivas (opcional)' 
+                : 'Notas adicionales sobre la ubicación (opcional)';
         });
+
+        // --- LÓGICA DEL MAPA INTERACTIVO ---
+        const latitudInput = document.getElementById('latitud');
+        const longitudInput = document.getElementById('longitud');
+        const ubicacionTextoInput = document.querySelector('input[name="ubicacion_texto"]');
+
+        // 1. Inicializar el mapa
+        const mapaSeleccion = L.map('mapa-seleccion').setView([-34.60, -58.38], 12);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(mapaSeleccion);
+
+        // 2. Crear un marcador arrastrable
+        let marcador = L.marker(mapaSeleccion.getCenter(), { draggable: true }).addTo(mapaSeleccion);
+        marcador.bindPopup("Arrastra este marcador a la ubicación del animal.").openPopup();
+
+        // Función para actualizar campos y dirección
+        function actualizarCampos(lat, lng) {
+            latitudInput.value = lat.toFixed(8);
+            longitudInput.value = lng.toFixed(8);
+            
+            // Geocodificación inversa para obtener la dirección
+            fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data && data.display_name) {
+                        ubicacionTextoInput.value = data.display_name;
+                    } else {
+                        ubicacionTextoInput.value = `Ubicación: ${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+                    }
+                })
+                .catch(err => {
+                    console.error("Error en geocodificación inversa:", err);
+                    ubicacionTextoInput.value = `Ubicación: ${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+                });
+        }
+
+        // 3. Actualizar campos cuando se arrastra el marcador
+        marcador.on('dragend', function(e) {
+            const latlng = e.target.getLatLng();
+            actualizarCampos(latlng.lat, latlng.lng);
+        });
+
+        // Inicializar campos con la posición inicial del marcador
+        const posInicial = marcador.getLatLng();
+        actualizarCampos(posInicial.lat, posInicial.lng);
 
         // Lógica para el botón "Usar mi ubicación actual"
         document.getElementById('usar-ubicacion-actual').addEventListener('click', function() {
@@ -109,14 +217,55 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
             // Sobrescribimos la función EXITO para rellenar los campos del formulario
             EXITO = function(position) {
                 const { latitude, longitude } = position.coords;
-                document.getElementById('latitud').value = latitude;
-                document.getElementById('longitud').value = longitude;
-                document.querySelector('input[name="ultima_ubicacion_vista"]').value = `Ubicación aproximada: ${latitude.toFixed(4)}, ${longitude.toFixed(4)}`;
+                // Mover el mapa y el marcador a la nueva posición
+                mapaSeleccion.setView([latitude, longitude], 16);
+                marcador.setLatLng([latitude, longitude]);
                 document.getElementById('usar-ubicacion-actual').textContent = '¡Ubicación Obtenida!';
+                actualizarCampos(latitude, longitude); // Actualizar todos los campos
             };
             OBTENER_POSICION_ACTUAL();
-        });
+        })
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
+            const navMenu = document.querySelector('.nav-menu');
+            const mobileUserMenu = document.querySelector('.mobile-user-menu');
+            
+            if (mobileMenuToggle && navMenu) {
+                mobileMenuToggle.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    navMenu.classList.toggle('active');
+                    mobileMenuToggle.classList.toggle('active');
+                });
 
+                document.addEventListener('click', function(event) {
+                    if (!navMenu.contains(event.target) && !mobileMenuToggle.contains(event.target)) {
+                        navMenu.classList.remove('active');
+                        mobileMenuToggle.classList.remove('active');
+                    }
+                });
+
+                const navLinks = navMenu.querySelectorAll('a');
+                navLinks.forEach(link => {
+                    link.addEventListener('click', function() {
+                        navMenu.classList.remove('active');
+                        mobileMenuToggle.classList.remove('active');
+                    });
+                });
+            }
+
+            if (mobileUserMenu) {
+                const userMenuTrigger = mobileUserMenu.querySelector('.user-menu-trigger');
+                if (userMenuTrigger) {
+                    userMenuTrigger.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        mobileUserMenu.classList.toggle('active');
+                    });
+                }
+            }
+        });
     </script>
 </body>
 </html>
