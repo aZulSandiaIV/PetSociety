@@ -5,7 +5,7 @@ let sessionData = null;
 const botton = document.getElementById("cargar-mas");
 botton.addEventListener("click", mostrar_publicaciones);
 
-// Cargar info de sesión (si existe)
+// Exportar en caso de que se necesite en otro módulo
 (async () => {
     try {
         const res = await fetch('session_check.php', { credentials: 'same-origin' });
