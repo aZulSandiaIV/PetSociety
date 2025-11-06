@@ -1,5 +1,4 @@
 
-let filtro = '';
 let sessionData = null;
 
 // Exportar en caso de que se necesite en otro módulo
@@ -44,7 +43,7 @@ async function cargar_publicaciones(filtro = '') {
 }
 
 // Ahora recibir una función 'renderCard'
-function mostrar_publicaciones(renderCard, container) {
+function mostrar_publicaciones(renderCard, container, filtro = '') {
 
     cargar_publicaciones(filtro).then(data => {
 

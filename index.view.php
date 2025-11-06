@@ -290,39 +290,38 @@
         <div class="main-content-wrapper">
             <!-- INICIO DE LA BARRA LATERAL DE FILTROS -->
             <aside class="filters-sidebar">
-                <form method="get" id="filter-form" onsubmit="modificar_filtros(); return false;">
-                    <div class="filters-header">
-                        <h3>Filtros</h3>
-                        <a href="index.php#seccion-publicaciones" class="clear-filters-btn">Limpiar</a>
-                    </div>
+                <div class="filters-header">
+                    <h3>Filtros</h3>
+                    <a href="index.php#seccion-publicaciones" class="clear-filters-btn">Limpiar</a>
+                </div>
 
-                    <div class="filter-group">
-                        <input type="text" name="search" id="search-filter" class="form-group" placeholder="Buscar por palabra clave..." style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box;">
-                    </div>
+                <div class="filter-group">
+                    <input type="text" name="search" id="search-filter" class="form-group" placeholder="Buscar por palabra clave..." style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box;">
+                </div>
 
-                    <div class="filter-group">
-                        <h4>Estado</h4>
-                        <label for="estado-adopcion"><input id="estado-adopcion" type="checkbox" name="estado[]" value="En Adopción"> En Adopción</label>
-                        <label for="estado-temporal"><input id="estado-temporal" type="checkbox" name="estado[]" value="Hogar Temporal"> Hogar Temporal</label>
-                        <label for="estado-perdido"><input id="estado-perdido" type="checkbox" name="estado[]" value="Perdido"> Perdido</label>
-                    </div>
+                <div class="filter-group">
+                    <h4>Estado</h4>
+                    <label for="estado-adopcion"><input id="estado-adopcion" type="radio" name="estado" value="Adopción"> En Adopción</label>
+                    <label for="estado-temporal"><input id="estado-temporal" type="radio" name="estado" value="Hogar Temporal"> Hogar Temporal</label>
+                    <label for="estado-perdido"><input id="estado-perdido" type="radio" name="estado" value="Perdido"> Perdido</label>
+                </div>
 
-                    <div class="filter-group">
-                        <h4>Especie</h4>
-                        <label for="especie-perro"><input id="especie-perro" type="checkbox" name="especie[]" value="Perro"> Perro</label>
-                        <label for="especie-gato"><input id="especie-gato" type="checkbox" name="especie[]" value="Gato"> Gato</label>
-                        <label for="especie-otro"><input id="especie-otro" type="checkbox" name="especie[]" value="Otro"> Otro</label>
-                    </div>
+                <div class="filter-group">
+                    <h4>Especie</h4>
+                    <label for="especie-perro"><input id="especie-perro" type="radio" name="especie" value="Perro"> Perro</label>
+                    <label for="especie-gato"><input id="especie-gato" type="radio" name="especie" value="Gato"> Gato</label>
+                    <label for="especie-otro"><input id="especie-otro" type="radio" name="especie" value="Otro"> Otro</label>
+                </div>
 
-                    <div class="filter-group">
-                        <h4>Tamaño</h4>
-                        <label for="tamano-peq"><input id="tamano-peq" type="checkbox" name="tamano[]" value="Pequeño"> Pequeño</label>
-                        <label for="tamano-med"><input id="tamano-med" type="checkbox" name="tamano[]" value="Mediano"> Mediano</label>
-                        <label for="tamano-grande"><input id="tamano-grande" type="checkbox" name="tamano[]" value="Grande"> Grande</label>
-                    </div>
+                <div class="filter-group">
+                    <h4>Tamaño</h4>
+                    <label for="tamano-peq"><input id="tamano-peq" type="radio" name="tamano" value="Pequeño"> Pequeño</label>
+                    <label for="tamano-med"><input id="tamano-med" type="radio" name="tamano" value="Mediano"> Mediano</label>
+                    <label for="tamano-grande"><input id="tamano-grande" type="radio" name="tamano" value="Grande"> Grande</label>
+                </div>
 
-                    <input type="submit" value="Aplicar filtros">
-                </form>
+                <button type="button" id="apply-filters" class="btn">Aplicar filtros</button>
+                
             </aside>
         <div>
             <div class="feed-container">
@@ -384,39 +383,73 @@
         }
 
         document.addEventListener('DOMContentLoaded', function() {
-            filtro = `?cargar_apartir=${CargarApartirDe}&cargar_cantidad=${CargarIncremento}`;
+            mostrar_publicaciones(renderCard, container, construirFiltroParaCarga());
             CargarApartirDe += CargarIncremento;
-            
-            mostrar_publicaciones(renderCard, container);
         });
 
         const button = document.getElementById("cargar-mas");
         button.addEventListener("click", function(){
-            filtro = `?cargar_apartir=${CargarApartirDe}&cargar_cantidad=${CargarIncremento}`;
+            mostrar_publicaciones(renderCard, container, construirFiltroParaCarga());
             CargarApartirDe += CargarIncremento;
-            
-            mostrar_publicaciones(renderCard, container)
-
-            
         });
         
-        function modificar_filtros() {
-
-            const form = document.getElementById('filter-form');
-            const formData = new FormData(form);
+        function getFilterQueryString() {
             const params = new URLSearchParams();
 
-            console.log(formData.especie);
+            const search = document.getElementById('search-filter')?.value.trim();
+            if (search) params.append('search', search);
 
-            filtro = '&' + params.toString();
-            CargarApartirDe = 0;
-            document.getElementsByClassName('feed-container')[0].innerHTML = '';
-            
-            console.log('Aplicando filtros:', filtro);
-            mostrar_publicaciones_index(filtro);
+            const estado = document.querySelector('input[name="estado"]:checked');
+            if (estado) {
+                // El backend espera 'status'
+                params.append('status', estado.value);
+            }
+
+            const especie = document.querySelector('input[name="especie"]:checked');
+            if (especie) {
+                // El backend espera 'race'
+                params.append('race', especie.value);
+            }
+
+            const tamano = document.querySelector('input[name="tamano"]:checked');
+            if (tamano) {
+                // El backend espera 'size'
+                params.append('size', tamano.value);
+            }
+
+            return params.toString();
         }
 
+        function construirFiltroParaCarga() {
 
+            const base = `?cargar_apartir=${CargarApartirDe}&cargar_cantidad=${CargarIncremento}`;
+            const filtrosQuery = getFilterQueryString();
+
+            filtro = filtrosQuery ? base + '&' + filtrosQuery : base;
+
+            console.log('Filtro construido:', filtro);
+            return filtro;
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const btn = document.getElementById('apply-filters');
+            if (btn) {
+                btn.addEventListener('click', function () {
+                    
+                    document.getElementsByClassName('feed-container')[0].innerHTML = '';
+
+                    //console.log('Aplicando filtros:', filtroQuery);
+
+                    button.innerText = 'Cargar Más';
+                    button.disabled = false;
+
+                    CargarApartirDe = 0;
+                    console.log('CargarApartirDe reiniciado a:', CargarApartirDe);
+                    mostrar_publicaciones(renderCard, container, construirFiltroParaCarga());
+                    CargarApartirDe += CargarIncremento;
+                });
+            }
+        });
         
 
     </script>
