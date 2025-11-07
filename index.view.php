@@ -392,9 +392,10 @@
         <div style="margin-bottom: 30px; margin-top: 40px;">
             <h2>¿Has visto a un animal perdido?</h2>
             <p>Explora el mapa para ver los últimos avistamientos y animales perdidos en tu zona. Cada marcador te muestra información importante para ayudar a reunirlos con sus familias.</p>
-            <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+            <div style="display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap;">
                 <button id="ver-mi-ubicacion" class="btn" style="width: auto;">Mostrar mi ubicación</button>
                 <a href="reportar_avistamiento_mapa.php" class="btn" style="width: auto; background-color: #7A9BA8;">Reportar Callejero</a>
+                <a href="mapa_avistamientos.php" class="btn" style="width: auto; background-color: #8C8C8C;">Ver mapa completo</a>
             </div>
             <div id="mapa-avistamientos"></div>
         </div>
@@ -405,17 +406,17 @@
 
     <!-- Scripts para el mapa -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script src="geolocalizacion.js"></script>
+    <script src="Geolocalizacion.js"></script>
 
     <script src="Post_CargaAsync.js"></script>
     <script src="funciones_js.js"></script>
     <script>
-
         let CargarIncremento = 5;
         let CargarApartirDe = 0;
         const container = document.getElementsByClassName('feed-container')[0];
+        const button = document.getElementById("cargar-mas");
 
-        function renderCard(animal){
+        function renderCard(animal) { // Esta función se mantiene aquí porque es específica de esta vista
             return `
             <div class="animal-card" style="position: relative;">
                 ${animal.es_refugio == 1 ? '<span class="refugio-tag">REFUGIO</span>' : ''}
@@ -429,8 +430,6 @@
                         ${animal.edad ? animal.edad : ''}
                     </p>
                     <p>${animal.contenido_corto}...</p>`
-                    // El botón de "Ver detalles" necesita todos los datos del animal.
-                    // Usamos JSON.stringify para pasar el objeto completo de forma segura.
                     + `<a href="#" class="btn details-btn" onclick='ver_detalles(${JSON.stringify(animal)})'>Ver detalles</a>`
                     +
                     `
@@ -444,183 +443,52 @@
                     }
                 </div>
             </div>
-
             `;
         }
 
+        // --- Lógica de Carga y Filtros ---
+
+        // Carga inicial de publicaciones
         document.addEventListener('DOMContentLoaded', function() {
-            mostrar_publicaciones(renderCard, container, construirFiltroParaCarga());
+            mostrar_publicaciones(renderCard, container, construirFiltroParaCarga(CargarApartirDe, CargarIncremento));
             CargarApartirDe += CargarIncremento;
         });
 
-        const button = document.getElementById("cargar-mas");
+        // Botón "Cargar Más"
         button.addEventListener("click", function(){
-            mostrar_publicaciones(renderCard, container, construirFiltroParaCarga());
+            cargar_mas_publicaciones(renderCard, container, CargarApartirDe, CargarIncremento);
             CargarApartirDe += CargarIncremento;
         });
-        
-        function getFilterQueryString() {
-            const params = new URLSearchParams();
 
-            const search = document.getElementById('search-filter')?.value.trim();
-            if (search) params.append('search', search);
-
-            const estado = document.querySelector('input[name="estado"]:checked');
-            if (estado) {
-                // El backend espera 'status'
-                params.append('status', estado.value);
-            }
-
-            const especie = document.querySelector('input[name="especie"]:checked');
-            if (especie) {
-                // El backend espera 'race'
-                params.append('race', especie.value);
-            }
-
-            const tamano = document.querySelector('input[name="tamano"]:checked');
-            if (tamano) {
-                // El backend espera 'size'
-                params.append('size', tamano.value);
-            }
-
-            return params.toString();
+        // Botón "Aplicar Filtros"
+        const applyFiltersBtn = document.getElementById('apply-filters');
+        if (applyFiltersBtn) {
+            applyFiltersBtn.addEventListener('click', function () {
+                CargarApartirDe = aplicar_filtros_publicaciones(renderCard, container, button, CargarIncremento);
+            });
         }
 
-        function construirFiltroParaCarga() {
-
-            const base = `?cargar_apartir=${CargarApartirDe}&cargar_cantidad=${CargarIncremento}`;
-            const filtrosQuery = getFilterQueryString();
-
-            filtro = filtrosQuery ? base + '&' + filtrosQuery : base;
-
-            console.log('Filtro construido:', filtro);
-            return filtro;
-        }
-
-        document.addEventListener('DOMContentLoaded', function () {
-            const btn = document.getElementById('apply-filters');
-            if (btn) {
-                btn.addEventListener('click', function () {
-                    
-                    document.getElementsByClassName('feed-container')[0].innerHTML = '';
-
-                    //console.log('Aplicando filtros:', filtroQuery);
-
-                    button.innerText = 'Cargar Más';
-                    button.disabled = false;
-
-                    CargarApartirDe = 0;
-                    console.log('CargarApartirDe reiniciado a:', CargarApartirDe);
-                    mostrar_publicaciones(renderCard, container, construirFiltroParaCarga());
-                    CargarApartirDe += CargarIncremento;
-                });
-            }
-        });
-        
         // --- Lógica para Limpiar Filtros ---
-        document.addEventListener('DOMContentLoaded', function () {
-            const clearBtn = document.querySelector('.clear-filters-btn');
-            if (clearBtn) {
-                clearBtn.addEventListener('click', function (e) {
-                    e.preventDefault(); // Prevenir la navegación del enlace
-
-                    // Limpiar campo de búsqueda
-                    document.getElementById('search-filter').value = '';
-
-                    // Desmarcar todos los radio buttons
-                    const radioButtons = document.querySelectorAll('input[type="radio"]');
-                    radioButtons.forEach(radio => radio.checked = false);
-
-                    // Simular clic en "Aplicar filtros" para recargar las publicaciones sin filtros
-                    document.getElementById('apply-filters').click();
-
-                    // Opcional: hacer scroll a la sección de publicaciones
-                    document.getElementById('seccion-publicaciones').scrollIntoView({ behavior: 'smooth' });
-                });
-            }
-        });
-
-
+        const clearFiltersBtn = document.querySelector('.clear-filters-btn');
+        if (clearFiltersBtn) {
+            clearFiltersBtn.addEventListener('click', function (e) {
+                e.preventDefault(); // Prevenir la navegación del enlace
+                limpiar_filtros(); // Llama a la nueva función refactorizada
+            });
+        }
     </script>
     
     <script>
         // --- Lógica del Mapa ---
-        // La variable 'mapa' ahora es global (declarada en geolocalizacion.js)
-        mapa = L.map('mapa-avistamientos').setView([-34.60, -58.38], 12); // Zoom inicial más apropiado
+        // Llama a la función para la interactividad de los menús
+        interactividad_menus();
 
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        }).addTo(mapa);
-
-        // --- Marcadores de Avistamientos (huella) ---
-        // Icono personalizado para avistamientos
-        const huellaIcon = L.icon({
-            iconUrl: 'https://cdn-icons-png.flaticon.com/512/12/12195.png',
-            iconSize:     [28, 28],
-            iconAnchor:   [16, 32],
-            popupAnchor:  [0, -32]
-        });
-        const avistamientos = <?php echo $avistamientos_json; ?>;
-        avistamientos.forEach(avistamiento => {
-            L.marker([avistamiento.latitud, avistamiento.longitud], {icon: huellaIcon})
-                .addTo(mapa)
-                .bindPopup(avistamiento.popup_html);
-        });
-
-        // --- Marcadores de Animales Perdidos (alerta) ---
-        // Icono personalizado para animales perdidos
-        const alertaIcon = L.icon({
-            iconUrl: 'https://cdn-icons-png.flaticon.com/512/753/753345.png',
-            iconSize:     [28, 28],
-            iconAnchor:   [16, 32],
-            popupAnchor:  [0, -32]
-        });
-        const perdidos = <?php echo $perdidos_json; ?>;
-        perdidos.forEach(perdido => {
-            L.marker([perdido.latitud, perdido.longitud], {icon: alertaIcon})
-                .addTo(mapa)
-                .bindPopup(perdido.popup_html);
-        });
-
-        // --- Marcadores de Publicaciones (Adopción, Hogar Temporal, Refugios) ---
-        const adopcionIcon = L.icon({
-            iconUrl: 'https://cdn-icons-png.flaticon.com/512/1077/1077035.png', // Icono de corazón
-            iconSize:     [28, 28],
-            iconAnchor:   [16, 32],
-            popupAnchor:  [0, -32]
-        });
-        const refugioIcon = L.icon({
-            iconUrl: 'https://cdn-icons-png.flaticon.com/512/619/619153.png', // Icono de casa
-            iconSize:     [28, 28],
-            iconAnchor:   [16, 32],
-            popupAnchor:  [0, -32]
-        });
-
-        const publicaciones = <?php echo $publicaciones_json; ?>;
-        publicaciones.forEach(pub => {
-            // Elegir el icono: si es refugio, el de refugio, si no, el de adopción
-            const icon = pub.es_refugio ? refugioIcon : adopcionIcon;
-
-            L.marker([pub.latitud, pub.longitud], {icon: icon})
-                .addTo(mapa)
-                .bindPopup(pub.popup_html);
-        });
-
-
-        // --- Lógica para mostrar la ubicación del usuario ---
-        document.getElementById('ver-mi-ubicacion').addEventListener('click', function() {
-            this.textContent = 'Buscando...';
-            this.disabled = true;
-
-            // Sobrescribimos la función EXITO para que llame a la función correcta 'ponerEnMapa'
-            // que está definida en geolocalizacion.js
-            EXITO = function(position) {
-                PONER_EN_MAPA(position.coords.latitude, position.coords.longitude);
-                document.getElementById('ver-mi-ubicacion').textContent = 'Mostrar mi ubicación';
-            };
-
-            OBTENER_POSICION_ACTUAL();
-        });
+        // Llama a la nueva función para inicializar el mapa
+        mapa_interactivo_index(
+            <?php echo $avistamientos_json; ?>,
+            <?php echo $perdidos_json; ?>,
+            <?php echo $publicaciones_json; ?>
+        );
 
         // Si hay un hash en la URL, hacer scroll a esa sección
         window.addEventListener('load', function() {
@@ -628,46 +496,6 @@
                 document.getElementById('seccion-publicaciones').scrollIntoView({
                     behavior: 'smooth'
                 });
-            }
-        });
-
-        document.addEventListener('DOMContentLoaded', function() {
-            const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
-            const navMenu = document.querySelector('.nav-menu');
-            const mobileUserMenu = document.querySelector('.mobile-user-menu');
-            
-            if (mobileMenuToggle && navMenu) {
-                mobileMenuToggle.addEventListener('click', function(e) {
-                    e.stopPropagation();
-                    navMenu.classList.toggle('active');
-                    mobileMenuToggle.classList.toggle('active');
-                });
-
-                document.addEventListener('click', function(event) {
-                    if (!navMenu.contains(event.target) && !mobileMenuToggle.contains(event.target)) {
-                        navMenu.classList.remove('active');
-                        mobileMenuToggle.classList.remove('active');
-                    }
-                });
-
-                const navLinks = navMenu.querySelectorAll('a');
-                navLinks.forEach(link => {
-                    link.addEventListener('click', function() {
-                        navMenu.classList.remove('active');
-                        mobileMenuToggle.classList.remove('active');
-                    });
-                });
-            }
-
-            if (mobileUserMenu) {
-                const userMenuTrigger = mobileUserMenu.querySelector('.user-menu-trigger');
-                if (userMenuTrigger) {
-                    userMenuTrigger.addEventListener('click', function(e) {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        mobileUserMenu.classList.toggle('active');
-                    });
-                }
             }
         });
     </script>

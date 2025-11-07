@@ -1,28 +1,9 @@
 <?php
+session_start();
 require_once "config.php";
 
 // Obtener los últimos 50 avistamientos (para no sobrecargar el mapa)
-$sql = "SELECT latitud, longitud, imagen_url, descripcion, fecha_avistamiento 
-        FROM avistamientos 
-        ORDER BY fecha_avistamiento DESC 
-        LIMIT 50";
-
-$avistamientos_json = "[]";
-if ($result = $conexion->query($sql)) {
-    $avistamientos = [];
-    while ($row = $result->fetch_assoc()) {
-        // Preparamos los datos para el popup del mapa
-        $row['popup_html'] = "
-            <div>
-                <img src='" . htmlspecialchars($row['imagen_url']) . "' alt='Avistamiento' style='width:150px; height:auto; border-radius:4px;'>
-                <p>" . htmlspecialchars($row['descripcion']) . "</p>
-                <small>Visto el: " . date('d/m/Y H:i', strtotime($row['fecha_avistamiento'])) . "</small>
-            </div>
-        ";
-        $avistamientos[] = $row;
-    }
-    $avistamientos_json = json_encode($avistamientos);
-}
+$avistamientos_json = obtener_ultimos_avistamientos($conexion);
 $conexion->close();
 ?>
 <!DOCTYPE html>
@@ -32,6 +13,9 @@ $conexion->close();
     <title>Mapa de Avistamientos - PetSociety</title>
     <link rel="stylesheet" href="estilos.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+    <?php if (isset($_SESSION['is_admin']) && $_SESSION['is_admin'] == 1): ?>
+        <link rel="stylesheet" href="admin/admin.css">
+    <?php endif; ?>
     <style>
         #mapa { height: 600px; width: 100%; }
     </style>
@@ -53,6 +37,17 @@ $conexion->close();
                         <li><a href="index.php">Inicio</a></li>
                         <li><a href="refugios.php">Refugios</a></li>
                         <li><a href="buzon.php">Mensajes</a></li>
+                        <?php if (isset($_SESSION['is_admin']) && $_SESSION['is_admin'] == 1): ?>
+                            <li class="admin-panel-dropdown">
+                                <span class="admin-panel-trigger">Panel de Administrador</span>
+                                <div class="admin-submenu">
+                                    <ul>
+                                        <li><a href="admin/statistics.php">Estadísticas</a></li>
+                                        <li><a href="admin/manage_publications.php">Administrar Publicaciones</a></li>
+                                    </ul>
+                                </div>
+                            </li>
+                        <?php endif; ?>
                     <?php else: ?>
                         <li><a href="login.php">Iniciar Sesión</a></li>
                         <li><a href="registro.php">Registrarse</a></li>
@@ -67,7 +62,7 @@ $conexion->close();
                             <div class="dropdown-menu">
                                 <ul>
                                     <?php if (isset($_SESSION['is_admin']) && $_SESSION['is_admin'] == 1): ?>
-                                        <li><a href="admin/index.php" class="admin-panel-link">Panel Admin</a></li>
+                                        <li><a href="admin/statistics.php" class="admin-panel-link">Panel Admin</a></li>
                                     <?php endif; ?>
                                     <li><a href="mi_perfil.php">Mi Perfil</a></li>
                                     <li><a href="logout.php">Cerrar Sesión</a></li>
@@ -89,78 +84,19 @@ $conexion->close();
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <!-- Incluimos tu script de geolocalización -->
-    <script src="geolocalizacion.js"></script>
+    <script src="Geolocalizacion.js"></script>
+    <!-- Incluimos el script de funciones JS para el menú -->
+    <script src="funciones_js.js"></script>
 
-    <script>
-        // --- Lógica del Mapa ---
-        // Inicializa el mapa centrado en una ubicación genérica
-        const mapa = L.map('mapa').setView([-34.60, -58.38], 12); // Buenos Aires como ejemplo
-
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        }).addTo(mapa);
-
-        const avistamientos = <?php echo $avistamientos_json; ?>;
-
-        avistamientos.forEach(avistamiento => {
-            L.marker([avistamiento.latitud, avistamiento.longitud])
-                .addTo(mapa)
-                .bindPopup(avistamiento.popup_html);
-        });
-
-        // --- Lógica para mostrar la ubicación del usuario ---
-        document.getElementById('ver-mi-ubicacion').addEventListener('click', function() {
-            this.textContent = 'Buscando...';
-            this.disabled = true;
-            
-            // Definimos la función que se ejecutará cuando se obtenga la ubicación
-            const miCallbackDeExito = function(position) {
-                ponerEnMapa(position.coords.latitude, position.coords.longitude, mapa);
-            };
-
-            geolocalizador.obtenerPosicionActual(miCallbackDeExito);
-        });
-
-    </script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
-            const navMenu = document.querySelector('.nav-menu');
-            const mobileUserMenu = document.querySelector('.mobile-user-menu');
-            
-            if (mobileMenuToggle && navMenu) {
-                mobileMenuToggle.addEventListener('click', function(e) {
-                    e.stopPropagation();
-                    navMenu.classList.toggle('active');
-                    mobileMenuToggle.classList.toggle('active');
-                });
+            // Llama a la función refactorizada para mostrar el mapa de avistamientos
+            ver_avistamientos_mapa('mapa', <?php echo $avistamientos_json; ?>);
+            // Llama a la función refactorizada para el botón de ubicación
+            mostrar_ubicacion_usuario('ver-mi-ubicacion');
 
-                document.addEventListener('click', function(event) {
-                    if (!navMenu.contains(event.target) && !mobileMenuToggle.contains(event.target)) {
-                        navMenu.classList.remove('active');
-                        mobileMenuToggle.classList.remove('active');
-                    }
-                });
-
-                const navLinks = navMenu.querySelectorAll('a');
-                navLinks.forEach(link => {
-                    link.addEventListener('click', function() {
-                        navMenu.classList.remove('active');
-                        mobileMenuToggle.classList.remove('active');
-                    });
-                });
-            }
-
-            if (mobileUserMenu) {
-                const userMenuTrigger = mobileUserMenu.querySelector('.user-menu-trigger');
-                if (userMenuTrigger) {
-                    userMenuTrigger.addEventListener('click', function(e) {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        mobileUserMenu.classList.toggle('active');
-                    });
-                }
-            }
+            // Llama a la función para la interactividad de los menús
+            interactividad_menus();
         });
     </script>
 </body>

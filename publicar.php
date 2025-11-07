@@ -14,7 +14,7 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
     <link rel="stylesheet" href="estilos.css">
     <!-- Estilo para el mapa -->
-    <style>#mapa-seleccion { height: 400px; margin-top: 15px; border-radius: 8px; z-index: 1; }</style>
+    <style>#mapa-seleccion { height: 400px; margin-top: 15px; border-radius: 8px; z-index: 9999; }</style>
 </head>
 <body>
     <header>
@@ -88,7 +88,7 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
                 </div>
                 <div class="form-group">
                     <label>Ubicación Exacta (Mapa)</label>
-                    <input type="text" name="ubicacion_texto" placeholder="Arrastra el marcador en el mapa o usa el botón" required readonly>
+                    <input type="text" name="ubicacion_texto" id="ubicacion_texto" placeholder="Arrastra el marcador en el mapa o usa el botón" required readonly>
                     <button type="button" id="usar-ubicacion-actual" class="btn" style="width: auto; margin-top: 5px; background-color: #97BC62;">Usar mi ubicación actual</button>
                     <!-- Campos ocultos para las coordenadas -->
                     <input type="hidden" name="latitud" id="latitud">
@@ -149,122 +149,22 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
 
     <!-- Incluimos Leaflet y tu script de geolocalización -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script src="geolocalizacion.js"></script>
+    <script src="Geolocalizacion.js"></script>
+    <script src="funciones_js.js"></script>
 
-    <script>
-        document.getElementById('tipo_publicacion').addEventListener('change', function() {
-            const camposUbicacion = document.getElementById('campos_ubicacion');
-            const ubicacionInput = camposUbicacion.querySelector('input[name="ubicacion_texto"]');
-            const labelCaracteristicas = document.getElementById('label_caracteristicas');
-
-            // Los campos de ubicación siempre están visibles ahora.
-            // Solo cambiamos el texto de la etiqueta si es un animal perdido.
-            labelCaracteristicas.textContent = (this.value === 'Perdido') 
-                ? 'Características distintivas (opcional)' 
-                : 'Notas adicionales sobre la ubicación (opcional)';
-        });
-
-        // --- LÓGICA DEL MAPA INTERACTIVO ---
-        const latitudInput = document.getElementById('latitud');
-        const longitudInput = document.getElementById('longitud');
-        const ubicacionTextoInput = document.querySelector('input[name="ubicacion_texto"]');
-
-        // 1. Inicializar el mapa
-        const mapaSeleccion = L.map('mapa-seleccion').setView([-34.60, -58.38], 12);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(mapaSeleccion);
-
-        // 2. Crear un marcador arrastrable
-        let marcador = L.marker(mapaSeleccion.getCenter(), { draggable: true }).addTo(mapaSeleccion);
-        marcador.bindPopup("Arrastra este marcador a la ubicación del animal.").openPopup();
-
-        // Función para actualizar campos y dirección
-        function actualizarCampos(lat, lng) {
-            latitudInput.value = lat.toFixed(8);
-            longitudInput.value = lng.toFixed(8);
-            
-            // Geocodificación inversa para obtener la dirección
-            fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`)
-                .then(response => response.json())
-                .then(data => {
-                    if (data && data.display_name) {
-                        ubicacionTextoInput.value = data.display_name;
-                    } else {
-                        ubicacionTextoInput.value = `Ubicación: ${lat.toFixed(4)}, ${lng.toFixed(4)}`;
-                    }
-                })
-                .catch(err => {
-                    console.error("Error en geocodificación inversa:", err);
-                    ubicacionTextoInput.value = `Ubicación: ${lat.toFixed(4)}, ${lng.toFixed(4)}`;
-                });
-        }
-
-        // 3. Actualizar campos cuando se arrastra el marcador
-        marcador.on('dragend', function(e) {
-            const latlng = e.target.getLatLng();
-            actualizarCampos(latlng.lat, latlng.lng);
-        });
-
-        // Inicializar campos con la posición inicial del marcador
-        const posInicial = marcador.getLatLng();
-        actualizarCampos(posInicial.lat, posInicial.lng);
-
-        // Lógica para el botón "Usar mi ubicación actual"
-        document.getElementById('usar-ubicacion-actual').addEventListener('click', function() {
-            this.textContent = 'Obteniendo...';
-            this.disabled = true;
-
-            // Sobrescribimos la función EXITO para rellenar los campos del formulario
-            EXITO = function(position) {
-                const { latitude, longitude } = position.coords;
-                // Mover el mapa y el marcador a la nueva posición
-                mapaSeleccion.setView([latitude, longitude], 16);
-                marcador.setLatLng([latitude, longitude]);
-                document.getElementById('usar-ubicacion-actual').textContent = '¡Ubicación Obtenida!';
-                actualizarCampos(latitude, longitude); // Actualizar todos los campos
-            };
-            OBTENER_POSICION_ACTUAL();
-        })
-    </script>
-    <script>
+    <script>        
         document.addEventListener('DOMContentLoaded', function() {
-            const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
-            const navMenu = document.querySelector('.nav-menu');
-            const mobileUserMenu = document.querySelector('.mobile-user-menu');
-            
-            if (mobileMenuToggle && navMenu) {
-                mobileMenuToggle.addEventListener('click', function(e) {
-                    e.stopPropagation();
-                    navMenu.classList.toggle('active');
-                    mobileMenuToggle.classList.toggle('active');
-                });
+            // Llama a la función refactorizada para manejar el cambio de tipo de publicación
+            manejarCambioTipoPublicacion();
+            // --- LÓGICA DEL MAPA (REFACTORIZADA) ---
+            const mapaInfo = inicializarMapaDeSeleccion('mapa-seleccion', 'latitud', 'longitud', 'ubicacion_texto');
 
-                document.addEventListener('click', function(event) {
-                    if (!navMenu.contains(event.target) && !mobileMenuToggle.contains(event.target)) {
-                        navMenu.classList.remove('active');
-                        mobileMenuToggle.classList.remove('active');
-                    }
-                });
-
-                const navLinks = navMenu.querySelectorAll('a');
-                navLinks.forEach(link => {
-                    link.addEventListener('click', function() {
-                        navMenu.classList.remove('active');
-                        mobileMenuToggle.classList.remove('active');
-                    });
-                });
-            }
-
-            if (mobileUserMenu) {
-                const userMenuTrigger = mobileUserMenu.querySelector('.user-menu-trigger');
-                if (userMenuTrigger) {
-                    userMenuTrigger.addEventListener('click', function(e) {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        mobileUserMenu.classList.toggle('active');
-                    });
-                }
-            }
+            // Llama a la función refactorizada para el botón "Usar mi ubicación actual"
+            usar_ubicacion_actual(mapaInfo);
         });
+        
+        // Llama a la función para la interactividad de los menús
+        interactividad_menus();
     </script>
 </body>
 </html>

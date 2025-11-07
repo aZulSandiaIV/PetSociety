@@ -78,66 +78,17 @@ session_start(); // Iniciamos sesión para saber si el usuario está logueado
         </form>
     </div>
 
+    <!-- Incluimos Leaflet y tus scripts de geolocalización y funciones -->
     <script src="Geolocalizacion.js"></script>
-    <script>
-        document.getElementById('obtener-ubicacion-btn').addEventListener('click', function() {
-            const mensajeDiv = document.getElementById('mensaje-ubicacion');
-            mensajeDiv.textContent = 'Buscando tu ubicación...';
-            this.disabled = true;
+    <script src="funciones_js.js"></script>
 
-            EXITO = function(position) {
-                const { latitude, longitude } = position.coords;
-                document.getElementById('latitud').value = latitude;
-                document.getElementById('longitud').value = longitude;
-                
-                mensajeDiv.textContent = '¡Ubicación obtenida con éxito! Ya puedes enviar el reporte.';
-                mensajeDiv.style.color = 'green';
-                document.getElementById('enviar-reporte-btn').disabled = false;
-                document.getElementById('enviar-reporte-btn').style.backgroundColor = '';
-            };
-
-            OBTENER_POSICION_ACTUAL();
-        });
-    </script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
-            const navMenu = document.querySelector('.nav-menu');
-            const mobileUserMenu = document.querySelector('.mobile-user-menu');
+            // Llama a la función refactorizada para manejar la obtención de la ubicación
+            obtener_ubicacion_para_formulario('obtener-ubicacion-btn', 'latitud', 'longitud', 'enviar-reporte-btn', 'mensaje-ubicacion');
             
-            if (mobileMenuToggle && navMenu) {
-                mobileMenuToggle.addEventListener('click', function(e) {
-                    e.stopPropagation();
-                    navMenu.classList.toggle('active');
-                    mobileMenuToggle.classList.toggle('active');
-                });
-
-                document.addEventListener('click', function(event) {
-                    if (!navMenu.contains(event.target) && !mobileMenuToggle.contains(event.target)) {
-                        navMenu.classList.remove('active');
-                        mobileMenuToggle.classList.remove('active');
-                    }
-                });
-
-                const navLinks = navMenu.querySelectorAll('a');
-                navLinks.forEach(link => {
-                    link.addEventListener('click', function() {
-                        navMenu.classList.remove('active');
-                        mobileMenuToggle.classList.remove('active');
-                    });
-                });
-            }
-
-            if (mobileUserMenu) {
-                const userMenuTrigger = mobileUserMenu.querySelector('.user-menu-trigger');
-                if (userMenuTrigger) {
-                    userMenuTrigger.addEventListener('click', function(e) {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        mobileUserMenu.classList.toggle('active');
-                    });
-                }
-            }
+            // Llama a la función para la interactividad de los menús
+            interactividad_menus();
         });
     </script>
 </body>
