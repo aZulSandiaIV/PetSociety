@@ -82,7 +82,15 @@ if (isset($_GET['reply_to']) && !empty($_GET['reply_to'])) {
 
 // No permitir que un usuario se envíe un mensaje a sí mismo
 if ($destinatario_id == $_SESSION['id_usuario']) {
-    die("No puedes enviarte un mensaje a ti mismo. <a href='index.php'>Volver</a>");
+    // Mostramos un mensaje en la página en lugar de una alerta JS
+    echo "<!DOCTYPE html><html lang='es'><head><meta charset='UTF-8'><title>Error</title><link rel='stylesheet' href='estilos.css'></head><body>";
+    echo "<div class='form-container' style='text-align:center;'>";
+    echo "<h2>Acción no permitida</h2>";
+    echo "<p>No puedes enviarte un mensaje a ti mismo.</p>";
+    echo "<a href='javascript:history.back()' class='btn'>Volver</a>";
+    echo "</div>";
+    echo "</body></html>";
+    exit;
 }
 ?>
 <!DOCTYPE html>

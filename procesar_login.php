@@ -54,7 +54,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             
                             // Redirigir según el rol
                             if ($is_admin == 1) {
-                                header("location: admin/index.php");
+                                // Redirigir al index principal, que ya tiene lógica para mostrar el panel de admin.
+                                header("location: index.php");
                             } else {
                                 header("location: index.php");
                             }

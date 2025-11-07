@@ -29,7 +29,8 @@ if ($stmt_refugio = $conexion->prepare($sql_refugio)) {
 }
 
 // --- Obtener las publicaciones del refugio ---
-$sql_publicaciones = "SELECT p.id_publicacion, p.titulo, p.contenido, a.id_animal, a.nombre, a.estado, a.especie, a.raza, a.imagen_url 
+$sql_publicaciones = "SELECT p.id_publicacion, p.titulo, p.contenido, 
+                      a.id_animal, a.nombre, a.estado, a.especie, a.raza, a.imagen_url, a.genero, a.edad, a.tamaño, a.color
                       FROM publicaciones p 
                       JOIN animales a ON p.id_animal = a.id_animal 
                       WHERE p.id_usuario_publicador = ? 
@@ -43,14 +44,20 @@ if ($stmt_publicaciones = $conexion->prepare($sql_publicaciones)) {
     while ($row = $result_publicaciones->fetch_assoc()) {
         $publicaciones[] = [
             'id_publicacion' => $row['id_publicacion'],
+            'id_publicador' => $id_refugio, // El publicador es el mismo refugio
             'id_animal' => $row['id_animal'],
             'titulo' => htmlspecialchars($row['titulo']),
             'nombre' => htmlspecialchars($row['nombre']),
             'estado' => htmlspecialchars($row['estado']),
             'especie' => htmlspecialchars($row['especie']),
             'raza' => htmlspecialchars($row['raza']),
+            'genero' => htmlspecialchars($row['genero'] ?? ''),
+            'edad' => htmlspecialchars($row['edad'] ?? ''),
+            'tamaño' => htmlspecialchars($row['tamaño'] ?? ''),
+            'color' => htmlspecialchars($row['color'] ?? ''),
             'imagen' => $row['imagen_url'] ? htmlspecialchars($row['imagen_url']) : 'https://via.placeholder.com/300x200.png?text=Sin+Foto',
-            'contenido_corto' => nl2br(htmlspecialchars(substr($row['contenido'], 0, 100)))
+            'contenido_corto' => nl2br(htmlspecialchars(substr($row['contenido'], 0, 100))),
+            'descripcion' => nl2br(htmlspecialchars($row['contenido'])) // Descripción completa para el modal
         ];
     }
     $stmt_publicaciones->close();
@@ -147,6 +154,8 @@ $conexion->close();
                             <i class="fas fa-paper-plane"></i>
                             Enviar Mensaje
                         </a>
+                    <?php elseif (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true && $_SESSION['id_usuario'] == $id_refugio): ?>
+                        <span class="btn own-post-indicator" style="cursor: default;">Es tu perfil</span>
                     <?php endif; ?>
                 </div>
             </div>
@@ -167,11 +176,19 @@ $conexion->close();
                             <div class="animal-card-content" style="display: flex; flex-direction: column; flex-grow: 1;">
                                 <h3><?php echo $pub['titulo']; ?></h3>
                                 <p class="details"><strong><?php echo $pub['nombre']; ?></strong> - <?php echo $pub['especie']; ?> (<?php echo $pub['raza']; ?>)</p>
-                                <p><?php echo $pub['contenido_corto']; ?>...</p>
+                                <p><?php echo $pub['contenido_corto']; ?>...</p>                                
+                                <?php
+                                    // Preparamos el objeto de datos para el modal
+                                    $animal_data = json_encode($pub, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP);
+                                ?>
+                                <a href="#" class="btn details-btn" onclick='ver_detalles(<?php echo $animal_data; ?>)'>Ver detalles</a>
+
                                 <?php if ($pub['estado'] == 'Perdido'): ?>
                                     <a href="reportar_avistamiento.php?id_animal=<?php echo $pub['id_animal']; ?>" class="btn contact-btn" style="background-color: #E57373;">Reportar Avistamiento</a>
                                 <?php else: ?>
-                                    <?php if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true): ?>
+                                    <?php if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true && intval($_SESSION['id_usuario']) === intval($id_refugio)): ?>
+                                        <span class="btn own-post-indicator">Es tu publicación</span>
+                                    <?php elseif (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true): ?>
                                         <a href="enviar_mensaje.php?id_publicacion=<?php echo $pub['id_publicacion']; ?>" class="btn contact-btn">Contactar al Publicador</a>
                                     <?php else: ?>
                                         <a href="login.php" class="btn contact-btn">Inicia sesión para contactar</a>
@@ -189,6 +206,52 @@ $conexion->close();
             <?php endif; ?>
         </div>
     </div>
+
+    <!-- MODAL PARA VER DETALLES DEL ANIMAL (copiado de index.view.php) -->
+    <div id="modal-detalles" class="modal-overlay" style="display: none;">
+        <div class="modal-content">
+            <button class="modal-close" onclick="cerrarModal()">&times;</button>
+            <div class="modal-body">
+                <img id="modal-imagen" src="" alt="Foto del animal" class="modal-img">
+                <div class="modal-info">
+                    <h2 id="modal-titulo"></h2>
+                    <p><strong>Nombre:</strong> <span id="modal-nombre"></span></p>
+                    <p><strong>Especie:</strong> <span id="modal-especie"></span></p>
+                    <p><strong>Raza:</strong> <span id="modal-raza"></span></p>
+                    <p><strong>Género:</strong> <span id="modal-genero"></span></p>
+                    <p><strong>Edad:</strong> <span id="modal-edad"></span></p>
+                    <p><strong>Tamaño:</strong> <span id="modal-tamano"></span></p>
+                    <p><strong>Color:</strong> <span id="modal-color"></span></p>
+                    <hr>
+                    <h3>Descripción</h3>
+                    <p id="modal-descripcion"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <style>
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; z-index: 1000; }
+        .modal-content { background: #fff; padding: 30px; border-radius: 10px; max-width: 800px; width: 90%; position: relative; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
+        .modal-close { position: absolute; top: 10px; right: 15px; font-size: 28px; font-weight: bold; border: none; background: none; cursor: pointer; }
+        .modal-body { display: flex; gap: 20px; }
+        .modal-img { width: 300px; height: 300px; object-fit: cover; border-radius: 8px; }
+        .modal-info h2 { margin-top: 0; }
+        .modal-info p { margin: 8px 0; }
+        @media (max-width: 768px) {
+            .modal-body { flex-direction: column; }
+            .modal-img { width: 100%; height: 250px; }
+        }
+        .animal-card .details-btn {
+            margin-top: 8px;
+            background-color: #f0f0f0;
+            color: #404040;
+            text-align: center;
+        }
+        .animal-card .details-btn:hover {
+            background-color: #e0e0e0;
+            color: #202020;
+        }
+    </style>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -230,6 +293,18 @@ $conexion->close();
                 }
             }
         });
+    </script>
+
+    <!-- Scripts para el modal -->
+    <script src="funciones_js.js"></script>
+    <script>
+        // Cerrar el modal si se hace clic fuera de él
+        window.onclick = function(event) {
+            const modal = document.getElementById('modal-detalles');
+            if (event.target == modal) {
+                cerrarModal();
+            }
+        }
     </script>
     
     <?php include 'footer.php'; ?>

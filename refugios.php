@@ -104,7 +104,9 @@ $conexion->close();
                         <p><strong>Publicaciones:</strong> <?php echo htmlspecialchars($refugio['publicaciones'] ?? 'Sin publicaciones'); ?></p>
                         <div class="refugio-actions">
                             <a href="perfil_refugio.php?id=<?php echo $refugio['id_usuario']; ?>" class="btn btn-ver-perfil">Ver Perfil</a>
-                            <a href="enviar_mensaje.php?id_destinatario=<?php echo $refugio['id_usuario']; ?>" class="btn btn-enviar-mensaje">📩 Enviar Mensaje</a>
+                            <?php if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true && $_SESSION['id_usuario'] != $refugio['id_usuario']): ?>
+                                <a href="enviar_mensaje.php?id_destinatario=<?php echo $refugio['id_usuario']; ?>" class="btn btn-enviar-mensaje">📩 Enviar Mensaje</a>
+                            <?php endif; ?>
                         </div>
                     </div>
                 <?php endforeach; ?>

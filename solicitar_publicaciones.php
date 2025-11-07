@@ -43,7 +43,7 @@ $cargar_cantidad = isset($_GET['cargar_cantidad']) ? (int)$_GET['cargar_cantidad
 $limit_clause = "LIMIT {$cargar_apartir}, {$cargar_cantidad}";
 
 // --- CONSTRUCCIÓN FINAL DE LA CONSULTA ---
-$sql = "SELECT a.id_animal, a.nombre, a.especie, a.raza, a.imagen_url, a.estado, a.tamaño, a.edad, a.color,
+$sql = "SELECT a.id_animal, a.nombre, a.especie, a.raza, a.imagen_url, a.estado, a.tamaño, a.edad, a.color, a.genero,
                p.id_publicacion, p.id_usuario_publicador, p.titulo, p.contenido,
                u.es_refugio
         FROM publicaciones p 
@@ -89,7 +89,9 @@ while ($row = $result->fetch_assoc()) {
         'tamaño' => htmlspecialchars($row['tamaño'] ?? ''),
         'edad' => htmlspecialchars($row['edad'] ?? ''),
         'color' => htmlspecialchars($row['color'] ?? ''),
-        'contenido_corto' => nl2br(htmlspecialchars(substr($row['contenido'], 0, 100)))
+        'genero' => htmlspecialchars($row['genero'] ?? ''),
+        'contenido_corto' => nl2br(htmlspecialchars(substr($row['contenido'], 0, 100))),
+        'descripcion' => nl2br(htmlspecialchars($row['contenido'])) // Descripción completa para el modal
     ];
 }
 

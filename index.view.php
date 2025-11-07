@@ -62,6 +62,16 @@
             background-color: #6B8E9F;
             text-align: center;
         }
+        .animal-card .details-btn {
+            margin-top: 8px;
+            background-color: #f0f0f0;
+            color: #404040;
+            text-align: center;
+        }
+        .animal-card .details-btn:hover {
+            background-color: #e0e0e0;
+            color: #202020;
+        }
         .animal-card .report-btn {
             margin-top: auto;
             background-color: #A68A6B;
@@ -330,11 +340,56 @@
             <button id="cargar-mas" class="btn">Cargar Más</button>
         </div>
 
-
+    <!-- MODAL PARA VER DETALLES DEL ANIMAL -->
+    <div id="modal-detalles" class="modal-overlay" style="display: none;">
+        <div class="modal-content">
+            <button class="modal-close" onclick="cerrarModal()">&times;</button>
+            <div class="modal-body">
+                <img id="modal-imagen" src="" alt="Foto del animal" class="modal-img">
+                <div class="modal-info">
+                    <h2 id="modal-titulo"></h2>
+                    <p><strong>Nombre:</strong> <span id="modal-nombre"></span></p>
+                    <p><strong>Especie:</strong> <span id="modal-especie"></span></p>
+                    <p><strong>Raza:</strong> <span id="modal-raza"></span></p>
+                    <p><strong>Género:</strong> <span id="modal-genero"></span></p>
+                    <p><strong>Edad:</strong> <span id="modal-edad"></span></p>
+                    <p><strong>Tamaño:</strong> <span id="modal-tamano"></span></p>
+                    <p><strong>Color:</strong> <span id="modal-color"></span></p>
+                    <hr>
+                    <h3>Descripción</h3>
+                    <p id="modal-descripcion"></p>
+                </div>
+            </div>
+        </div>
     </div>
+    <style>
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; z-index: 1000; }
+        .modal-content { background: #fff; padding: 30px; border-radius: 10px; max-width: 800px; width: 90%; position: relative; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
+        .modal-close { position: absolute; top: 10px; right: 15px; font-size: 28px; font-weight: bold; border: none; background: none; cursor: pointer; }
+        .modal-body { display: flex; gap: 20px; }
+        .modal-img { width: 300px; height: 300px; object-fit: cover; border-radius: 8px; }
+        .modal-info h2 { margin-top: 0; }
+        .modal-info p { margin: 8px 0; }
+        @media (max-width: 768px) {
+            .modal-body { flex-direction: column; }
+            .modal-img { width: 100%; height: 250px; }
+        }
+    </style>
 
-    <!-- SECCIÓN DEL MAPA DE AVISTAMIENTOS -->
-    <div style="margin-bottom: 30px; margin-top: 40px;">
+    <script>
+    // Cerrar el modal si se hace clic fuera de él
+    window.onclick = function(event) {
+        const modal = document.getElementById('modal-detalles');
+        if (event.target == modal) {
+            cerrarModal();
+        }
+    }
+    </script>
+    
+    </div> <!-- Cierre de .main-content-wrapper -->
+
+        <!-- SECCIÓN DEL MAPA DE AVISTAMIENTOS -->
+        <div style="margin-bottom: 30px; margin-top: 40px;">
             <h2>¿Has visto a un animal perdido?</h2>
             <p>Explora el mapa para ver los últimos avistamientos y animales perdidos en tu zona. Cada marcador te muestra información importante para ayudar a reunirlos con sus familias.</p>
             <div style="display: flex; gap: 10px; margin-bottom: 15px;">
@@ -344,6 +399,8 @@
             <div id="mapa-avistamientos"></div>
         </div>
 
+    </div> <!-- Cierre de .container -->
+
     <?php include 'footer.php'; ?>
 
     <!-- Scripts para el mapa -->
@@ -351,6 +408,7 @@
     <script src="geolocalizacion.js"></script>
 
     <script src="Post_CargaAsync.js"></script>
+    <script src="funciones_js.js"></script>
     <script>
 
         let CargarIncremento = 5;
@@ -370,8 +428,13 @@
                         ${animal.tamano && animal.edad ? ' | ' : ''}
                         ${animal.edad ? animal.edad : ''}
                     </p>
-                    <p>${animal.contenido_corto}...</p>
-                    ${ (sessionData && sessionData.loggedin && sessionData.user && sessionData.user.id_usuario === animal.id_publicador)
+                    <p>${animal.contenido_corto}...</p>`
+                    // El botón de "Ver detalles" necesita todos los datos del animal.
+                    // Usamos JSON.stringify para pasar el objeto completo de forma segura.
+                    + `<a href="#" class="btn details-btn" onclick='ver_detalles(${JSON.stringify(animal)})'>Ver detalles</a>`
+                    +
+                    `
+                    ${ (sessionData && sessionData.loggedin && sessionData.user && parseInt(sessionData.user.id_usuario) === parseInt(animal.id_publicador))
                         ? '<span class="btn own-post-indicator">Es tu publicación</span>'
                         : (animal.estado === 'Perdido'
                             ? `<a href="reportar_avistamiento.php?id_animal=${animal.id_animal}" class="btn contact-btn report-btn">Reportar Avistamiento</a>`
