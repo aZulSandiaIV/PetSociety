@@ -137,4 +137,5 @@ function actualizarSesionAdmin(mysqli $conexion, int $id_usuario): void
         $_SESSION['is_admin'] = 0;
     }
 }
+
 ?>

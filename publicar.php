@@ -72,7 +72,6 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
                     <option value="Adopción">Dar en Adopción</option>
                     <option value="Hogar Temporal">Buscar Hogar Temporal</option>
                     <option value="Perdido">Reportar como Perdido</option>
-                    <option value="Encontrado">Reportar como Encontrado</option>
                 </select>
             </div>
 

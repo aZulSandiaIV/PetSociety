@@ -24,11 +24,17 @@ if ($stmt_refugio = $conexion->prepare($sql_refugio)) {
         header("location: refugios.php");
         exit;
     }
+    $result_refugio->free(); // Liberar el resultado de la consulta anterior
     $stmt_refugio->close();
 }
 
 // --- Obtener las publicaciones del refugio ---
-$sql_publicaciones = "SELECT p.id_publicacion, p.titulo, p.contenido, a.id_animal, a.nombre, a.estado, a.especie, a.raza, a.imagen_url FROM publicaciones p JOIN animales a ON p.id_animal = a.id_animal WHERE p.id_usuario_publicador = ? ORDER BY p.fecha_publicacion DESC";
+$sql_publicaciones = "SELECT p.id_publicacion, p.titulo, p.contenido, a.id_animal, a.nombre, a.estado, a.especie, a.raza, a.imagen_url 
+                      FROM publicaciones p 
+                      JOIN animales a ON p.id_animal = a.id_animal 
+                      WHERE p.id_usuario_publicador = ? 
+                      AND a.estado NOT IN ('Adoptado', 'Encontrado')
+                      ORDER BY p.fecha_publicacion DESC";
 $publicaciones = [];
 if ($stmt_publicaciones = $conexion->prepare($sql_publicaciones)) {
     $stmt_publicaciones->bind_param("i", $id_refugio);
@@ -136,10 +142,12 @@ $conexion->close();
                     </div>
                 </div>
                 <div class="refugio-actions">
-                    <a href="enviar_mensaje.php?id_destinatario=<?php echo $id_refugio; ?>" class="btn btn-primary">
-                        <i class="fas fa-paper-plane"></i>
-                        Enviar Mensaje
-                    </a>
+                    <?php if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true && $_SESSION['id_usuario'] != $id_refugio): ?>
+                        <a href="enviar_mensaje.php?id_destinatario=<?php echo $id_refugio; ?>" class="btn btn-primary">
+                            <i class="fas fa-paper-plane"></i>
+                            Enviar Mensaje
+                        </a>
+                    <?php endif; ?>
                 </div>
             </div>
         </div>
@@ -164,7 +172,7 @@ $conexion->close();
                                     <a href="reportar_avistamiento.php?id_animal=<?php echo $pub['id_animal']; ?>" class="btn contact-btn" style="background-color: #E57373;">Reportar Avistamiento</a>
                                 <?php else: ?>
                                     <?php if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true): ?>
-                                        <a href="enviar_mensaje.php?id_publicacion=<?php echo $pub['id_publicacion']; ?>" class="btn contact-btn">Contactar al Refugio</a>
+                                        <a href="enviar_mensaje.php?id_publicacion=<?php echo $pub['id_publicacion']; ?>" class="btn contact-btn">Contactar al Publicador</a>
                                     <?php else: ?>
                                         <a href="login.php" class="btn contact-btn">Inicia sesión para contactar</a>
                                     <?php endif; ?>

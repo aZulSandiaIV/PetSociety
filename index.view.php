@@ -273,7 +273,7 @@
             <h1>Estamos aqui para ayudarte a encontrar tu mascota</h1>
             <div class="hero-buttons">
                 <a href="publicar.php?estado=Perdido" class="hero-btn perdiste">Perdí a mi Mascota</a>
-                <a href="publicar.php?estado=Encontrado" class="hero-btn encontraste">Encontré una Mascota perdida</a>
+                <a href="reportar_avistamiento_mapa.php" class="hero-btn encontraste">Encontré una Mascota perdida</a>
             </div>
         </div>
         <div class="hero-image-wrapper">
@@ -454,6 +454,29 @@
             }
         });
         
+        // --- Lógica para Limpiar Filtros ---
+        document.addEventListener('DOMContentLoaded', function () {
+            const clearBtn = document.querySelector('.clear-filters-btn');
+            if (clearBtn) {
+                clearBtn.addEventListener('click', function (e) {
+                    e.preventDefault(); // Prevenir la navegación del enlace
+
+                    // Limpiar campo de búsqueda
+                    document.getElementById('search-filter').value = '';
+
+                    // Desmarcar todos los radio buttons
+                    const radioButtons = document.querySelectorAll('input[type="radio"]');
+                    radioButtons.forEach(radio => radio.checked = false);
+
+                    // Simular clic en "Aplicar filtros" para recargar las publicaciones sin filtros
+                    document.getElementById('apply-filters').click();
+
+                    // Opcional: hacer scroll a la sección de publicaciones
+                    document.getElementById('seccion-publicaciones').scrollIntoView({ behavior: 'smooth' });
+                });
+            }
+        });
+
 
     </script>
     
