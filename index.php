@@ -131,8 +131,9 @@ if ($result_perdidos = $conexion->query($sql_perdidos)) {
 $publicaciones_mapa = [];
 foreach ($animales as $animal) {
     if (isset($animal['latitud']) && isset($animal['longitud'])) {
-        // No incluimos los 'Perdido' porque ya se obtienen en su propia consulta
-        if ($animal['estado'] != 'Perdido') {
+        // No incluimos 'Perdido' (ya tiene su propia consulta) ni los que ya no están disponibles.
+        $estados_excluidos = ['Perdido', 'Adoptado', 'Encontrado'];
+        if (!in_array($animal['estado'], $estados_excluidos)) {
             $popup_html = "
                 <div style='text-align:center;'>
                     <img src='" . $animal['imagen'] . "' alt='Foto de " . $animal['nombre'] . "' style='width:150px; height:auto; border-radius:4px;'>
