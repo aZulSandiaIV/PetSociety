@@ -138,4 +138,105 @@ function actualizarSesionAdmin(mysqli $conexion, int $id_usuario): void
     }
 }
 
+/**
+ * Obtiene los datos para todos los marcadores del mapa.
+ *
+ * @param mysqli $conexion Objeto de conexión a la base de datos.
+ * @param array $animales Array de animales ya cargados en la página.
+ * @return array Un array con 'avistamientos_json', 'perdidos_json', y 'publicaciones_json'.
+ */
+function mapa_avistamientos(mysqli $conexion, array $animales): array
+{
+    $map_data = [
+        'avistamientos_json' => '[]',
+        'perdidos_json' => '[]',
+        'publicaciones_json' => '[]'
+    ];
+
+    // --- LÓGICA PARA EL MAPA DE AVISTAMIENTOS ---
+    $sql_avistamientos = "SELECT id_avistamiento, latitud, longitud, imagen_url, descripcion, fecha_avistamiento 
+                          FROM avistamientos 
+                          WHERE estado = 'Visto'
+                          ORDER BY fecha_avistamiento DESC
+                          LIMIT 50";
+
+    if ($result_avistamientos = $conexion->query($sql_avistamientos)) {
+        $avistamientos_mapa = [];
+        while ($row = $result_avistamientos->fetch_assoc()) {
+            $botones_avistamiento = '';
+            if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true) {
+                $botones_avistamiento = "
+                    <div style='margin-top:10px; display:flex; justify-content:space-around;'>
+                        <a href='actualizar_avistamiento.php?id={$row['id_avistamiento']}&accion=sigue_aqui' style='font-size:0.8em; padding: 4px 8px; background-color:#97BC62; color:white; text-decoration:none; border-radius:4px;'>Sigue Aquí</a>
+                        <a href='actualizar_avistamiento.php?id={$row['id_avistamiento']}&accion=no_esta' style='font-size:0.8em; padding: 4px 8px; background-color:#E57373; color:white; text-decoration:none; border-radius:4px;'>Ya no está</a>
+                    </div>";
+            }
+            $row['popup_html'] = "
+                <div>
+                    <img src='" . htmlspecialchars($row['imagen_url']) . "' alt='Avistamiento' style='width:150px; height:auto; border-radius:4px;'>
+                    <p>" . htmlspecialchars($row['descripcion']) . "</p>
+                    <small>Visto el: " . date('d/m/Y H:i', strtotime($row['fecha_avistamiento'])) . "</small>
+                    {$botones_avistamiento}
+                </div>
+            ";
+            $avistamientos_mapa[] = $row;
+        }
+        $map_data['avistamientos_json'] = json_encode($avistamientos_mapa);
+    }
+
+    // --- LÓGICA PARA EL MAPA DE REPORTES DE PERDIDOS ---
+    $sql_perdidos = "SELECT r.latitud, r.longitud, a.nombre, a.imagen_url, p.titulo, p.id_publicacion
+                     FROM reportes_perdidos r
+                     JOIN animales a ON r.id_animal = a.id_animal
+                     JOIN publicaciones p ON a.id_animal = p.id_animal
+                     WHERE r.latitud IS NOT NULL AND r.longitud IS NOT NULL AND a.estado = 'Perdido'
+                     ORDER BY p.fecha_publicacion DESC
+                     LIMIT 50";
+
+    if ($result_perdidos = $conexion->query($sql_perdidos)) {
+        $perdidos_mapa = [];
+        while ($row = $result_perdidos->fetch_assoc()) {
+            $row['popup_html'] = "
+                <div style='text-align:center;'>
+                    <img src='" . htmlspecialchars($row['imagen_url']) . "' alt='Foto de " . htmlspecialchars($row['nombre']) . "' style='width:150px; height:auto; border-radius:4px;'>
+                    <p><strong>¡SE BUSCA!</strong><br>" . htmlspecialchars($row['titulo']) . "</p>
+                </div>";
+            $perdidos_mapa[] = $row;
+        }
+        $map_data['perdidos_json'] = json_encode($perdidos_mapa);
+    }
+
+    // --- LÓGICA PARA EL MAPA DE PUBLICACIONES (ADOPCIÓN, HOGAR TEMPORAL, REFUGIOS) ---
+    // Esta parte se mantiene en index.php ya que depende de los resultados de la paginación principal.
+
+    return $map_data;
+}
+
+/**
+ * Prepara los datos de las publicaciones para ser mostrados en el mapa.
+ *
+ * @param array $animales Array de animales con sus datos.
+ * @return string JSON con los datos de los marcadores de publicaciones.
+ */
+function mapa_publicaciones(array $animales): string
+{
+    $publicaciones_mapa = [];
+    foreach ($animales as $animal) {
+        if (isset($animal['latitud']) && isset($animal['longitud'])) {
+            // No incluimos 'Perdido' (ya tiene su propia consulta) ni los que ya no están disponibles.
+            $estados_excluidos = ['Perdido', 'Adoptado', 'Encontrado'];
+            if (!in_array($animal['estado'], $estados_excluidos)) {
+                $popup_html = "
+                    <div style='text-align:center;'>
+                        <img src='" . $animal['imagen'] . "' alt='Foto de " . $animal['nombre'] . "' style='width:150px; height:auto; border-radius:4px;'>
+                        <p><strong>" . $animal['titulo'] . "</strong><br>(" . $animal['estado'] . ")</p>
+                    </div>";
+                
+                $publicaciones_mapa[] = [ 'latitud' => $animal['latitud'], 'longitud' => $animal['longitud'], 'popup_html' => $popup_html, 'es_refugio' => $animal['es_refugio'] ];
+            }
+        }
+    }
+    return json_encode($publicaciones_mapa);
+}
+
 ?>
