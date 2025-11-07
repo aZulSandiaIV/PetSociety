@@ -3,15 +3,9 @@ session_start();
 require_once "config.php";
 require_once "funciones.php";
 
-// --- Obtener todos los refugios ---
-$sql = "SELECT id_usuario, nombre, email, telefono, foto_perfil_url, (SELECT GROUP_CONCAT(p.titulo SEPARATOR ', ') FROM publicaciones p WHERE p.id_usuario_publicador = u.id_usuario) AS publicaciones FROM usuarios u WHERE es_refugio = 1";
-$refugios = [];
-if ($result = $conexion->query($sql)) {
-    while ($row = $result->fetch_assoc()) {
-        $refugios[] = $row;
-    }
-    $result->free();
-}
+// --- Obtener todos los refugios usando la nueva función ---
+$refugios = obtener_refugios($conexion);
+
 $conexion->close();
 ?>
 <!DOCTYPE html>
@@ -101,7 +95,7 @@ $conexion->close();
                         <h3><?php echo htmlspecialchars($refugio['nombre']); ?></h3>
                         <p><strong>Email:</strong> <?php echo htmlspecialchars($refugio['email']); ?></p>
                         <p><strong>Teléfono:</strong> <?php echo htmlspecialchars($refugio['telefono'] ?? 'No especificado'); ?></p>
-                        <p><strong>Publicaciones:</strong> <?php echo htmlspecialchars($refugio['publicaciones'] ?? 'Sin publicaciones'); ?></p>
+                        <p><strong>Publicaciones activas:</strong> <?php echo $refugio['num_publicaciones']; ?></p>
                         <div class="refugio-actions">
                             <a href="perfil_refugio.php?id=<?php echo $refugio['id_usuario']; ?>" class="btn btn-ver-perfil">Ver Perfil</a>
                             <?php if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true && $_SESSION['id_usuario'] != $refugio['id_usuario']): ?>
@@ -116,45 +110,11 @@ $conexion->close();
         </div>
     </div>
 
+    <script src="funciones_js.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
-            const navMenu = document.querySelector('.nav-menu');
-            const mobileUserMenu = document.querySelector('.mobile-user-menu');
-            
-            if (mobileMenuToggle && navMenu) {
-                mobileMenuToggle.addEventListener('click', function(e) {
-                    e.stopPropagation();
-                    navMenu.classList.toggle('active');
-                    mobileMenuToggle.classList.toggle('active');
-                });
-
-                document.addEventListener('click', function(event) {
-                    if (!navMenu.contains(event.target) && !mobileMenuToggle.contains(event.target)) {
-                        navMenu.classList.remove('active');
-                        mobileMenuToggle.classList.remove('active');
-                    }
-                });
-
-                const navLinks = navMenu.querySelectorAll('a');
-                navLinks.forEach(link => {
-                    link.addEventListener('click', function() {
-                        navMenu.classList.remove('active');
-                        mobileMenuToggle.classList.remove('active');
-                    });
-                });
-            }
-
-            if (mobileUserMenu) {
-                const userMenuTrigger = mobileUserMenu.querySelector('.user-menu-trigger');
-                if (userMenuTrigger) {
-                    userMenuTrigger.addEventListener('click', function(e) {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        mobileUserMenu.classList.toggle('active');
-                    });
-                }
-            }
+            // Llama a la función para la interactividad de los menús
+            interactividad_menus();
         });
     </script>
 

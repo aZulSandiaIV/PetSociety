@@ -298,10 +298,13 @@ function mapa_interactivo_index(avistamientos, perdidos, publicaciones) {
     mostrar_ubicacion_usuario('ver-mi-ubicacion');
 }
 
+
 /**
  * Devuelve el ID del usuario logueado desde la variable global sessionData.
  * @returns {number|null} El ID del usuario o null si no está logueado.
  */
+
+
 function verificar_id_usuario() {
     return (sessionData && sessionData.loggedin && sessionData.user) ? sessionData.user.id_usuario : null;
 }

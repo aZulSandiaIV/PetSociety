@@ -284,34 +284,67 @@ function mapa_publicaciones(array $animales): string
 function obtener_publicaciones(mysqli $conexion, array $filtros = []): array
 {
     // --- CONFIGURACIÓN DE FILTROS PERMITIDOS ---
-    $allowed_status_filters = ['Adopción', 'Hogar Temporal', 'Perdido'];
+    $allowed_filters = [
+        'status' => ['Adopción', 'Hogar Temporal', 'Perdido'],
+        'race'   => ['Perro', 'Gato', 'Otro'],
+        'size'   => ['Pequeño', 'Mediano', 'Grande']
+    ];
 
-    $where_Clause = '';
+    $where_clauses = ["a.estado NOT IN ('Adoptado', 'Encontrado')"];
 
-    if (isset($filtros['status']) && in_array($filtros['status'], $allowed_status_filters, true)) {
-        $filtro_estado = $conexion->real_escape_string($filtros['status']);
-        $where_Clause .= " WHERE p.tipo_publicacion = '{$filtro_estado}'";
-    } elseif (isset($filtros['filter_status_null']) && $filtros['filter_status_null'] === '1') {
-        $where_Clause = "";
-    } else {
-        $where_Clause .= " WHERE p.tipo_publicacion IN ('Adopción', 'Hogar Temporal', 'Perdido')";
+    // Filtro por estado
+    if (isset($filtros['status']) && in_array($filtros['status'], $allowed_filters['status'], true)) {
+        $where_clauses[] = "p.tipo_publicacion = '" . $conexion->real_escape_string($filtros['status']) . "'";
     }
 
+    // Filtro por especie (race)
+    if (isset($filtros['race']) && in_array($filtros['race'], $allowed_filters['race'], true)) {
+        $where_clauses[] = "a.especie = '" . $conexion->real_escape_string($filtros['race']) . "'";
+    }
+
+    // Filtro por tamaño (size)
+    if (isset($filtros['size']) && in_array($filtros['size'], $allowed_filters['size'], true)) {
+        $where_clauses[] = "a.tamaño = '" . $conexion->real_escape_string($filtros['size']) . "'";
+    }
+
+    // Filtro por búsqueda de texto
+    if (isset($filtros['search']) && !empty($filtros['search'])) {
+        $search_term = $conexion->real_escape_string($filtros['search']);
+        $where_clauses[] = "(p.titulo LIKE '%{$search_term}%' OR p.contenido LIKE '%{$search_term}%' OR a.nombre LIKE '%{$search_term}%' OR a.raza LIKE '%{$search_term}%')";
+    }
+
+    // Filtro por ID de publicador
+    if (isset($filtros['id_publicador']) && !empty($filtros['id_publicador'])) {
+        $where_clauses[] = "p.id_usuario_publicador = " . (int)$filtros['id_publicador'];
+    }
+
+    // --- PAGINACIÓN ---
+    $limit_clause = '';
+    if (isset($filtros['cargar_apartir'], $filtros['cargar_cantidad'])) {
+        $offset = (int)$filtros['cargar_apartir'];
+        $limit = (int)$filtros['cargar_cantidad'];
+        $limit_clause = "LIMIT {$offset}, {$limit}";
+    }
+    
     $sql = "SELECT a.id_animal, a.nombre, a.especie, a.raza, a.imagen_url, a.estado, a.tamaño, a.edad, a.color, a.genero,
                p.id_publicacion, p.id_usuario_publicador, p.titulo, p.contenido, p.latitud, p.longitud,
                u.es_refugio
             FROM publicaciones p 
             JOIN animales a ON p.id_animal = a.id_animal 
-            JOIN usuarios u ON p.id_usuario_publicador = u.id_usuario
-            {$where_Clause}
-            ORDER BY p.fecha_publicacion DESC";
+            JOIN usuarios u ON p.id_usuario_publicador = u.id_usuario";
+
+    if (!empty($where_clauses)) {
+        $sql .= " WHERE " . implode(' AND ', $where_clauses);
+    }
+
+    $sql .= " ORDER BY p.fecha_publicacion DESC " . $limit_clause;
 
     $animales = [];
     $result = $conexion->query($sql);
 
     if ($result) {
         while ($row = $result->fetch_assoc()) {
-            $animal = [
+            $animales[] = [
                 'id_animal' => $row['id_animal'],
                 'id_publicacion' => $row['id_publicacion'],
                 'id_publicador' => $row['id_usuario_publicador'],
@@ -325,12 +358,12 @@ function obtener_publicaciones(mysqli $conexion, array $filtros = []): array
                 'tamaño' => htmlspecialchars($row['tamaño'] ?? ''),
                 'edad' => htmlspecialchars($row['edad'] ?? ''),
                 'color' => htmlspecialchars($row['color'] ?? ''),
+                'genero' => htmlspecialchars($row['genero'] ?? ''),
                 'contenido_corto' => nl2br(htmlspecialchars(substr($row['contenido'], 0, 100))),
-                // --- FIX: Añadir latitud y longitud al array de retorno ---
+                'descripcion' => nl2br(htmlspecialchars($row['contenido'])), // Descripción completa para el modal
                 'latitud' => $row['latitud'],
                 'longitud' => $row['longitud']
             ];
-            $animales[] = $animal;
         }
         $result->free();
     }
@@ -362,12 +395,40 @@ function obtener_nombre_animal(mysqli $conexion, int $id_animal): ?string
     return $nombre;
 }
 
+
+/**
+ * Obtiene los datos de un refugio específico.
+ *
+ * @param mysqli $conexion Objeto de conexión a la base de datos.
+ * @param int $id_refugio ID del refugio a buscar.
+ * @return array|null Array con los datos del refugio o null si no se encuentra o no es un refugio.
+ */
+
+function obtener_datos_refugio(mysqli $conexion, int $id_refugio): ?array
+{
+    $sql = "SELECT nombre, email, telefono, foto_perfil_url FROM usuarios WHERE id_usuario = ? AND es_refugio = 1";
+    $refugio = null;
+    if ($stmt = $conexion->prepare($sql)) {
+        $stmt->bind_param("i", $id_refugio);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        if ($result->num_rows == 1) {
+            $refugio = $result->fetch_assoc();
+        }
+        $stmt->close();
+    }
+    return $refugio;
+}
+
+
 /**
  * Obtiene los últimos 50 avistamientos de la base de datos.
  *
  * @param mysqli $conexion Objeto de conexión a la base de datos.
  * @return string JSON con los datos de los últimos avistamientos.
  */
+
+
 function obtener_ultimos_avistamientos(mysqli $conexion): string
 {
     $sql = "SELECT latitud, longitud, imagen_url, descripcion, fecha_avistamiento 
@@ -389,5 +450,30 @@ function obtener_ultimos_avistamientos(mysqli $conexion): string
         $result->free();
     }
     return json_encode($avistamientos);
+}
+
+
+/**
+ * Obtiene una lista de todos los refugios registrados.
+ *
+ * @param mysqli $conexion Objeto de conexión a la base de datos.
+ * @return array Array con los datos de todos los refugios.
+ */
+
+function obtener_refugios(mysqli $conexion): array
+{
+    // La subconsulta ahora cuenta las publicaciones activas en lugar de concatenar títulos.
+    $sql = "SELECT id_usuario, nombre, email, telefono, foto_perfil_url, 
+                   (SELECT COUNT(p.id_publicacion) FROM publicaciones p JOIN animales a ON p.id_animal = a.id_animal WHERE p.id_usuario_publicador = u.id_usuario AND a.estado NOT IN ('Adoptado', 'Encontrado')) AS num_publicaciones 
+            FROM usuarios u 
+            WHERE es_refugio = 1";
+    $refugios = [];
+    if ($result = $conexion->query($sql)) {
+        while ($row = $result->fetch_assoc()) {
+            $refugios[] = $row;
+        }
+        $result->free();
+    }
+    return $refugios;
 }
 ?>

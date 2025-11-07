@@ -158,46 +158,10 @@ if ($destinatario_id == $_SESSION['id_usuario']) {
         </form>
     </div>
 
+    <script src="funciones_js.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
-            const navMenu = document.querySelector('.nav-menu');
-            const mobileUserMenu = document.querySelector('.mobile-user-menu');
-            
-            if (mobileMenuToggle && navMenu) {
-                mobileMenuToggle.addEventListener('click', function(e) {
-                    e.stopPropagation();
-                    navMenu.classList.toggle('active');
-                    mobileMenuToggle.classList.toggle('active');
-                });
-
-                document.addEventListener('click', function(event) {
-                    if (!navMenu.contains(event.target) && !mobileMenuToggle.contains(event.target)) {
-                        navMenu.classList.remove('active');
-                        mobileMenuToggle.classList.remove('active');
-                    }
-                });
-
-                const navLinks = navMenu.querySelectorAll('a');
-                navLinks.forEach(link => {
-                    link.addEventListener('click', function() {
-                        navMenu.classList.remove('active');
-                        mobileMenuToggle.classList.remove('active');
-                    });
-                });
-            }
-
-            if (mobileUserMenu) {
-                const userMenuTrigger = mobileUserMenu.querySelector('.user-menu-trigger');
-                if (userMenuTrigger) {
-                    userMenuTrigger.addEventListener('click', function(e) {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        mobileUserMenu.classList.toggle('active');
-                    });
-                }
-            }
-        });
+        // Llama a la función para la interactividad de los menús
+        interactividad_menus();
     </script>
 </body>
 </html>

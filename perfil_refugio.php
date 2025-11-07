@@ -10,58 +10,16 @@ if (!isset($_GET['id']) || empty($_GET['id'])) {
 
 $id_refugio = intval($_GET['id']);
 
-// --- Obtener datos del refugio ---
-$sql_refugio = "SELECT nombre, email, telefono, foto_perfil_url FROM usuarios WHERE id_usuario = ? AND es_refugio = 1";
-$refugio = null;
-if ($stmt_refugio = $conexion->prepare($sql_refugio)) {
-    $stmt_refugio->bind_param("i", $id_refugio);
-    $stmt_refugio->execute();
-    $result_refugio = $stmt_refugio->get_result();
-    if ($result_refugio->num_rows == 1) {
-        $refugio = $result_refugio->fetch_assoc();
-    } else {
-        // No se encontró el refugio, redirigir
-        header("location: refugios.php");
-        exit;
-    }
-    $result_refugio->free(); // Liberar el resultado de la consulta anterior
-    $stmt_refugio->close();
+// --- Obtener datos del refugio usando la nueva función ---
+$refugio = obtener_datos_refugio($conexion, $id_refugio);
+if ($refugio === null) {
+    // No se encontró el refugio o no es un refugio, redirigir
+    header("location: refugios.php");
+    exit;
 }
 
-// --- Obtener las publicaciones del refugio ---
-$sql_publicaciones = "SELECT p.id_publicacion, p.titulo, p.contenido, 
-                      a.id_animal, a.nombre, a.estado, a.especie, a.raza, a.imagen_url, a.genero, a.edad, a.tamaño, a.color
-                      FROM publicaciones p 
-                      JOIN animales a ON p.id_animal = a.id_animal 
-                      WHERE p.id_usuario_publicador = ? 
-                      AND a.estado NOT IN ('Adoptado', 'Encontrado')
-                      ORDER BY p.fecha_publicacion DESC";
-$publicaciones = [];
-if ($stmt_publicaciones = $conexion->prepare($sql_publicaciones)) {
-    $stmt_publicaciones->bind_param("i", $id_refugio);
-    $stmt_publicaciones->execute();
-    $result_publicaciones = $stmt_publicaciones->get_result();
-    while ($row = $result_publicaciones->fetch_assoc()) {
-        $publicaciones[] = [
-            'id_publicacion' => $row['id_publicacion'],
-            'id_publicador' => $id_refugio, // El publicador es el mismo refugio
-            'id_animal' => $row['id_animal'],
-            'titulo' => htmlspecialchars($row['titulo']),
-            'nombre' => htmlspecialchars($row['nombre']),
-            'estado' => htmlspecialchars($row['estado']),
-            'especie' => htmlspecialchars($row['especie']),
-            'raza' => htmlspecialchars($row['raza']),
-            'genero' => htmlspecialchars($row['genero'] ?? ''),
-            'edad' => htmlspecialchars($row['edad'] ?? ''),
-            'tamaño' => htmlspecialchars($row['tamaño'] ?? ''),
-            'color' => htmlspecialchars($row['color'] ?? ''),
-            'imagen' => $row['imagen_url'] ? htmlspecialchars($row['imagen_url']) : 'https://via.placeholder.com/300x200.png?text=Sin+Foto',
-            'contenido_corto' => nl2br(htmlspecialchars(substr($row['contenido'], 0, 100))),
-            'descripcion' => nl2br(htmlspecialchars($row['contenido'])) // Descripción completa para el modal
-        ];
-    }
-    $stmt_publicaciones->close();
-}
+// --- Obtener las publicaciones del refugio usando la función refactorizada ---
+$publicaciones = obtener_publicaciones($conexion, ['id_publicador' => $id_refugio]);
 
 $conexion->close();
 ?>
