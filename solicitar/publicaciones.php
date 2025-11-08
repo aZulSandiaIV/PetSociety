@@ -49,7 +49,7 @@
     }
     if (isset($_GET['user_id']) && is_numeric($_GET['user_id'])) {
         $filtro_usuario = (int)$_GET['user_id'];
-        $where_clauses[] = "p.id_usuario_publicador = {$filtro_usuario}";
+        $where_clauses[] = "p.id_usuario_publicador = {$filtro_usuario} ";
     }
 
     if (isset($_GET['date']) && is_numeric($_GET['date'])) {
