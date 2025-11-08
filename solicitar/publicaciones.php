@@ -62,6 +62,10 @@
         $where_clauses[] = "(p.titulo LIKE '%{$search_term}%' OR p.contenido LIKE '%{$search_term}%' OR a.nombre LIKE '%{$search_term}%' OR a.raza LIKE '%{$search_term}%')";
     }
 
+    if (isset($_GET['ubication']) && $_GET['ubication'] === '1') {
+        $where_clauses[] = "p.latitud IS NOT NULL AND p.longitud IS NOT NULL ";
+    }
+
 
     $sql = "SELECT a.id_animal, a.nombre, a.especie, a.raza, a.imagen_url, a.estado, a.tamaño, a.edad, a.color, a.genero,
                p.id_publicacion, p.id_usuario_publicador, p.titulo, p.contenido, p.latitud, p.longitud,

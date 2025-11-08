@@ -260,12 +260,21 @@ function mapa_interactivo_index(avistamientos, perdidos, publicaciones) {
         iconAnchor:   [16, 32],
         popupAnchor:  [0, -32]
     });
+    /*
+    cargar_datos('publicaciones', '?status=Perdido&ubication=1').then(perdido => {
+        perdido.forEach(perdido => {
+            L.marker([perdido.latitud, perdido.longitud], {icon: alertaIcon})
+                .addTo(mapa)
+                .bindPopup(perdido.popup_html);
+        });
+    });
+    */
     perdidos.forEach(perdido => {
         L.marker([perdido.latitud, perdido.longitud], {icon: alertaIcon})
             .addTo(mapa)
             .bindPopup(perdido.popup_html);
     });
-
+    
     // --- Marcadores de Publicaciones (Adopción, Hogar Temporal, Refugios) ---
     const adopcionIcon = L.icon({
         iconUrl: 'https://cdn-icons-png.flaticon.com/512/1077/1077035.png', // Icono de corazón

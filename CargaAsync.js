@@ -44,7 +44,7 @@ async function cargar_datos(directorio ,filtro = '') {
 
 // Ahora recibir una función 'renderCard'
 function mostrar_publicaciones(directorio, renderCard, container, filtro = '') {
-    console.log(directorio);
+
     cargar_datos(directorio, filtro).then(data => {
 
         if (!data || data.length === 0){
@@ -61,4 +61,16 @@ function mostrar_publicaciones(directorio, renderCard, container, filtro = '') {
 
     return true;
 }
-
+/* // Clase para manejar la carga de publicaciones
+    // No pude implementarlo, pero la idea estuvo aquí
+class PublicacionLoader {
+    constructor({ directorio, renderCard, container }) {
+        this.directorio = directorio;
+        this.renderCard = renderCard;
+        this.container = container;
+    }
+    load(filtro = '') {
+        return mostrar_publicaciones(this.directorio, this.renderCard, this.container, filtro);
+    }
+}
+*/
