@@ -4,7 +4,7 @@ let sessionData = null;
 // Exportar en caso de que se necesite en otro módulo
 (async () => {
     try {
-        const res = await fetch('session_check.php', { credentials: 'same-origin' });
+        const res = await fetch('solicitar/session_check.php', { credentials: 'same-origin' });
         const contentType = res.headers.get('content-type') || '';
         if (!contentType.includes('application/json')) {
             const txt = await res.text();
@@ -17,9 +17,9 @@ let sessionData = null;
     }
 })();
 
-async function cargar_publicaciones(filtro = '') {
+async function cargar_datos(directorio ,filtro = '') {
     try {
-        const response = await fetch('solicitar_publicaciones.php' + filtro);
+        const response = await fetch(`solicitar/${directorio}.php${filtro}`);
         
         if (response.status === 204) {
             return null;
@@ -28,7 +28,7 @@ async function cargar_publicaciones(filtro = '') {
         const contentType = response.headers.get('content-type') || '';
         if (!contentType.includes('application/json')) {
             const txt = await response.text();
-            console.error('solicitar_publicaciones.php returned non-JSON:', txt);
+            console.error('publicaciones.php returned non-JSON:', txt);
             return null;
         }
 
@@ -43,9 +43,9 @@ async function cargar_publicaciones(filtro = '') {
 }
 
 // Ahora recibir una función 'renderCard'
-function mostrar_publicaciones(renderCard, container, filtro = '') {
+function mostrar_publicaciones(directorio, renderCard, container, filtro = '') {
 
-    cargar_publicaciones(filtro).then(data => {
+    cargar_datos(directorio, filtro).then(data => {
 
         if (!data || data.length === 0){
             button.innerHTML = 'No hay más publicaciones';
@@ -61,4 +61,16 @@ function mostrar_publicaciones(renderCard, container, filtro = '') {
 
     return true;
 }
-
+/* // Clase para manejar la carga de publicaciones
+    // No pude implementarlo, pero la idea estuvo aquí
+class PublicacionLoader {
+    constructor({ directorio, renderCard, container }) {
+        this.directorio = directorio;
+        this.renderCard = renderCard;
+        this.container = container;
+    }
+    load(filtro = '') {
+        return mostrar_publicaciones(this.directorio, this.renderCard, this.container, filtro);
+    }
+}
+*/

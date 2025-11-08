@@ -91,11 +91,6 @@ function manejarCambioTipoPublicacion() {
  */
 
 
-function cargar_mas_publicaciones(renderCard, container, CargarApartirDe, CargarIncremento) {
-    mostrar_publicaciones(renderCard, container, construirFiltroParaCarga(CargarApartirDe, CargarIncremento));
-}
-
-
 /**
  * Limpia el contenedor y aplica los filtros seleccionados, reiniciando la paginación.
  * @param {function} renderCard - La función para renderizar una tarjeta.
@@ -118,7 +113,7 @@ function aplicar_filtros_publicaciones(renderCard, container, button, CargarIncr
     const CargarApartirDe = 0; // Reiniciar paginación
     
     // Mostrar las nuevas publicaciones filtradas
-    mostrar_publicaciones(renderCard, container, construirFiltroParaCarga(CargarApartirDe, CargarIncremento));
+    mostrar_publicaciones('publicaciones' ,renderCard, container, construirFiltroParaCarga(CargarApartirDe, CargarIncremento));
     
     return CargarApartirDe + CargarIncremento; // Devolvemos el siguiente punto de partida
 }

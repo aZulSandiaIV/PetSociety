@@ -406,7 +406,7 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="Geolocalizacion.js"></script>
 
-    <script src="Post_CargaAsync.js"></script>
+    <script src="js/CargaAsync.js"></script>
     <script src="funciones_js.js"></script>
     <script>
         let CargarIncremento = 5;
@@ -448,13 +448,13 @@
 
         // Carga inicial de publicaciones
         document.addEventListener('DOMContentLoaded', function() {
-            mostrar_publicaciones(renderCard, container, construirFiltroParaCarga(CargarApartirDe, CargarIncremento));
+            mostrar_publicaciones('publicaciones', renderCard, container, construirFiltroParaCarga(CargarApartirDe, CargarIncremento));
             CargarApartirDe += CargarIncremento;
         });
 
         // Botón "Cargar Más"
         button.addEventListener("click", function(){
-            cargar_mas_publicaciones(renderCard, container, CargarApartirDe, CargarIncremento);
+            mostrar_publicaciones('publicaciones', renderCard, container, construirFiltroParaCarga(CargarApartirDe, CargarIncremento));
             CargarApartirDe += CargarIncremento;
         });
 

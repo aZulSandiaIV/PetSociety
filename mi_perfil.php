@@ -61,7 +61,9 @@ $conexion->close();
     <?php if (isset($_SESSION['is_admin']) && $_SESSION['is_admin'] == 1): ?>
         <link rel="stylesheet" href="admin/admin.css">
     <?php endif; ?>
+    <script src="js/CargaAsync.js"></script>
 </head>
+    
 <body>
     <header>
         <div class="container">
@@ -129,7 +131,7 @@ $conexion->close();
         <div class="profile-section">
             <div class="profile-info">
                 <div class="profile-picture">
-<?php 
+                    <?php
                     $foto_perfil = obtenerFotoPerfil($usuario['foto_perfil_url'], $usuario['nombre'], $id_usuario);
                     if ($foto_perfil['tipo'] === 'foto'): 
                     ?>
@@ -218,48 +220,29 @@ $conexion->close();
             </div>
         </div>
 
-        <?php if (!empty($publicaciones)): ?>
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                <h2>Gestionar Mis Publicaciones</h2>
-                <a href="publicar.php" class="btn nueva-publicacion-btn">🐾 Nueva Publicación</a>
-            </div>
-            <?php foreach ($publicaciones as $pub): ?>
-                <div class="pub-card">
-                    <div class="pub-info">
-                        <h3><?php echo htmlspecialchars($pub['titulo']); ?> (<?php echo htmlspecialchars($pub['nombre']); ?>)</h3>
-                        <span class="pub-estado <?php if($pub['estado'] == 'Adoptado' || $pub['estado'] == 'Encontrado') echo 'estado-'.$pub['estado']; ?>">
-                            Estado: <?php echo htmlspecialchars($pub['estado']); ?>
-                        </span>
-                    </div>
-                    <div class="pub-actions">
-                        <?php if ($pub['estado'] == 'En Adopción'): ?>
-                            <a href="gestionar_adopcion.php?id_pub=<?php echo $pub['id_publicacion']; ?>&id_animal=<?php echo $pub['id_animal']; ?>" class="btn">Gestionar Adopción</a>
-                        <?php elseif ($pub['estado'] == 'Hogar Temporal'): ?>
-                            <a href="gestionar_adopcion.php?id_pub=<?php echo $pub['id_publicacion']; ?>&id_animal=<?php echo $pub['id_animal']; ?>" class="btn">Gestionar Hogar</a>
-                        <?php elseif ($pub['estado'] == 'Perdido'): ?>
-                            <form method="post" style="display: inline;">
-                                <a href="ver_reportes.php?id_animal=<?php echo $pub['id_animal']; ?>" class="btn" style="background-color: #97BC62;">Ver Avistamientos</a>
-                                <input type="hidden" name="id_animal" value="<?php echo $pub['id_animal']; ?>">
-                                <button type="submit" name="marcar_encontrado" class="btn" onclick="return confirm('¿Estás seguro de que has encontrado a tu mascota?');">Marcar como Encontrado</button>
-                            </form>
-                        <?php elseif ($pub['estado'] == 'Encontrado'): ?>
-                            <span>Publicación activa</span>
-                        <?php else: ?>
-                            <span>Gestión finalizada</span>
-                        <?php endif; ?>
-                    </div>
-                </div>
-            <?php endforeach; ?>
-        <?php else: ?>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
             <h2>Gestionar Mis Publicaciones</h2>
-            <div class="no-publications">
-                <h3>¡Aún no tienes publicaciones!</h3>
-                <p>Comienza a ayudar a las mascotas publicando tu primera historia.</p>
-                <a href="publicar.php" class="btn">🐾 Crear mi primera publicación</a>
-            </div>
-        <?php endif; ?>
+            <a href="publicar.php" class="btn nueva-publicacion-btn">🐾 Nueva Publicación</a>
+        </div>
+        
+        <div id="publications-section">
+            <!-- Las publicaciones se cargarán aquí dinámicamente -->
+        </div>
+        <div id="cargar-mas-btn">
+            <button id="cargar-mas-btn" class="btn load-more-btn">Cargar Más</button>
+        </div>                        
+
+        <!--
+        <h2>Gestionar Mis Publicaciones</h2>
+        <div class="no-publications">
+            <h3>¡Aún no tienes publicaciones!</h3>
+            <p>Comienza a ayudar a las mascotas publicando tu primera historia.</p>
+            <a href="publicar.php" class="btn">🐾 Crear mi primera publicación</a>
+        </div>
+                        -->
     </div>
 
+    <script src="js/mi_perfil.js"></script>
     <script>
         function enableEdit() {
             document.getElementById('profile-view').style.display = 'none';
