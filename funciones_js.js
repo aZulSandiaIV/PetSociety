@@ -235,3 +235,36 @@ function limpiar_filtros() {
 function verificar_id_usuario() {
     return (sessionData && sessionData.loggedin && sessionData.user) ? sessionData.user.id_usuario : null;
 }
+
+
+/* Filtros estilo menu hamburguesa para la version movil */
+
+function filtros_version_movil() {
+  
+  const toggleBtn = document.getElementById('mobile-filter-toggle');
+  const closeBtn = document.getElementById('mobile-filter-close');
+  const sidebar = document.querySelector('.filters-sidebar');
+  const overlay = document.getElementById('filter-overlay');
+
+  // Salir si los elementos no existen (para no dar error en otras páginas)
+  if (!toggleBtn || !closeBtn || !sidebar || !overlay) {
+    return;
+  }
+
+  const openFilters = () => {
+    sidebar.classList.add('active');
+    overlay.classList.add('active');
+    document.body.style.overflow = 'hidden'; // Evita scroll del body
+  };
+
+  const closeFilters = () => {
+    sidebar.classList.remove('active');
+    overlay.classList.remove('active');
+    document.body.style.overflow = ''; // Restaura scroll
+  };
+
+  toggleBtn.addEventListener('click', openFilters);
+  closeBtn.addEventListener('click', closeFilters);
+  overlay.addEventListener('click', closeFilters);
+
+}
