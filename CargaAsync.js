@@ -17,9 +17,9 @@ let sessionData = null;
     }
 })();
 
-async function cargar_publicaciones(filtro = '') {
+async function cargar_datos(directorio ,filtro = '') {
     try {
-        const response = await fetch('solicitar/publicaciones.php' + filtro);
+        const response = await fetch(`solicitar/${directorio}.php${filtro}`);
         
         if (response.status === 204) {
             return null;
@@ -43,9 +43,9 @@ async function cargar_publicaciones(filtro = '') {
 }
 
 // Ahora recibir una función 'renderCard'
-function mostrar_publicaciones(renderCard, container, filtro = '') {
-
-    cargar_publicaciones(filtro).then(data => {
+function mostrar_publicaciones(directorio, renderCard, container, filtro = '') {
+    console.log(directorio);
+    cargar_datos(directorio, filtro).then(data => {
 
         if (!data || data.length === 0){
             button.innerHTML = 'No hay más publicaciones';

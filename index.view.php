@@ -450,13 +450,13 @@
 
         // Carga inicial de publicaciones
         document.addEventListener('DOMContentLoaded', function() {
-            mostrar_publicaciones(renderCard, container, construirFiltroParaCarga(CargarApartirDe, CargarIncremento));
+            mostrar_publicaciones('publicaciones', renderCard, container, construirFiltroParaCarga(CargarApartirDe, CargarIncremento));
             CargarApartirDe += CargarIncremento;
         });
 
         // Botón "Cargar Más"
         button.addEventListener("click", function(){
-            cargar_mas_publicaciones(renderCard, container, CargarApartirDe, CargarIncremento);
+            mostrar_publicaciones('publicaciones', renderCard, container, construirFiltroParaCarga(CargarApartirDe, CargarIncremento));
             CargarApartirDe += CargarIncremento;
         });
 
