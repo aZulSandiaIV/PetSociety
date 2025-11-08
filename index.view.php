@@ -333,11 +333,9 @@
                 <button type="button" id="apply-filters" class="btn">Aplicar filtros</button>
                 
             </aside>
-        <div>
-            <div class="feed-container">
-                <!-- Las publicaciones se cargarán aquí dinámicamente -->
-            </div>
-            <button id="cargar-mas" class="btn">Cargar Más</button>
+        <div class="feed-wrapper content-main"> <!-- Usamos un nuevo wrapper para el feed y el botón -->
+            <div class="feed-container"></div>
+            <button id="cargar-mas" class="btn">Cargar Más</button> 
         </div>
 
     <!-- MODAL PARA VER DETALLES DEL ANIMAL -->
