@@ -140,22 +140,21 @@ function usar_ubicacion_actual(mapaInfo) {
  * @param {string} buttonId - El ID del botón que activa la geolocalización.
  */
 
-
 function mostrar_ubicacion_usuario(buttonId) {
     const boton = document.getElementById(buttonId);
-    if (boton) {
-        boton.addEventListener('click', function() {
-            this.textContent = 'Buscando...';
-            this.disabled = true;
-            
-            EXITO = function(position) {
-                PONER_EN_MAPA(position.coords.latitude, position.coords.longitude);
-                boton.textContent = 'Mostrar mi ubicación';
-                boton.disabled = false; // Reactivar el botón
-            };
-            OBTENER_POSICION_ACTUAL();
-        });
-    }
+    if (!boton) return; // Si el botón no existe en la página, no hacer nada.
+
+    boton.addEventListener('click', function() {
+        this.textContent = 'Buscando...';
+        this.disabled = true;
+        
+        EXITO = function(position) {
+            PONER_EN_MAPA(position.coords.latitude, position.coords.longitude);
+            boton.textContent = 'Mostrar mi ubicación';
+            boton.disabled = false; // Reactivar el botón
+        };
+        OBTENER_POSICION_ACTUAL();
+    });
 }
 
 
@@ -166,23 +165,76 @@ function mostrar_ubicacion_usuario(buttonId) {
  */
 
 
-function ver_avistamientos_mapa(mapId, avistamientosData) {
-    // La variable 'mapa' es global.
-    mapa = L.map(mapId).setView([-34.60, -58.38], 12); // Buenos Aires como ejemplo
+/**
+ * Inicializa el mapa interactivo en la página principal y añade marcadores.
+ * @param {string} avistamientosJsonString - JSON string de avistamientos.
+ * @param {string} perdidosJsonString - JSON string de animales perdidos.
+ * @param {string} publicacionesJsonString - JSON string de publicaciones (adopción/hogar temporal).
+ */
 
+
+function mapa_interactivo_index(avistamientos, perdidos, publicaciones) {
+    // La variable 'mapa' ahora es global (declarada en geolocalizacion.js)
+    mapa = L.map('mapa-avistamientos').setView([-34.60, -58.38], 12); // Zoom inicial más apropiado
+    
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(mapa);
 
-    if (avistamientosData && Array.isArray(avistamientosData)) {
-        avistamientosData.forEach(avistamiento => {
-            L.marker([avistamiento.latitud, avistamiento.longitud])
-                .addTo(mapa)
-                .bindPopup(avistamiento.popup_html);
-        });
-    }
-}
+    // --- Marcadores de Avistamientos (huella) ---
+    // Icono personalizado para avistamientos
+    const huellaIcon = L.icon({
+        iconUrl: 'https://cdn-icons-png.flaticon.com/512/12/12195.png',
+        iconSize:     [28, 28],
+        iconAnchor:   [16, 32],
+        popupAnchor:  [0, -32]
+    });
+    avistamientos.forEach(avistamiento => {
+        L.marker([avistamiento.latitud, avistamiento.longitud], {icon: huellaIcon})
+            .addTo(mapa)
+            .bindPopup(avistamiento.popup_html);
+    });
 
+    // --- Marcadores de Animales Perdidos (alerta) ---
+    // Icono personalizado para animales perdidos
+    const alertaIcon = L.icon({
+        iconUrl: 'https://cdn-icons-png.flaticon.com/512/753/753345.png',
+        iconSize:     [28, 28],
+        iconAnchor:   [16, 32],
+        popupAnchor:  [0, -32]
+    });
+    perdidos.forEach(perdido => {
+        L.marker([perdido.latitud, perdido.longitud], {icon: alertaIcon})
+            .addTo(mapa)
+            .bindPopup(perdido.popup_html);
+    });
+
+    // --- Marcadores de Publicaciones (Adopción, Hogar Temporal, Refugios) ---
+    const adopcionIcon = L.icon({
+        iconUrl: 'https://cdn-icons-png.flaticon.com/512/1077/1077035.png', // Icono de corazón
+        iconSize:     [28, 28],
+        iconAnchor:   [16, 32],
+        popupAnchor:  [0, -32]
+    });
+    const refugioIcon = L.icon({
+        iconUrl: 'https://cdn-icons-png.flaticon.com/512/619/619153.png', // Icono de casa
+        iconSize:     [28, 28],
+        iconAnchor:   [16, 32],
+        popupAnchor:  [0, -32]
+    });
+
+    publicaciones.forEach(pub => {
+        // Elegir el icono: si es refugio, el de refugio, si no, el de adopción
+        const icon = pub.es_refugio ? refugioIcon : adopcionIcon;
+
+        L.marker([pub.latitud, pub.longitud], {icon: icon})
+            .addTo(mapa)
+            .bindPopup(pub.popup_html);
+    });
+
+    // Llama a la función refactorizada para el botón de ubicación
+    mostrar_ubicacion_usuario('ver-mi-ubicacion');
+}
 
 /**
  * Configura un botón para obtener la ubicación del usuario y rellenar campos de un formulario.

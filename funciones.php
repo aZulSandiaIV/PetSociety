@@ -452,6 +452,37 @@ function obtener_ultimos_avistamientos(mysqli $conexion): string
     return json_encode($avistamientos);
 }
 
+/**
+ * Obtiene los últimos 50 perdidos de la base de datos.
+ *
+ * @param mysqli $conexion Objeto de conexión a la base de datos.
+ * @return string JSON con los datos de los últimos perdidos.
+ */
+function obtener_ultimos_perdidos(mysqli $conexion): string
+{
+    $sql = "SELECT r.latitud, r.longitud, a.nombre, a.imagen_url, p.titulo
+            FROM reportes_perdidos r
+            JOIN animales a ON r.id_animal = a.id_animal
+            JOIN publicaciones p ON a.id_animal = p.id_animal
+            WHERE r.latitud IS NOT NULL AND r.longitud IS NOT NULL AND a.estado = 'Perdido'
+            ORDER BY r.fecha_reporte DESC
+            LIMIT 50";
+
+    $perdidos = [];
+    if ($result = $conexion->query($sql)) {
+        while ($row = $result->fetch_assoc()) {
+            $row['popup_html'] = "
+                <div style='text-align:center;'>
+                    <img src='" . htmlspecialchars($row['imagen_url']) . "' alt='Foto de " . htmlspecialchars($row['nombre']) . "' style='width:150px; height:auto; border-radius:4px;'>
+                    <p><strong>¡SE BUSCA!</strong><br>" . htmlspecialchars($row['titulo']) . "</p>
+                    <small>Última vez visto cerca de aquí.</small>
+                </div>";
+            $perdidos[] = $row;
+        }
+        $result->free();
+    }
+    return json_encode($perdidos);
+}
 
 /**
  * Obtiene una lista de todos los refugios registrados.
