@@ -480,6 +480,7 @@
         // --- Lógica del Mapa ---
         // Llama a la función para la interactividad de los menús
         interactividad_menus();
+        filtros_version_movil();
 
         // Llama a la nueva función para inicializar el mapa
         mapa_interactivo_index(
