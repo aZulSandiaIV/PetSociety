@@ -408,7 +408,7 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="Geolocalizacion.js"></script>
 
-    <script src="Post_CargaAsync.js"></script>
+    <script src="CargaAsync.js"></script>
     <script src="funciones_js.js"></script>
     <script>
         let CargarIncremento = 5;

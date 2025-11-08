@@ -4,7 +4,7 @@ let sessionData = null;
 // Exportar en caso de que se necesite en otro módulo
 (async () => {
     try {
-        const res = await fetch('session_check.php', { credentials: 'same-origin' });
+        const res = await fetch('solicitar/session_check.php', { credentials: 'same-origin' });
         const contentType = res.headers.get('content-type') || '';
         if (!contentType.includes('application/json')) {
             const txt = await res.text();
@@ -19,7 +19,7 @@ let sessionData = null;
 
 async function cargar_publicaciones(filtro = '') {
     try {
-        const response = await fetch('solicitar_publicaciones.php' + filtro);
+        const response = await fetch('solicitar/publicaciones.php' + filtro);
         
         if (response.status === 204) {
             return null;
@@ -28,7 +28,7 @@ async function cargar_publicaciones(filtro = '') {
         const contentType = response.headers.get('content-type') || '';
         if (!contentType.includes('application/json')) {
             const txt = await response.text();
-            console.error('solicitar_publicaciones.php returned non-JSON:', txt);
+            console.error('publicaciones.php returned non-JSON:', txt);
             return null;
         }
 
