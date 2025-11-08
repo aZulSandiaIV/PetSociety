@@ -45,8 +45,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if ($stmt = $conexion->prepare($sql)) {
             $stmt->bind_param("ddssi", $latitud, $longitud, $imagen_url, $descripcion, $id_usuario);
             if ($stmt->execute()) {
-                echo "¡Gracias por tu ayuda! El reporte ha sido publicado en el mapa. Serás redirigido en 3 segundos.";
-                header("refresh:3;url=index.php");
+                header("Location: index.php");
+                exit;
             } else {
                 throw new Exception("Error al guardar el reporte en la base de datos.");
             }

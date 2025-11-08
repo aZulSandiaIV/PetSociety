@@ -95,9 +95,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $stmt->bind_param("sssssis", $nombre, $dni, $email, $telefono, $password_hash, $es_refugio, $foto_perfil_url);
 
                 if ($stmt->execute()) {
-                    echo "¡Registro exitoso! Serás redirigido a la página de inicio de sesión en 3 segundos.";
-                    header("refresh:3;url=login.php");
-                    exit();
+                    header("Location: login.php");
+                    exit;
                 } else {
                     $errors[] = "Algo salió mal al crear tu cuenta. Por favor, inténtalo de nuevo.";
                 }

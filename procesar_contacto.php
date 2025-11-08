@@ -30,10 +30,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $stmt->bind_param("ss", $email, $comentario);
 
             if ($stmt->execute()) {
-                // Éxito: redirigir o mostrar mensaje
-                echo "¡Gracias por tu comentario! Hemos recibido tu sugerencia. Serás redirigido en 5 segundos.";
-                header("refresh:5;url=index.php");
-                exit();
+               header("Location: index.php");
+               exit;
             } else {
                 $errors[] = "Algo salió mal al guardar tu comentario. Por favor, inténtalo de nuevo más tarde.";
             }

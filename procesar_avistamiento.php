@@ -23,8 +23,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // 'd' es para tipo double (decimal)
         $stmt->bind_param("iissdd", $id_animal, $id_usuario_reportador, $ultima_ubicacion, $caracteristicas, $latitud, $longitud);
         if ($stmt->execute()) {
-            echo "¡Gracias por tu ayuda! Tu reporte ha sido enviado al dueño. Serás redirigido en 3 segundos.";
-            header("refresh:3;url=index.php");
+            header("Location: index.php");
+            exit;
         } else {
             echo "Error al guardar el reporte.";
         }

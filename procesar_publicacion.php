@@ -125,8 +125,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             // Si todo fue bien, confirmar la transacción
             $conexion->commit();
-            echo "¡Publicación creada con éxito! Redirigiendo a la página principal...";
-            header("refresh:3;url=index.php");
+            header("Location: index.php");
+        
 
         } else {
             throw new Exception("Error al preparar la consulta de animal.");
