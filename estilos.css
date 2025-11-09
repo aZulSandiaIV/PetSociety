@@ -654,28 +654,6 @@ header #branding h1 {
     padding: 12px 0;
   }
 
-  .main-content-wrapper {
-    flex-direction: column;
-    gap: 20px;
-  }
-
-  .filters-sidebar {
-    width: 100%;
-    position: static;
-    max-height: none;
-    margin-bottom: 20px;
-    padding: 15px;
-  }
-
-  .filter-group {
-    width: 100%;
-    margin-right: 0;
-  }
-
-  .active-filters {
-    padding: 10px;
-  }
-
   header nav {
     min-width: auto;
   }

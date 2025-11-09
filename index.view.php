@@ -218,6 +218,26 @@
         header nav ul.nav-menu li {
             white-space: nowrap;
         }
+
+        /* Estilos para el botón de ocultar/mostrar filtros */
+        .btn-toggle-filters {
+            padding: 4px 12px;
+            font-size: 0.8rem;
+            background-color: #e0e0e0;
+            color: #404040;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        .btn-toggle-filters:hover {
+            background-color: #d0d0d0;
+        }
+
+        /* Clase para ocultar la barra lateral */
+        .filters-sidebar.hidden {
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -294,7 +314,10 @@
 
     <div class="container">
         <div id="seccion-publicaciones">
-            <h2>Encuentra a tu próximo compañero</h2>
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 20px;">
+                <h2>Encuentra a tu próximo compañero</h2>
+                <button id="toggle-filters-btn" class="btn-toggle-filters">Ocultar Filtros</button>
+            </div>
         </div>
 
         <div class="main-content-wrapper">
@@ -383,9 +406,7 @@
         }
     }
     </script>
-    
     </div> <!-- Cierre de .main-content-wrapper -->
-
         <!-- SECCIÓN DEL MAPA DE AVISTAMIENTOS -->
         <div style="margin-bottom: 30px; margin-top: 40px;">
             <h2>¿Has visto a un animal perdido?</h2>
@@ -397,8 +418,8 @@
             </div>
             <div id="mapa-avistamientos"></div>
         </div>
+</div> <!-- Cierre de .container -->
 
-    </div> <!-- Cierre de .container -->
 
     <?php include 'footer.php'; ?>
 
@@ -480,7 +501,9 @@
         // --- Lógica del Mapa ---
         // Llama a la función para la interactividad de los menús
         interactividad_menus();
-        filtros_version_movil();
+        
+        // Llama a la función para ocultar/mostrar filtros
+        ocultar_mostrar_filtros();
 
         // Llama a la nueva función para inicializar el mapa
         mapa_interactivo_index(
