@@ -232,34 +232,22 @@ function verificar_id_usuario() {
 }
 
 
-/* Filtros estilo menu hamburguesa para la version movil */
+function ocultar_mostrar_filtros() {
+    const toggleButton = document.getElementById('toggle-filters-btn');
+    const sidebar = document.querySelector('.filters-sidebar');
 
-function filtros_version_movil() {
-  
-  const toggleBtn = document.getElementById('mobile-filter-toggle');
-  const closeBtn = document.getElementById('mobile-filter-close');
-  const sidebar = document.querySelector('.filters-sidebar');
-  const overlay = document.getElementById('filter-overlay');
+    if (toggleButton && sidebar) {
+        toggleButton.addEventListener('click', () => {
+            sidebar.classList.toggle('hidden');
 
-  // Salir si los elementos no existen (para no dar error en otras páginas)
-  if (!toggleBtn || !closeBtn || !sidebar || !overlay) {
-    return;
-  }
-
-  const openFilters = () => {
-    sidebar.classList.add('active');
-    overlay.classList.add('active');
-    document.body.style.overflow = 'hidden'; // Evita scroll del body
-  };
-
-  const closeFilters = () => {
-    sidebar.classList.remove('active');
-    overlay.classList.remove('active');
-    document.body.style.overflow = ''; // Restaura scroll
-  };
-
-  toggleBtn.addEventListener('click', openFilters);
-  closeBtn.addEventListener('click', closeFilters);
-  overlay.addEventListener('click', closeFilters);
-
+            // Cambiar el texto del botón según el estado de la barra lateral
+            if (sidebar.classList.contains('hidden')) {
+                toggleButton.textContent = 'Mostrar Filtros';
+            } else {
+                toggleButton.textContent = 'Ocultar Filtros';
+            }
+        });
+    } else {
+        console.log("No se encontró el botón para ocultar/mostrar filtros o la barra lateral.");
+    }
 }
