@@ -173,8 +173,13 @@
             <h2>¿Has visto a un animal perdido?</h2>
             <p>Explora el mapa para ver los últimos avistamientos y animales perdidos en tu zona. Cada marcador te muestra información importante para ayudar a reunirlos con sus familias.</p>
             <div style="display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap;">
-                <button id="ver-mi-ubicacion" class="btn" style="width: auto;">Mostrar mi ubicación</button>
+                <button id="ver-mi-ubicacion" class="btn" style="width: auto;">Buscar por mi Zona</button>
                 <a href="reportar_avistamiento_mapa.php" class="btn" style="width: auto; background-color: #7A9BA8;">Reportar Callejero</a>
+            </div>
+            <div style="display:flex; gap:8px; align-items:center; margin-bottom:10px;">
+                <label for="rango-km" style="margin:0;">Rango (km):</label>
+                <input id="rango-km" type="range" min="1" max="200" value="1" />
+                <span id="rango-valor">50 km</span>
             </div>
             <div id="mapa-avistamientos"></div>
         </div>
