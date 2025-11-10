@@ -9,236 +9,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
     <link rel="stylesheet" href="estilos.css">
+    <link rel="stylesheet" href="index.css">
     <?php if (isset($_SESSION['is_admin']) && $_SESSION['is_admin'] == 1): ?>
         <link rel="stylesheet" href="admin/admin.css">
     <?php endif; ?>
-    <style>
-        /* Estilos específicos para el feed de animales */
-        .feed-container {
-            display: grid;
-            gsrid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 20px;
-        }
-        .animal-card {
-            background: #fff;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-            overflow: hidden; /* Para que la imagen no se salga de los bordes redondeados */
-            display: flex;
-            flex-direction: column;
-            transition: transform 0.2s ease-in-out;
-            font-family: 'Inter', sans-serif;
-        }
-        .animal-card:hover {
-            transform: translateY(-5px);
-        }
-        .animal-card img {
-            width: 100%;
-            height: 200px;
-            object-fit: cover; /* Asegura que la imagen cubra el espacio sin deformarse */
-        }
-        .animal-card-content {
-            padding: 20px;
-            background-color: rgba(255, 255, 255, 0.95);
-        }
-        .animal-card h3 {
-            color: #404040;
-            font-size: 1.3rem;
-            margin-bottom: 1px;
-            font-weight: bold;
-        }
-        .animal-card p {
-            color: #595959;
-            font-size: 0.95rem;
-            margin-bottom: 10px;
-            line-height: 1.5;
-        }
-        .animal-card .details {
-            color: #8C8C8C;
-            font-size: 0.9rem;
-        }
-        .animal-card .contact-btn {
-            margin-top: auto;
-            background-color: #6B8E9F;
-            text-align: center;
-        }
-        .animal-card .details-btn {
-            margin-top: 8px;
-            background-color: #f0f0f0;
-            color: #404040;
-            text-align: center;
-        }
-        .animal-card .details-btn:hover {
-            background-color: #e0e0e0;
-            color: #202020;
-        }
-        .animal-card .report-btn {
-            margin-top: auto;
-            background-color: #A68A6B;
-            text-align: center;
-        }
-        .animal-card .own-post-indicator {
-            margin-top: auto;
-            background-color: #D9D9D9;
-            cursor: default;
-        }
-        .refugio-tag {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background-color: #404040;
-            color: white;
-            padding: 3px 8px;
-            border-radius: 4px;
-            font-size: 0.75em;
-        }
-        /* Estilo para el mapa */
-        #mapa-avistamientos {
-            height: 500px; width: 100%; margin-bottom: 30px; border-radius: 8px; z-index: 20;
-        }
-
-        .hero-section {
-                background-color: #F2F2F2;
-                padding: 80px 0;
-        }
-        .hero-section .container {
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                gap: 60px;
-                width: 80%;
-        }
-        .hero-content {
-                flex: 1;
-                max-width: 600px;
-        }
-        .hero-content h1 {
-                color: #404040;
-                font-size: 2.5rem;
-                margin-bottom: 30px;
-                font-weight: bold;
-                line-height: 1.2;
-        }
-        .hero-buttons {
-                display: flex;
-                gap: 20px;
-        }
-        .hero-btn {
-                padding: 10px 24px;
-                color: white;
-                text-decoration: none;
-                font-size: 1.1rem;
-                font-weight: 600;
-                border-radius: 50px;
-                border: none;
-                cursor: pointer;
-                transition: all 0.3s ease;
-                display: inline-flex;
-                align-items: center;
-                justify-content: center;
-                text-align: center;
-        }
-        .hero-btn.perdiste {
-                background-color: #A68A6B;
-        }
-        .hero-btn.perdiste:hover {
-                background-color: #8F7354;
-                transform: translateY(-3px);
-                box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-        }
-        .hero-btn.encontraste {
-                background-color: #6B8E9F;
-        }
-        .hero-btn.encontraste:hover {
-                background-color: #5A7A8A;
-                transform: translateY(-3px);
-                box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-        }
-        .hero-image-wrapper {
-                flex: 1;
-                max-width: 500px;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-        }
-        .hero-image-wrapper img {
-                width: 100%;
-                max-width: 400px;
-                height: 400px;
-                object-fit: cover;
-                border-radius: 50%;
-        }
-        @media (max-width: 1400px) {
-                .hero-buttons {
-                        flex-direction: column;
-                        gap: 15px;
-                }
-                .hero-btn {
-                        max-width: 300px;
-                        width: 100%;
-                }
-        }
-        @media (max-width: 768px) {
-                .hero-section .container {
-                        flex-direction: column !important;
-                        gap: 40px !important;
-                }
-                .hero-content {
-                        max-width: 100% !important;
-                        text-align: center !important;
-                }
-                .hero-content h1 {
-                        font-size: 2rem !important;
-                }
-                .hero-buttons {
-                        flex-direction: column !important;
-                        gap: 15px !important;
-                        align-items: center !important;
-                }
-                .hero-image-wrapper {
-                        max-width: 100% !important;
-                }
-                .hero-image-wrapper img {
-                        max-width: 300px !important;
-                        height: 300px !important;
-                }
-        }
-         h1, h2, h3, h4, h5, h6
-         {
-             font-family: 'Inter', sans-serif;
-         }
-
-        button, .btn, a.button
-        {
-            font-family: 'Inter', sans-serif;
-            font-weight: 600;
-        }
-        
-        
-        header nav ul.nav-menu li {
-            white-space: nowrap;
-        }
-
-        /* Estilos para el botón de ocultar/mostrar filtros */
-        .btn-toggle-filters {
-            padding: 4px 12px;
-            font-size: 0.8rem;
-            background-color: #e0e0e0;
-            color: #404040;
-            border: none;
-            border-radius: 20px;
-            cursor: pointer;
-            font-weight: 600;
-        }
-        .btn-toggle-filters:hover {
-            background-color: #d0d0d0;
-        }
-
-        /* Clase para ocultar la barra lateral */
-        .filters-sidebar.hidden {
-            display: none;
-        }
-    </style>
 </head>
 <body>
 
@@ -300,7 +74,7 @@
 <div class="hero-section">
     <div class="container">
         <div class="hero-content">
-            <h1>Estamos aqui para ayudarte a encontrar tu mascota</h1>
+            <h1>Estamos aquí para ayudarte a encontrar tu mascota</h1>
             <div class="hero-buttons">
                 <a href="publicar.php?estado=Perdido" class="hero-btn perdiste">Perdí a mi Mascota</a>
                 <a href="reportar_avistamiento_mapa.php" class="hero-btn encontraste">Encontré una Mascota perdida</a>
@@ -383,19 +157,6 @@
             </div>
         </div>
     </div>
-    <style>
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; z-index: 1000; }
-        .modal-content { background: #fff; padding: 30px; border-radius: 10px; max-width: 800px; width: 90%; position: relative; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
-        .modal-close { position: absolute; top: 10px; right: 15px; font-size: 28px; font-weight: bold; border: none; background: none; cursor: pointer; }
-        .modal-body { display: flex; gap: 20px; }
-        .modal-img { width: 300px; height: 300px; object-fit: cover; border-radius: 8px; }
-        .modal-info h2 { margin-top: 0; }
-        .modal-info p { margin: 8px 0; }
-        @media (max-width: 768px) {
-            .modal-body { flex-direction: column; }
-            .modal-img { width: 100%; height: 250px; }
-        }
-    </style>
 
     <script>
     // Cerrar el modal si se hace clic fuera de él
@@ -426,7 +187,7 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="Geolocalizacion.js"></script>
 
-    <script src="Post_CargaAsync.js"></script>
+    <script src="js/CargaAsync.js"></script>
     <script src="funciones_js.js"></script>
     <script>
         let CargarIncremento = 5;
@@ -468,13 +229,13 @@
 
         // Carga inicial de publicaciones
         document.addEventListener('DOMContentLoaded', function() {
-            mostrar_publicaciones(renderCard, container, construirFiltroParaCarga(CargarApartirDe, CargarIncremento));
+            mostrar_publicaciones('publicaciones', renderCard, container, construirFiltroParaCarga(CargarApartirDe, CargarIncremento));
             CargarApartirDe += CargarIncremento;
         });
 
         // Botón "Cargar Más"
         button.addEventListener("click", function(){
-            cargar_mas_publicaciones(renderCard, container, CargarApartirDe, CargarIncremento);
+            mostrar_publicaciones('publicaciones', renderCard, container, construirFiltroParaCarga(CargarApartirDe, CargarIncremento));
             CargarApartirDe += CargarIncremento;
         });
 

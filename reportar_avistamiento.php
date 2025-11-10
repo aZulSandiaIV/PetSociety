@@ -22,6 +22,7 @@ if ($nombre_animal === null) {
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reportar Avistamiento de <?php echo htmlspecialchars($nombre_animal); ?></title>
     <!-- CSS de Leaflet para el mapa -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>

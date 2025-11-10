@@ -10,6 +10,7 @@ if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true) {
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registro - PetSociety</title>
     <link rel="stylesheet" href="estilos.css">
 </head>
@@ -20,7 +21,13 @@ if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true) {
                 <h1><a href="index.php"><img src="img/logo1.png" alt="PetSociety Logo" class="header-logo"></a><a href="index.php">PetSociety</a></h1>
             </div>
             <nav>
-                <ul>
+                <button class="mobile-menu-toggle" aria-label="Toggle menu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+                <ul class="nav-menu">
+                    <li><a href="index.php">Inicio</a></li>
                     <li><a href="login.php">Iniciar Sesión</a></li>
                     <li><a href="registro.php">Registrarse</a></li>
                     <li><a href="refugios.php">Refugios</a></li>
@@ -75,5 +82,11 @@ if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true) {
     </div>
     
     <?php include 'footer.php'; ?>
+
+    <script src="funciones_js.js"></script>
+    <script>
+        // Activar funcionalidad del menú hamburguesa
+        interactividad_menus();
+    </script>
 </body>
 </html>
