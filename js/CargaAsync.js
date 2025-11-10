@@ -48,7 +48,10 @@ function mostrar_publicaciones(directorio, renderCard, container, filtro = '') {
     cargar_datos(directorio, filtro).then(data => {
 
         if (!data || data.length === 0){
-            button.innerHTML = 'No hay más publicaciones';
+            if(directorio == 'publicaciones')
+                button.innerHTML = 'No hay más publicaciones';
+            else if (directorio == 'refugios')
+                button.innerHTML = 'No hay más refugios';
             button.disabled = true;
             return null;
         }
