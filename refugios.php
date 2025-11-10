@@ -19,6 +19,7 @@ $conexion->close();
         <link rel="stylesheet" href="admin/admin.css">
     <?php endif; ?>
     
+    <script src="js/CargaAsync.js"></script>
 </head>
 <body>
     <header>
@@ -107,9 +108,17 @@ $conexion->close();
             <?php else: ?>
                 <p>No hay refugios registrados por el momento.</p>
             <?php endif; ?>
+            
         </div>
+        
+        <div>
+            <button id="cargar-mas-btn" class="btn load-more-btn">Cargar Más</button>
+        </div> 
+
     </div>
 
+    
+    <script src="js/refugios.js"></script>
     <script src="funciones_js.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
