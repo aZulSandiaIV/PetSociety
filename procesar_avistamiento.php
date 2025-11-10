@@ -11,17 +11,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $id_usuario_reportador = $_SESSION['id_usuario'];
     $ultima_ubicacion = trim($_POST['ultima_ubicacion_vista']);
     $caracteristicas = trim($_POST['caracteristicas_distintivas']);
+    $latitud = !empty($_POST['latitud']) ? $_POST['latitud'] : null;
+    $longitud = !empty($_POST['longitud']) ? $_POST['longitud'] : null;
 
     if (empty($id_animal) || empty($ultima_ubicacion)) {
         die("Error: Faltan datos obligatorios.");
     }
 
-    $sql = "INSERT INTO reportes_perdidos (id_animal, id_usuario_reportador, ultima_ubicacion_vista, caracteristicas_distintivas) VALUES (?, ?, ?, ?)";
+    $sql = "INSERT INTO reportes_perdidos (id_animal, id_usuario_reportador, ultima_ubicacion_vista, caracteristicas_distintivas, latitud, longitud) VALUES (?, ?, ?, ?, ?, ?)";
     if ($stmt = $conexion->prepare($sql)) {
-        $stmt->bind_param("iiss", $id_animal, $id_usuario_reportador, $ultima_ubicacion, $caracteristicas);
+        // 'd' es para tipo double (decimal)
+        $stmt->bind_param("iissdd", $id_animal, $id_usuario_reportador, $ultima_ubicacion, $caracteristicas, $latitud, $longitud);
         if ($stmt->execute()) {
-            echo "¡Gracias por tu ayuda! Tu reporte ha sido enviado al dueño. Serás redirigido en 3 segundos.";
-            header("refresh:3;url=index.php");
+            header("Location: index.php");
+            exit;
         } else {
             echo "Error al guardar el reporte.";
         }

@@ -1,29 +1,22 @@
 <?php
+session_start();
 require_once "config.php";
 
-// Obtener los últimos 50 avistamientos (para no sobrecargar el mapa)
-$sql = "SELECT latitud, longitud, imagen_url, descripcion, fecha_avistamiento 
-        FROM avistamientos 
-        ORDER BY fecha_avistamiento DESC 
-        LIMIT 50";
+// --- LÓGICA PARA EL MAPA (replicando la del index.php) ---
 
-$avistamientos_json = "[]";
-if ($result = $conexion->query($sql)) {
-    $avistamientos = [];
-    while ($row = $result->fetch_assoc()) {
-        // Preparamos los datos para el popup del mapa
-        $row['popup_html'] = "
-            <div>
-                <img src='" . htmlspecialchars($row['imagen_url']) . "' alt='Avistamiento' style='width:150px; height:auto; border-radius:4px;'>
-                <p>" . htmlspecialchars($row['descripcion']) . "</p>
-                <small>Visto el: " . date('d/m/Y H:i', strtotime($row['fecha_avistamiento'])) . "</small>
-            </div>
-        ";
-        $avistamientos[] = $row;
-    }
-    $avistamientos_json = json_encode($avistamientos);
-}
+// 1. Obtener todas las publicaciones activas para los marcadores de adopción/refugio.
+$publicaciones = obtener_publicaciones($conexion, []);
+
+// 2. Obtener los datos de avistamientos y perdidos.
+$map_data = mapa_avistamientos($conexion, $publicaciones);
+$avistamientos_json = $map_data['avistamientos_json'];
+$perdidos_json = $map_data['perdidos_json'];
+
+// 3. Preparar los datos de las publicaciones para el mapa.
+$publicaciones_json = mapa_publicaciones($publicaciones);
+
 $conexion->close();
+
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -32,59 +25,94 @@ $conexion->close();
     <title>Mapa de Avistamientos - PetSociety</title>
     <link rel="stylesheet" href="estilos.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+    <?php if (isset($_SESSION['is_admin']) && $_SESSION['is_admin'] == 1): ?>
+        <link rel="stylesheet" href="admin/admin.css"> 
+    <?php endif; ?> 
     <style>
-        #mapa { height: 600px; width: 100%; }
+        #mapa-avistamientos { height: 600px; width: 100%; }
     </style>
 </head>
 <body>
     <header>
         <div class="container">
-            <div id="branding"><h1><a href="index.php">PetSociety</a></h1></div>
-            <nav><ul><li><a href="index.php">Inicio</a></li><li><a href="reportar_avistamiento_mapa.php" class="btn" style="color:white;padding:5px 10px;">Reportar Avistamiento</a></li></ul></nav>
+            <div id="branding">
+                <h1><a href="index.php"><img src="img/logo1.png" alt="PetSociety Logo" class="header-logo"></a><a href="index.php">PetSociety</a></h1>
+            </div>
+            <nav>
+                <button class="mobile-menu-toggle" aria-label="Toggle menu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+                <ul class="nav-menu">
+                    <?php if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true): ?>
+                        <li><a href="index.php">Inicio</a></li>
+                        <li><a href="refugios.php">Refugios</a></li>
+                        <li><a href="buzon.php">Mensajes</a></li>
+                        <?php if (isset($_SESSION['is_admin']) && $_SESSION['is_admin'] == 1): ?>
+                            <li class="admin-panel-dropdown">
+                                <span class="admin-panel-trigger">Panel de Administrador</span>
+                                <div class="admin-submenu">
+                                    <ul>
+                                        <li><a href="admin/statistics.php">Estadísticas</a></li>
+                                        <li><a href="admin/manage_publications.php">Administrar Publicaciones</a></li>
+                                    </ul>
+                                </div>
+                            </li>
+                        <?php endif; ?>
+                    <?php else: ?>
+                        <li><a href="login.php">Iniciar Sesión</a></li>
+                        <li><a href="registro.php">Registrarse</a></li>
+                        <li><a href="refugios.php">Refugios</a></li>
+                    <?php endif; ?>
+                    <?php if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true): ?>
+                        <li class="user-menu mobile-user-menu">
+                            <span class="user-menu-trigger">
+                                <span class="user-icon"></span>
+                                <span class="user-name"><?php echo htmlspecialchars($_SESSION["nombre"]); ?></span>
+                            </span>
+                            <div class="dropdown-menu">
+                                <ul>
+                                    <?php if (isset($_SESSION['is_admin']) && $_SESSION['is_admin'] == 1): ?>
+                                        <li><a href="admin/statistics.php" class="admin-panel-link">Panel Admin</a></li>
+                                    <?php endif; ?>
+                                    <li><a href="mi_perfil.php">Mi Perfil</a></li>
+                                    <li><a href="logout.php">Cerrar Sesión</a></li>
+                                </ul>
+                            </div>
+                        </li>
+                    <?php endif; ?>
+                </ul>
+            </nav>
         </div>
     </header>
 
     <div class="container">
-        <h2>Mapa de Avistamientos Recientes</h2>
-        <p>Estos son los últimos avistamientos reportados. Haz clic en un marcador para ver los detalles o usa el botón para ver tu posición.</p>
+        <h2>Mapa Completo</h2>
+        <p>Explora el mapa para ver todas las publicaciones: animales en adopción , refugios , mascotas perdidas  y avistamientos de callejeros.</p>
         <button id="ver-mi-ubicacion" class="btn" style="margin-bottom: 15px; width: auto;">Mostrar mi ubicación</button>
-        <div id="mapa"></div>
+        <div id="mapa-avistamientos"></div>
     </div>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <!-- Incluimos tu script de geolocalización -->
-    <script src="geolocalizacion.js"></script>
+     <script src="Geolocalizacion.js"></script>
+    <!-- Incluimos el script de funciones JS para el menú -->
+    <script src="funciones_js.js"></script>
 
     <script>
-        // --- Lógica del Mapa ---
-        // Inicializa el mapa centrado en una ubicación genérica
-        const mapa = L.map('mapa').setView([-34.60, -58.38], 12); // Buenos Aires como ejemplo
+        document.addEventListener('DOMContentLoaded', function() {
+            // Llama a la función del mapa interactivo, pasándole los datos.
+            // Como esta página no muestra publicaciones, se pasa un array vacío [].
+            mapa_interactivo_index(
+                <?php echo $avistamientos_json; ?>,
+                <?php echo $perdidos_json; ?>,
+                <?php echo $publicaciones_json; ?>
+            );
 
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        }).addTo(mapa);
-
-        const avistamientos = <?php echo $avistamientos_json; ?>;
-
-        avistamientos.forEach(avistamiento => {
-            L.marker([avistamiento.latitud, avistamiento.longitud])
-                .addTo(mapa)
-                .bindPopup(avistamiento.popup_html);
+            // Llama a la función para la interactividad de los menús
+            interactividad_menus();
         });
-
-        // --- Lógica para mostrar la ubicación del usuario ---
-        document.getElementById('ver-mi-ubicacion').addEventListener('click', function() {
-            this.textContent = 'Buscando...';
-            this.disabled = true;
-            
-            // Definimos la función que se ejecutará cuando se obtenga la ubicación
-            const miCallbackDeExito = function(position) {
-                ponerEnMapa(position.coords.latitude, position.coords.longitude, mapa);
-            };
-
-            geolocalizador.obtenerPosicionActual(miCallbackDeExito);
-        });
-
     </script>
 </body>
 </html>

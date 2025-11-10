@@ -52,25 +52,61 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     // Si no hay errores, proceder con la inserción
     if (empty($errors)) {
-        $sql = "INSERT INTO usuarios (nombre, dni, email, telefono, password_hash, es_refugio, is_admin) VALUES (?, ?, ?, ?, ?, ?, 0)";
+        // --- Manejo de la foto de perfil ---
+        $foto_perfil_url = null; // Por defecto, no hay foto
 
-        if ($stmt = $conexion->prepare($sql)) {
-            // Hashear la contraseña
-            $password_hash = password_hash($password, PASSWORD_DEFAULT);
-
-            $stmt->bind_param("sssssi", $nombre, $dni, $email, $telefono, $password_hash, $es_refugio);
-
-            if ($stmt->execute()) {
-                // Redirigir a la página de login con un mensaje de éxito
-                echo "¡Registro exitoso! Serás redirigido a la página de inicio de sesión en 3 segundos.";
-                header("refresh:3;url=login.php");
-                exit();
-            } else {
-                echo "Algo salió mal. Por favor, inténtalo de nuevo más tarde.";
+        // 1. Verificar si se subió un archivo y no hubo errores
+        if (isset($_FILES['foto_perfil']) && $_FILES['foto_perfil']['error'] == UPLOAD_ERR_OK) {
+            $directorio_subidas = 'uploads/perfiles/';
+            
+            // 2. Crear el directorio si no existe
+            if (!is_dir($directorio_subidas)) {
+                mkdir($directorio_subidas, 0777, true);
             }
-            $stmt->close();
+
+            // 3. Validar el archivo (tipo y tamaño)
+            $nombre_archivo = uniqid('perfil_') . '-' . basename($_FILES["foto_perfil"]["name"]);
+            $ruta_archivo = $directorio_subidas . $nombre_archivo;
+            $tipo_archivo = strtolower(pathinfo($ruta_archivo, PATHINFO_EXTENSION));
+            $extensiones_validas = ["jpg", "jpeg", "png", "gif"];
+
+            if (!in_array($tipo_archivo, $extensiones_validas)) {
+                $errors[] = "El formato de la foto de perfil no es válido. Solo se permiten JPG, PNG o GIF.";
+            } elseif ($_FILES["foto_perfil"]["size"] > 5 * 1024 * 1024) { // Límite de 5MB
+                $errors[] = "La foto de perfil es demasiado grande (máximo 5MB).";
+            }
+
+            // 4. Mover el archivo si es válido
+            if (empty($errors)) {
+                if (move_uploaded_file($_FILES["foto_perfil"]["tmp_name"], $ruta_archivo)) {
+                    $foto_perfil_url = $ruta_archivo; // Guardamos la ruta para la base de datos
+                } else {
+                    $errors[] = "Hubo un error al guardar la foto de perfil.";
+                }
+            }
         }
-    } else {
+
+        // --- Inserción en la base de datos (solo si no hubo errores) ---
+        if (empty($errors)) {
+            $sql = "INSERT INTO usuarios (nombre, dni, email, telefono, password_hash, es_refugio, foto_perfil_url, is_admin) VALUES (?, ?, ?, ?, ?, ?, ?, 0)";
+
+            if ($stmt = $conexion->prepare($sql)) {
+                $password_hash = password_hash($password, PASSWORD_DEFAULT);
+                $stmt->bind_param("sssssis", $nombre, $dni, $email, $telefono, $password_hash, $es_refugio, $foto_perfil_url);
+
+                if ($stmt->execute()) {
+                    header("Location: login.php");
+                    exit;
+                } else {
+                    $errors[] = "Algo salió mal al crear tu cuenta. Por favor, inténtalo de nuevo.";
+                }
+                $stmt->close();
+            }
+        }
+    }
+    
+    // Si hubo algún error (de validación o de subida de archivo), se muestra aquí
+    if (!empty($errors)) {
         // Mostrar errores
         echo '<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><title>Error de Registro</title><link rel="stylesheet" href="estilos.css"></head><body>';
         echo '<div class="form-container">';

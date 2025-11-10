@@ -14,10 +14,25 @@ if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true) {
     <link rel="stylesheet" href="estilos.css">
 </head>
 <body>
+    <header>
+        <div class="container">
+            <div id="branding">
+                <h1><a href="index.php"><img src="img/logo1.png" alt="PetSociety Logo" class="header-logo"></a><a href="index.php">PetSociety</a></h1>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="login.php">Iniciar Sesión</a></li>
+                    <li><a href="registro.php">Registrarse</a></li>
+                    <li><a href="refugios.php">Refugios</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
     <div class="form-container">
         <h2>Crear una Cuenta</h2>
         <p>Completa este formulario para registrarte.</p>
-        <form action="procesar_registro.php" method="post">
+        <form action="procesar_registro.php" method="post" enctype="multipart/form-data">
             <div class="form-group">
                 <label>Nombre Completo</label>
                 <input type="text" name="nombre" required>
@@ -43,6 +58,11 @@ if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true) {
                 <input type="password" name="confirm_password" required minlenght="6">
             </div>
             <div class="form-group">
+                <label>Foto de Perfil (Opcional)</label>
+                <input type="file" name="foto_perfil" accept="image/jpeg, image/png, image/gif">
+                <small>Sube una imagen para tu perfil. No es obligatorio.</small>
+            </div>
+            <div class="form-group">
                 <label for="es_refugio" style="display: flex; align-items: center; gap: 10px;">
                     <input type="checkbox" name="es_refugio" id="es_refugio" value="1" style="width: auto;"> Registrarse como Refugio
                 </label>
@@ -53,5 +73,7 @@ if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true) {
             <p>¿Ya tienes una cuenta? <a href="login.php">Inicia sesión aquí</a>.</p>
         </form>
     </div>
+    
+    <?php include 'footer.php'; ?>
 </body>
 </html>

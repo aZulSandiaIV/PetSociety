@@ -48,26 +48,36 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             $_SESSION["loggedin"] = true;
                             $_SESSION["id_usuario"] = $id;
                             $_SESSION["nombre"] = $nombre;
+                            $_SESSION["email"] = $email;
                             $_SESSION["is_admin"] = $is_admin;
                             $_SESSION["es_refugio"] = $es_refugio;
                             
                             // Redirigir según el rol
                             if ($is_admin == 1) {
-                                header("location: admin/index.php");
+                                // Redirigir al index principal, que ya tiene lógica para mostrar el panel de admin.
+                                header("location: index.php");
                             } else {
                                 header("location: index.php");
                             }
                         } else {
-                            // Mostrar un error si la contraseña no es válida
-                            echo "La contraseña que ingresaste no es válida.";
+                            // Contraseña incorrecta
+                            $_SESSION['login_error'] = "Datos incorrectos, revise su información";
+                            $_SESSION['login_email'] = $email;
+                            header("location: login.php");
+                            exit;
                         }
                     }
                 } else {
-                    // Mostrar un error si el email no existe
-                    echo "No se encontró ninguna cuenta con ese email.";
+                    // Email no existe
+                    $_SESSION['login_error'] = "Datos incorrectos, revise su información";
+                    $_SESSION['login_email'] = $email;
+                    header("location: login.php");
+                    exit;
                 }
             } else {
-                echo "¡Ups! Algo salió mal. Por favor, inténtalo de nuevo más tarde.";
+                $_SESSION['login_error'] = "¡Ups! Algo salió mal. Por favor, inténtalo de nuevo más tarde.";
+                header("location: login.php");
+                exit;
             }
             $stmt->close();
         }
