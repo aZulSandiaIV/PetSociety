@@ -1,7 +1,7 @@
 <?php
     include "../config.php";
 
-    $sql = "SELECT id_usuario, nombre, email, telefono, foto_perfil_url, 
+    $sql = "SELECT id_usuario, nombre, email, telefono, foto_perfil_url as foto, 
                    (SELECT COUNT(p.id_publicacion) FROM publicaciones p JOIN animales a ON p.id_animal = a.id_animal WHERE p.id_usuario_publicador = u.id_usuario AND a.estado NOT IN ('Adoptado', 'Encontrado')) AS num_publicaciones 
             FROM usuarios u 
             WHERE es_refugio = 1";
@@ -10,16 +10,16 @@
 
     if ($result = $conexion->query($sql)) {
         while ($row = $result->fetch_assoc()) {
-            $refugios[] = $row;
-            if (!empty($row['foto_perfil_url']) && file_exists($$row['foto_perfil_url'])) {
-                $refugios['foto_perfil'] = [
+            
+            if (!empty($row['foto']) && file_exists($row['foto'])) {
+                $row['foto'] = [
                     'tipo' => 'foto',
-                    'url' => $row['foto_perfil_url'],
+                    'url' => $row['foto'],
                     'iniciales' => '',
                     'color' => ''
                 ];
             }else{
-                $refugio['foto_perfil'] = [
+                $row['foto'] = [
                     'tipo' => 'avatar',
                     'url' => '',
                     'iniciales' => generarIniciales($row['nombre']),
@@ -27,7 +27,7 @@
                 ];    
             }
             
-            
+            $refugios[] = $row;
         }
         $result->free();
     }
