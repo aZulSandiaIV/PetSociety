@@ -160,30 +160,16 @@ function mostrar_ubicacion_usuario(buttonId) {
 
 
 /**
- * Inicializa un mapa y muestra los marcadores de avistamientos.
- * @param {string} mapId - El ID del div contenedor del mapa.
- * @param {Array} avistamientosData - Un array de objetos de avistamiento.
+ * Define los iconos y añade los marcadores de avistamientos, perdidos y publicaciones al mapa.
+ * @param {L.Map} mapa - La instancia del mapa de Leaflet.
+ * @param {Array} avistamientos - Array de datos de avistamientos.
+ * @param {Array} perdidos - Array de datos de animales perdidos.
+ * @param {Array} publicaciones - Array de datos de publicaciones.
  */
 
 
-/**
- * Inicializa el mapa interactivo en la página principal y añade marcadores.
- * @param {string} avistamientosJsonString - JSON string de avistamientos.
- * @param {string} perdidosJsonString - JSON string de animales perdidos.
- * @param {string} publicacionesJsonString - JSON string de publicaciones (adopción/hogar temporal).
- */
-
-
-function mapa_interactivo_index(avistamientos, perdidos, publicaciones) {
-    // La variable 'mapa' ahora es global (declarada en geolocalizacion.js)
-    mapa = L.map('mapa-avistamientos').setView([-34.60, -58.38], 12); // Zoom inicial más apropiado
-    
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-    }).addTo(mapa);
-
+function poblado_y_marcadores_mapa(mapa, avistamientos, perdidos, publicaciones) {
     // --- Marcadores de Avistamientos (huella) ---
-    // Icono personalizado para avistamientos
     const huellaIcon = L.icon({
         iconUrl: 'https://cdn-icons-png.flaticon.com/512/12/12195.png',
         iconSize:     [28, 28],
@@ -197,7 +183,6 @@ function mapa_interactivo_index(avistamientos, perdidos, publicaciones) {
     });
 
     // --- Marcadores de Animales Perdidos (alerta) ---
-    // Icono personalizado para animales perdidos
     const alertaIcon = L.icon({
         iconUrl: 'https://cdn-icons-png.flaticon.com/512/753/753345.png',
         iconSize:     [28, 28],
@@ -223,19 +208,51 @@ function mapa_interactivo_index(avistamientos, perdidos, publicaciones) {
         iconAnchor:   [16, 32],
         popupAnchor:  [0, -32]
     });
-
     publicaciones.forEach(pub => {
-        // Elegir el icono: si es refugio, el de refugio, si no, el de adopción
         const icon = pub.es_refugio ? refugioIcon : adopcionIcon;
-
         L.marker([pub.latitud, pub.longitud], {icon: icon})
             .addTo(mapa)
             .bindPopup(pub.popup_html);
     });
+}
+
+
+/**
+ * Inicializa un mapa y muestra los marcadores de avistamientos.
+ * @param {string} mapId - El ID del div contenedor del mapa.
+ * @param {Array} avistamientosData - Un array de objetos de avistamiento.
+ */
+
+
+/**
+ * Inicializa el mapa interactivo en la página principal y añade marcadores.
+ * @param {string} avistamientosJsonString - JSON string de avistamientos.
+ * @param {string} perdidosJsonString - JSON string de animales perdidos.
+ * @param {string} publicacionesJsonString - JSON string de publicaciones (adopción/hogar temporal).
+ */
+
+
+function mapa_interactivo_index(avistamientos, perdidos, publicaciones) {
+    // La variable 'mapa' ahora es global (declarada al inicio del archivo)
+    mapa = L.map('mapa-avistamientos').setView([-34.60, -58.38], 12); // Zoom inicial más apropiado
+    
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(mapa);
+
+    // Llama a la nueva función para añadir todos los marcadores
+    poblado_y_marcadores_mapa(mapa, avistamientos, perdidos, publicaciones);
 
     // Llama a la función refactorizada para el botón de ubicación
     mostrar_ubicacion_usuario('ver-mi-ubicacion');
 }
+
+/**
+ * Orquesta la creación y población del mapa de avistamientos en la página principal.
+ * @param {Array} avistamientos - Array de datos de avistamientos.
+ * @param {Array} perdidos - Array de datos de animales perdidos.
+ * @param {Array} publicaciones - Array de datos de publicaciones.
+ */
 
 /**
  * Configura un botón para obtener la ubicación del usuario y rellenar campos de un formulario.
