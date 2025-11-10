@@ -7,7 +7,6 @@
         cargar_apartir: desde que registro cargar
         cargar_cantidad: cantidad de registros a cargar
         status: filtro por estado de publicacion (En Adopción, Hogar Temporal, Perdido)
-        refugio: si es 1, filtra solo publicaciones de refugios
         race: filtro por raza (Perro, Gato, Otro)
         size: filtro por tamaño (Pequeño, Mediano, Grande)
         user_id: filtro por id de usuario publicador
