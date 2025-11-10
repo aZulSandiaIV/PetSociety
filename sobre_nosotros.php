@@ -5,6 +5,7 @@ session_start();
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sobre Nosotros - PetSociety</title>
     <link rel="stylesheet" href="estilos.css">
     <link rel="stylesheet" href="sobre_nosotros.css">
@@ -17,12 +18,28 @@ session_start();
                 <h1><a href="index.php"><img src="img/logo1.png" alt="PetSociety Logo" class="header-logo"></a><a href="index.php">PetSociety</a></h1>
             </div>
             <nav>
+                <button class="mobile-menu-toggle" aria-label="Toggle menu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
                 <ul class="nav-menu">
                     <li><a href="index.php">Inicio</a></li>
                     <li><a href="refugios.php">Refugios</a></li>
                     <?php if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true): ?>
                         <li><a href="buzon.php">Mensajes</a></li>
-                        <li><a href="logout.php">Cerrar Sesión</a></li>
+                        <li class="user-menu mobile-user-menu">
+                            <span class="user-menu-trigger">
+                                <span class="user-icon"></span>
+                                <span class="user-name"><?php echo htmlspecialchars($_SESSION["nombre"]); ?></span>
+                            </span>
+                            <div class="dropdown-menu">
+                                <ul>
+                                    <li><a href="mi_perfil.php">Mi Perfil</a></li>
+                                    <li><a href="logout.php">Cerrar Sesión</a></li>
+                                </ul>
+                            </div>
+                        </li>
                     <?php else: ?>
                         <li><a href="login.php">Iniciar Sesión</a></li>
                         <li><a href="registro.php">Registrarse</a></li>
@@ -111,5 +128,11 @@ session_start();
     </div>
 
     <?php include 'footer.php'; ?>
+
+    <script src="funciones_js.js"></script>
+    <script>
+        // Activar funcionalidad del menú hamburguesa
+        interactividad_menus();
+    </script>
 </body>
 </html>

@@ -6,6 +6,7 @@ $email_sugerido = (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === tru
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Contacto - PetSociety</title>
     <link rel="stylesheet" href="estilos.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -17,6 +18,11 @@ $email_sugerido = (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === tru
                 <h1><a href="index.php"><img src="img/logo1.png" alt="PetSociety Logo" class="header-logo"></a><a href="index.php">PetSociety</a></h1>
             </div>
             <nav>
+                <button class="mobile-menu-toggle" aria-label="Toggle menu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
                 <ul class="nav-menu">
                     <li><a href="index.php">Inicio</a></li>
                     <li><a href="refugios.php">Refugios</a></li>
@@ -46,5 +52,11 @@ $email_sugerido = (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === tru
     </div>
 
     <?php include 'footer.php'; ?>
+
+    <script src="funciones_js.js"></script>
+    <script>
+        // Activar funcionalidad del menú hamburguesa
+        interactividad_menus();
+    </script>
 </body>
 </html>
