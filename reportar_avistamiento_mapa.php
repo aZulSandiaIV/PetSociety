@@ -62,7 +62,7 @@ session_start(); // Iniciamos sesión para saber si el usuario está logueado
                 <input type="file" name="foto_avistamiento" accept="image/*" required>
             </div>
             <div class="form-group">
-                <label>Descripción (opcional)</label>
+                <label>Descripsción (opcional)</label>
                 <textarea name="descripcion" rows="4" placeholder="Ej: Parecía asustado, llevaba un collar azul, estaba cerca del río..."></textarea>
             </div>
 

@@ -16,7 +16,7 @@
         /* Estilos específicos para el feed de animales */
         .feed-container {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gsrid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
             gap: 20px;
         }
         .animal-card {
