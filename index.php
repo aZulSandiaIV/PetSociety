@@ -12,11 +12,11 @@ $animales = obtener_publicaciones($conexion, $_GET);
 
 // --- LÓGICA PARA EL MAPA ---
 $map_data = mapa_avistamientos($conexion, $animales);
-$avistamientos_json = $map_data['avistamientos_json'];
-$perdidos_json = $map_data['perdidos_json'];
+$avistamientos_json = json_encode($map_data['avistamientos']);
+$perdidos_json = json_encode($map_data['perdidos']);
 
 // --- LÓGICA PARA EL MAPA DE PUBLICACIONES (ADOPCIÓN, HOGAR TEMPORAL, REFUGIOS) ---
-$publicaciones_json = mapa_publicaciones($animales);
+$publicaciones_json = json_encode(mapa_publicaciones($animales));
 
 
 $conexion->close();

@@ -160,9 +160,8 @@ function actualizarSesionAdmin(mysqli $conexion, int $id_usuario): void
 function mapa_avistamientos(mysqli $conexion, array $animales): array
 {
     $map_data = [
-        'avistamientos_json' => '[]',
-        'perdidos_json' => '[]',
-        'publicaciones_json' => '[]'
+        'avistamientos' => [],
+        'perdidos' => []
     ];
 
     // --- LÓGICA PARA EL MAPA DE AVISTAMIENTOS ---
@@ -193,7 +192,7 @@ function mapa_avistamientos(mysqli $conexion, array $animales): array
             ";
             $avistamientos_mapa[] = $row;
         }
-        $map_data['avistamientos_json'] = json_encode($avistamientos_mapa);
+        $map_data['avistamientos'] = $avistamientos_mapa;
     }
 
     // --- LÓGICA PARA EL MAPA DE REPORTES DE PERDIDOS ---
@@ -234,7 +233,7 @@ function mapa_avistamientos(mysqli $conexion, array $animales): array
                 $perdidos_mapa[] = $ultimo_reporte;
             }
         }
-        $map_data['perdidos_json'] = json_encode($perdidos_mapa);
+        $map_data['perdidos'] = $perdidos_mapa;
     }
 
     // --- LÓGICA PARA EL MAPA DE PUBLICACIONES (ADOPCIÓN, HOGAR TEMPORAL, REFUGIOS) ---
@@ -251,7 +250,7 @@ function mapa_avistamientos(mysqli $conexion, array $animales): array
  * @return string JSON con los datos de los marcadores de publicaciones.
  */
 
-function mapa_publicaciones(array $animales): string
+function mapa_publicaciones(array $animales): array
 {
     $publicaciones_mapa = [];
     foreach ($animales as $animal) {
@@ -269,7 +268,7 @@ function mapa_publicaciones(array $animales): string
             }
         }
     }
-    return json_encode($publicaciones_mapa);
+    return $publicaciones_mapa;
 }
 
 
