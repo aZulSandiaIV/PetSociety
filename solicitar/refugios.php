@@ -34,6 +34,23 @@
             }
             
             $refugios[] = $row;
+            if (!empty($row['foto_perfil_url']) && file_exists($$row['foto_perfil_url'])) {
+                $refugios['foto_perfil'] = [
+                    'tipo' => 'foto',
+                    'url' => $row['foto_perfil_url'],
+                    'iniciales' => '',
+                    'color' => ''
+                ];
+            }else{
+                $refugio['foto_perfil'] = [
+                    'tipo' => 'avatar',
+                    'url' => '',
+                    'iniciales' => generarIniciales($row['nombre']),
+                    'color' => generarColorAvatar($row['nombre'] . $row['id_usuario'])
+                ];    
+            }
+            
+            
         }
         $result->free();
     }

@@ -5,6 +5,7 @@ let cargar_apartir = 0;
 let cargar_cantidad = 20;
 
 function renderCard(refugio){
+    foto_perfil = cargar_datos('foto_perfil', `?perfil=${refugio.foto_perfil_url}&nombre=${refugio.nombre}&id=${refugio.id_usuario}`);
     return `
     <div class="refugio-card">
         <div class="refugio-profile-pic">
