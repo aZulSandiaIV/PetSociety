@@ -47,6 +47,7 @@ function mostrar_publicaciones(directorio, renderCard, container, filtro = '') {
 
     cargar_datos(directorio, filtro).then(data => {
 
+        console.log('Datos cargados:', data);
         if (!data || data.length === 0){
             if(directorio == 'publicaciones')
                 button.innerHTML = 'No hay más publicaciones';
@@ -56,8 +57,9 @@ function mostrar_publicaciones(directorio, renderCard, container, filtro = '') {
             return null;
         }
 
-        data.forEach(animal => {
-            container.innerHTML += renderCard(animal);
+        data.forEach(item => {
+            // Usar concatenación segura en lugar de asumir que container siempre existe
+            container.innerHTML += renderCard(item);
         });
 
     });

@@ -6,6 +6,12 @@
             FROM usuarios u 
             WHERE es_refugio = 1";
 
+    if (isset($_GET['cargar_apartir']) && isset($_GET['cargar_cantidad'])) {
+        $cargar_apartir = intval($_GET['cargar_apartir']);
+        $cargar_cantidad = intval($_GET['cargar_cantidad']);
+        $sql .= " LIMIT $cargar_apartir, $cargar_cantidad";
+    }
+
     $refugios = [];
 
     if ($result = $conexion->query($sql)) {
