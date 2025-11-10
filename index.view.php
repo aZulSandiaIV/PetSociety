@@ -175,7 +175,6 @@
             <div style="display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap;">
                 <button id="ver-mi-ubicacion" class="btn" style="width: auto;">Mostrar mi ubicación</button>
                 <a href="reportar_avistamiento_mapa.php" class="btn" style="width: auto; background-color: #7A9BA8;">Reportar Callejero</a>
-                <a href="mapa_avistamientos.php" class="btn" style="width: auto; background-color: #8C8C8C;">Ver mapa completo</a>
             </div>
             <div id="mapa-avistamientos"></div>
         </div>

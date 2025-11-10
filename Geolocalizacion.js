@@ -129,6 +129,7 @@ function usar_ubicacion_actual(mapaInfo) {
                 botonUbicacion.textContent = '¡Ubicación Obtenida!';
                 mapaInfo.actualizarCampos(latitude, longitude); // Usar la función de la instancia del mapa
             };
+
             OBTENER_POSICION_ACTUAL();
         });
     }
@@ -260,6 +261,11 @@ function obtener_ubicacion_para_formulario(buttonId, latInputId, lonInputId, sub
                 document.getElementById(lonInputId).value = position.coords.longitude;
                 if (mensajeDiv) mensajeDiv.textContent = '¡Ubicación obtenida con éxito! Ya puedes enviar el reporte.';
                 document.getElementById(submitButtonId).disabled = false;
+            };
+            ERROR = function(error) {
+                alert("Error al obtener la ubicación: " + error.message);
+                if (mensajeDiv) mensajeDiv.textContent = 'Error al obtener ubicación.';
+                botonObtener.disabled = false;
             };
             OBTENER_POSICION_ACTUAL();
         });
