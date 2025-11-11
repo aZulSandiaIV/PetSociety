@@ -179,7 +179,7 @@
             <div style="display:flex; gap:8px; align-items:center; margin-bottom:10px;">
                 <label for="rango-km" style="margin:0;">Rango (km):</label>
                 <input id="rango-km" type="range" min="1" max="200" value="1" />
-                <span id="rango-valor">50 km</span>
+                <span id="rango-valor">1 km</span>
             </div>
             <div id="mapa-avistamientos"></div>
         </div>

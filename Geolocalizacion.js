@@ -1,6 +1,7 @@
 // --- Variables Globales ---
 var mapa; // Para guardar la instancia del mapa de Leaflet
 var marcadorUsuario; // Para guardar el marcador del usuario y reutilizarlo
+var RANGO_KM; // Para guardar el valor del filtro de rango en km
 
 const OPCIONES = {
     enableHighAccuracy: true,
@@ -56,6 +57,137 @@ function PONER_EN_MAPA(latitud, longitud) {
     // Centra el mapa en la nueva ubicación
     mapa.setView(posicion, 15);
 }
+
+
+/**
+ * Comprueba si un punto geográfico está dentro de un rango específico desde un punto de referencia.
+ * El punto de referencia puede ser la ubicación del usuario o el centro del mapa.
+ * @param {number} latitud - Latitud del punto a comprobar.
+ * @param {number} longitud - Longitud del punto a comprobar.
+ * @param {number} rangoKm - El radio de distancia en kilómetros para la comprobación.
+ * @returns {boolean} - Devuelve true si el punto está dentro del rango, de lo contrario false.
+ */
+function buscar_por_zona(latitud, longitud, rangoKm) {
+    let refLat = null, refLng = null;
+
+    // Prioridad 1: Usar la posición del usuario si está disponible.
+    if (window.pos && window.pos.coords && typeof window.pos.coords.latitude === 'number' && typeof window.pos.coords.longitude === 'number') {
+        refLat = window.pos.coords.latitude;
+        refLng = window.pos.coords.longitude;
+    // Prioridad 2: Usar el centro del mapa.
+    } else if (typeof mapa !== 'undefined' && mapa && typeof mapa.getCenter === 'function') {
+        const center = mapa.getCenter();
+        refLat = (typeof center.lat === 'function') ? center.lat() : center.lat;
+        refLng = (typeof center.lng === 'function') ? center.lng() : center.lng;
+    } else {
+        // Si no hay punto de referencia, no se puede filtrar, así que se muestra todo.
+        return true;
+    }
+
+    // Función interna para calcular la distancia usando la fórmula de Haversine.
+    function haversineKm(lat1, lon1, lat2, lon2) {
+        const toRad = v => v * Math.PI / 180;
+        const R = 6371; // Radio de la Tierra en km
+        const dLat = toRad(lat2 - lat1);
+        const dLon = toRad(lon2 - lon1);
+        const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                  Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
+                  Math.sin(dLon / 2) * Math.sin(dLon / 2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        return R * c;
+    }
+
+    const latA = parseFloat(refLat), lngA = parseFloat(refLng);
+    const latB = parseFloat(latitud), lngB = parseFloat(longitud);
+
+    if ([latA, lngA, latB, lngB].some(v => Number.isNaN(v))) return true; // Si hay coordenadas inválidas, no filtrar.
+
+    return haversineKm(latA, lngA, latB, lngB) <= rangoKm;
+}
+
+
+/**
+ * Inicializa el filtro de rango, vinculando el control deslizante (slider)
+ * con las funciones que renderizan los marcadores en el mapa.
+ * @param {string} inputId - El ID del input tipo 'range'.
+ * @param {string} displayId - El ID del elemento que muestra el valor del rango.
+ */
+function inicializar_filtro_rango(inputId, displayId) {
+    const rangoInput = document.getElementById(inputId);
+    const rangoValor = document.getElementById(displayId);
+
+    if (!rangoInput || !rangoValor) {
+        console.warn("No se encontraron los elementos para el filtro de rango.");
+        return;
+    }
+
+    // Inicializa el valor del rango
+    RANGO_KM = parseFloat(rangoInput.value) || 1;
+
+    rangoInput.addEventListener('input', function () {
+        RANGO_KM = parseFloat(this.value);
+        rangoValor.textContent = RANGO_KM + ' km';
+        renderizar_publicaciones_mapa('avistamientos');
+        renderizar_publicaciones_mapa('perdidos');
+        renderizar_publicaciones_mapa('publicaciones');
+    });
+}
+
+/**
+ * Dibuja los marcadores en una capa específica del mapa, aplicando filtros de zona.
+ * @param {L.LayerGroup} layer - La capa de Leaflet donde se dibujarán los marcadores.
+ * @param {Array} data - El array de datos para los marcadores.
+ * @param {string} tipo - El tipo de marcador ('avistamientos', 'perdidos', 'publicaciones').
+ * @param {L.Icon} [icon] - El icono por defecto para los marcadores (no aplica para 'publicaciones').
+ */
+function dibujar_marcadores(layer, data, tipo, icon) {
+    layer.clearLayers();
+    data.forEach(item => {
+        let markerIcon = icon;
+        if (tipo === 'publicaciones') {
+            markerIcon = item.es_refugio ? window.refugioIcon : window.adopcionIcon;
+        }
+
+        if (item.latitud && item.longitud && buscar_por_zona(item.latitud, item.longitud, RANGO_KM)) {
+            const marker = L.marker([item.latitud, item.longitud], { icon: markerIcon });
+            if (item.popup_html) {
+                marker.bindPopup(item.popup_html);
+            }
+            marker.addTo(layer);
+        }
+    });
+}
+
+/**
+ * Renderiza los marcadores en el mapa según el tipo especificado.
+ * @param {string} tipo - El tipo de marcador a renderizar ('avistamientos', 'perdidos', 'publicaciones').
+ */
+function renderizar_publicaciones_mapa(tipo) {
+    let layer, icon, data;
+
+    switch (tipo) {
+        case 'avistamientos':
+            layer = window.avistamientosLayer;
+            icon = window.huellaIcon;
+            data = window.avistamientos;
+            break;
+        case 'perdidos':
+            layer = window.perdidosLayer;
+            icon = window.alertaIcon;
+            data = window.perdidos;
+            break;
+        case 'publicaciones':
+            layer = window.publicacionesLayer;
+            data = window.publicaciones;
+            break;
+        default:
+            console.error("Tipo de marcador no válido:", tipo);
+            return;
+    }
+
+    dibujar_marcadores(layer, data, tipo, icon);
+}
+
 
 /**
  * Inicializa un mapa de Leaflet para seleccionar una ubicación.
@@ -137,83 +269,100 @@ function usar_ubicacion_actual(mapaInfo) {
 
 
 /**
- * Configura un botón para obtener la ubicación del usuario y mostrarla en el mapa.
+ * Activa un botón para obtener la ubicación del usuario usando la API de Leaflet,
+ * mostrando la posición en el mapa y actualizando los filtros.
  * @param {string} buttonId - El ID del botón que activa la geolocalización.
  */
 
+
 function mostrar_ubicacion_usuario(buttonId) {
     const boton = document.getElementById(buttonId);
-    if (!boton) return; // Si el botón no existe en la página, no hacer nada.
+    if (!boton || typeof mapa === 'undefined') {
+        console.warn("El botón de ubicación o el mapa no están disponibles.");
+        return;
+    }
 
     boton.addEventListener('click', function() {
         this.textContent = 'Buscando...';
         this.disabled = true;
-        
-        EXITO = function(position) {
-            PONER_EN_MAPA(position.coords.latitude, position.coords.longitude);
-            boton.textContent = 'Mostrar mi ubicación';
-            boton.disabled = false; // Reactivar el botón
-        };
-        OBTENER_POSICION_ACTUAL();
+
+        mapa.locate({ setView: true, maxZoom: 16, enableHighAccuracy: true, timeout: 10000 });
+
+        mapa.on('locationfound', function(e) {
+            // Guardar la posición para que la use `buscar_por_zona`
+            window.pos = { coords: { latitude: e.latlng.lat, longitude: e.latlng.lng } };
+
+            if (marcadorUsuario) {
+                mapa.removeLayer(marcadorUsuario);
+            }
+            marcadorUsuario = L.marker(e.latlng).addTo(mapa)
+                .bindPopup(`<b>¡Estás aquí!</b><br>Precisión: ${Math.round(e.accuracy)} metros.`)
+                .openPopup();
+
+            boton.textContent = 'Buscar por mi zona';
+            boton.disabled = false;
+
+            // Re-renderizar los marcadores con la nueva ubicación de referencia
+            renderizar_publicaciones_mapa('avistamientos');
+            renderizar_publicaciones_mapa('perdidos');
+            renderizar_publicaciones_mapa('publicaciones');
+        });
+
+        mapa.on('locationerror', function(e) {
+            alert("Error al obtener la ubicación: " . e.message);
+            boton.textContent = 'Buscar por mi zona';
+            boton.disabled = false;
+            console.error("Error de geolocalización:", e.message);
+        });
     });
 }
 
 
 /**
- * Define los iconos y añade los marcadores de avistamientos, perdidos y publicaciones al mapa.
- * @param {L.Map} mapa - La instancia del mapa de Leaflet.
- * @param {Array} avistamientos - Array de datos de avistamientos.
- * @param {Array} perdidos - Array de datos de animales perdidos.
- * @param {Array} publicaciones - Array de datos de publicaciones.
+ * Crea los marcadores y capas para los avistamientos, perdidos y publicaciones.
+ * @param {Array} avistamientos - Array con los datos de los avistamientos.
+ * @param {Array} perdidos - Array con los datos de los perdidos.
+ * @param {Array} publicaciones - Array con los datos de las publicaciones.
  */
-
-
-function poblado_y_marcadores_mapa(mapa, avistamientos, perdidos, publicaciones) {
-    // --- Marcadores de Avistamientos (huella) ---
-    const huellaIcon = L.icon({
+function creacion_marcadores_mapa(avistamientos, perdidos, publicaciones) {
+    // --- Iconos personalizados ---
+    window.huellaIcon = L.icon({
         iconUrl: 'https://cdn-icons-png.flaticon.com/512/12/12195.png',
-        iconSize:     [28, 28],
-        iconAnchor:   [16, 32],
-        popupAnchor:  [0, -32]
-    });
-    avistamientos.forEach(avistamiento => {
-        L.marker([avistamiento.latitud, avistamiento.longitud], {icon: huellaIcon})
-            .addTo(mapa)
-            .bindPopup(avistamiento.popup_html);
+        iconSize: [28, 28],
+        iconAnchor: [16, 32],
+        popupAnchor: [0, -32]
     });
 
-    // --- Marcadores de Animales Perdidos (alerta) ---
-    const alertaIcon = L.icon({
+    window.alertaIcon = L.icon({
         iconUrl: 'https://cdn-icons-png.flaticon.com/512/753/753345.png',
-        iconSize:     [28, 28],
-        iconAnchor:   [16, 32],
-        popupAnchor:  [0, -32]
-    });
-    perdidos.forEach(perdido => {
-        L.marker([perdido.latitud, perdido.longitud], {icon: alertaIcon})
-            .addTo(mapa)
-            .bindPopup(perdido.popup_html);
+        iconSize: [28, 28],
+        iconAnchor: [16, 32],
+        popupAnchor: [0, -32]
     });
 
-    // --- Marcadores de Publicaciones (Adopción, Hogar Temporal, Refugios) ---
-    const adopcionIcon = L.icon({
-        iconUrl: 'https://cdn-icons-png.flaticon.com/512/1077/1077035.png', // Icono de corazón
-        iconSize:     [28, 28],
-        iconAnchor:   [16, 32],
-        popupAnchor:  [0, -32]
+    window.adopcionIcon = L.icon({
+        iconUrl: 'https://cdn-icons-png.flaticon.com/512/1077/1077035.png',
+        iconSize: [28, 28],
+        iconAnchor: [16, 32],
+        popupAnchor: [0, -32]
     });
-    const refugioIcon = L.icon({
-        iconUrl: 'https://cdn-icons-png.flaticon.com/512/619/619153.png', // Icono de casa
-        iconSize:     [28, 28],
-        iconAnchor:   [16, 32],
-        popupAnchor:  [0, -32]
+
+    window.refugioIcon = L.icon({
+        iconUrl: 'https://cdn-icons-png.flaticon.com/512/619/619153.png',
+        iconSize: [28, 28],
+        iconAnchor: [16, 32],
+        popupAnchor: [0, -32]
     });
-    publicaciones.forEach(pub => {
-        const icon = pub.es_refugio ? refugioIcon : adopcionIcon;
-        L.marker([pub.latitud, pub.longitud], {icon: icon})
-            .addTo(mapa)
-            .bindPopup(pub.popup_html);
-    });
+
+    // --- Capas para los marcadores ---
+    window.avistamientosLayer = L.layerGroup().addTo(mapa);
+    window.perdidosLayer = L.layerGroup().addTo(mapa);
+    window.publicacionesLayer = L.layerGroup().addTo(mapa);
+
+    // --- Guardar los datos en variables globales ---
+    window.avistamientos = avistamientos;
+    window.perdidos = perdidos;
+    window.publicaciones = publicaciones;
 }
 
 
@@ -239,11 +388,17 @@ function mapa_interactivo_index(avistamientos, perdidos, publicaciones) {
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(mapa);
+    
+    // Creacion de Marcadores
+    creacion_marcadores_mapa(avistamientos, perdidos, publicaciones);
+ 
+    // Renderizacion de marcadores
+    renderizar_publicaciones_mapa('avistamientos');
+    renderizar_publicaciones_mapa('perdidos');
+    renderizar_publicaciones_mapa('publicaciones');
 
-    // Llama a la nueva función para añadir todos los marcadores
-    poblado_y_marcadores_mapa(mapa, avistamientos, perdidos, publicaciones);
-
-    // Llama a la función refactorizada para el botón de ubicación
+    // Funciones
+    inicializar_filtro_rango('rango-km', 'rango-valor');
     mostrar_ubicacion_usuario('ver-mi-ubicacion');
 }
 
