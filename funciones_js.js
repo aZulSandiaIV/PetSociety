@@ -237,6 +237,13 @@ function ocultar_mostrar_filtros() {
     const sidebar = document.querySelector('.filters-sidebar');
 
     if (toggleButton && sidebar) {
+        // Ocultar filtros por defecto en pantallas pequeñas (móviles)
+        if (window.innerWidth < 768) { // Punto de quiebre común para móviles
+            sidebar.classList.add('hidden');
+            toggleButton.textContent = 'Mostrar Filtros';
+        }
+
+
         toggleButton.addEventListener('click', () => {
             sidebar.classList.toggle('hidden');
 
