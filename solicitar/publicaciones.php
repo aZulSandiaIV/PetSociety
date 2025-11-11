@@ -59,7 +59,7 @@
 
     if (isset($_GET['search']) && !empty($_GET['search'])) {
         $search_term = $conexion->real_escape_string($_GET['search']);
-        $where_clauses[] = "(p.titulo LIKE '%{$search_term}%' OR p.contenido LIKE '%{$search_term}%' OR a.nombre LIKE '%{$search_term}%' OR a.raza LIKE '%{$search_term}%')";
+        $where_clauses[] = "(p.titulo LIKE '%{$search_term}%' OR p.contenido LIKE '%{$search_term}%' OR a.nombre LIKE '%{$search_term}%' OR a.raza LIKE '%{$search_term}%' OR p.ubicacion_texto LIKE '%{$search_term}%')";
     }
 
     if (isset($_GET['ubication']) && $_GET['ubication'] === '1') {
