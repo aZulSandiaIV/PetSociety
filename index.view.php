@@ -195,7 +195,7 @@
     <script src="js/CargaAsync.js"></script>
     <script src="funciones_js.js"></script>
     <script>
-        let CargarIncremento = 5;
+        let CargarIncremento = 6;
         let CargarApartirDe = 0;
         const container = document.getElementsByClassName('feed-container')[0];
         const button = document.getElementById("cargar-mas");
