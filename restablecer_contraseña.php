@@ -91,6 +91,7 @@ $conexion->close();
     <title>Restablecer Contraseña - PetSociety</title>
     <link rel="stylesheet" href="estilos.css">
 </head>
+<?php include 'header_estandar.php'; ?>
 <body>
     <div class="form-container">
         <h2>Restablecer Contraseña</h2>

@@ -88,6 +88,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <title>Recuperar Contraseña - PetSociety</title>
     <link rel="stylesheet" href="estilos.css">
 </head>
+<?php include 'header_estandar.php'; ?>
 <body>
     <div class="form-container">
         <h2>Recuperar Contraseña</h2>

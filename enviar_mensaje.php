@@ -82,13 +82,17 @@ if (isset($_GET['reply_to']) && !empty($_GET['reply_to'])) {
 
 // No permitir que un usuario se envíe un mensaje a sí mismo
 if ($destinatario_id == $_SESSION['id_usuario']) {
-    // Mostramos un mensaje en la página en lugar de una alerta JS
-    echo "<!DOCTYPE html><html lang='es'><head><meta charset='UTF-8'><title>Error</title><link rel='stylesheet' href='estilos.css'></head><body>";
-    echo "<div class='form-container' style='text-align:center;'>";
-    echo "<h2>Acción no permitida</h2>";
-    echo "<p>No puedes enviarte un mensaje a ti mismo.</p>";
-    echo "<a href='javascript:history.back()' class='btn'>Volver</a>";
+    // Mostramos un mensaje de error usando el layout estándar
+    echo "<!DOCTYPE html><html lang='es'><head><meta charset='UTF-8'><title>Error - PetSociety</title><link rel='stylesheet' href='estilos.css'></head><body>";
+    include 'header_estandar.php';
+    echo "<div class='container' style='text-align:center; padding-top: 50px; padding-bottom: 50px;'>";
+    echo "    <div class='form-container'>";
+    echo "        <h2>Acción no permitida</h2>";
+    echo "        <p>No puedes enviarte un mensaje a ti mismo.</p>";
+    echo "        <a href='javascript:history.back()' class='btn' style='display: inline-block; width: auto; margin-top: 15px;'>Volver</a>";
+    echo "    </div>";
     echo "</div>";
+    include 'footer.php';
     echo "</body></html>";
     exit;
 }
@@ -104,59 +108,7 @@ if ($destinatario_id == $_SESSION['id_usuario']) {
     <?php endif; ?>
 </head>
 <body>
-    <header>
-        <div class="container">
-            <div id="branding">
-                <h1><a href="index.php"><img src="img/logo1.png" alt="PetSociety Logo" class="header-logo"></a><a href="index.php">PetSociety</a></h1>
-            </div>
-            <nav>
-                <button class="mobile-menu-toggle" aria-label="Toggle menu">
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                </button>
-                <ul class="nav-menu">
-                    <?php if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true): ?>
-                        <li><a href="index.php">Inicio</a></li>
-                        <li><a href="mapa.php">Mapa</a></li>
-                        <li><a href="refugios.php">Refugios</a></li>
-                        <li><a href="buzon.php">Mensajes</a></li>
-                        <?php if (isset($_SESSION['is_admin']) && $_SESSION['is_admin'] == 1): ?>
-                            <li class="admin-panel-dropdown">
-                                <span class="admin-panel-trigger">Panel de Administrador</span>
-                                <div class="admin-submenu">
-                                    <ul>
-                                        <li><a href="admin/statistics.php">Estadísticas</a></li>
-                                        <li><a href="admin/manage_publications.php">Administrar Publicaciones</a></li>
-                                    </ul>
-                                </div>
-                            </li>
-                        <?php endif; ?>
-                    <?php else: ?>
-                        <li><a href="index.php">Inicio</a></li>
-                        <li><a href="mapa.php">Mapa</a></li>
-                        <li><a href="refugios.php">Refugios</a></li>
-                        <li><a href="login.php">Iniciar Sesión</a></li>
-                        <li><a href="registro.php">Registrarse</a></li>
-                    <?php endif; ?>
-                    <?php if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true): ?>
-                        <li class="user-menu mobile-user-menu">
-                            <span class="user-menu-trigger">
-                                <span class="user-icon"></span>
-                                <span class="user-name"><?php echo htmlspecialchars($_SESSION["nombre"]); ?></span>
-                            </span>
-                            <div class="dropdown-menu">
-                                <ul>
-                                    <li><a href="mi_perfil.php">Mi Perfil</a></li>
-                                    <li><a href="logout.php">Cerrar Sesión</a></li>
-                                </ul>
-                            </div>
-                        </li>
-                    <?php endif; ?>
-                </ul>
-            </nav>
-        </div>
-    </header>
+    <?php include 'header_estandar.php'; ?>
 
     <div class="form-container">
         <h2>Enviar Mensaje a <?php echo htmlspecialchars($nombre_publicador); ?></h2>
@@ -177,5 +129,7 @@ if ($destinatario_id == $_SESSION['id_usuario']) {
         // Llama a la función para la interactividad de los menús
         interactividad_menus();
     </script>
+
+    <?php include 'footer.php'; ?>
 </body>
 </html>
