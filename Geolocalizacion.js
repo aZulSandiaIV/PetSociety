@@ -274,46 +274,61 @@ function usar_ubicacion_actual(mapaInfo) {
  * @param {string} buttonId - El ID del botón que activa la geolocalización.
  */
 
-
-function mostrar_ubicacion_usuario(buttonId) {
+function mostrar_ubicacion_usuario(buttonId, avistamientos, perdidos, publicaciones) {
     const boton = document.getElementById(buttonId);
-    if (!boton || typeof mapa === 'undefined') {
-        console.warn("El botón de ubicación o el mapa no están disponibles.");
+    if (!boton) {
+        console.warn("El botón de ubicación no está disponible.");
         return;
     }
 
     boton.addEventListener('click', function() {
         this.textContent = 'Buscando...';
         this.disabled = true;
-
-        mapa.locate({ setView: true, maxZoom: 16, enableHighAccuracy: true, timeout: 10000 });
-
-        mapa.on('locationfound', function(e) {
-            // Guardar la posición para que la use `buscar_por_zona`
-            window.pos = { coords: { latitude: e.latlng.lat, longitude: e.latlng.lng } };
-
-            if (marcadorUsuario) {
-                mapa.removeLayer(marcadorUsuario);
-            }
-            marcadorUsuario = L.marker(e.latlng).addTo(mapa)
-                .bindPopup(`<b>¡Estás aquí!</b><br>Precisión: ${Math.round(e.accuracy)} metros.`)
-                .openPopup();
-
-            boton.textContent = 'Buscar por mi zona';
-            boton.disabled = false;
-
-            // Re-renderizar los marcadores con la nueva ubicación de referencia
+ 
+        // Hacemos visible el contenedor del mapa
+        const mapaContainer = document.getElementById('mapa-container');
+        if (mapaContainer) {
+            mapaContainer.style.display = 'block';
+        }
+ 
+        // Si el mapa no ha sido inicializado, lo creamos ahora.
+        if (!mapaInicializado) {
+            console.log("Inicializando el mapa por primera vez...");
+            mapa = L.map('mapa-avistamientos').setView([-34.60, -58.38], 12);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(mapa);
+ 
+            creacion_marcadores_mapa(avistamientos, perdidos, publicaciones);
             renderizar_publicaciones_mapa('avistamientos');
             renderizar_publicaciones_mapa('perdidos');
             renderizar_publicaciones_mapa('publicaciones');
-        });
-
-        mapa.on('locationerror', function(e) {
-            alert("Error al obtener la ubicación: " . e.message);
-            boton.textContent = 'Buscar por mi zona';
-            boton.disabled = false;
-            console.error("Error de geolocalización:", e.message);
-        });
+            inicializar_filtro_rango('rango-km', 'rango-valor');
+ 
+            mapa.on('locationfound', function(e) {
+                window.pos = { coords: { latitude: e.latlng.lat, longitude: e.latlng.lng } };
+                if (marcadorUsuario) mapa.removeLayer(marcadorUsuario);
+                marcadorUsuario = L.marker(e.latlng).addTo(mapa).bindPopup(`<b>¡Estás aquí!</b>`).openPopup();
+                boton.textContent = 'Buscar por mi Zona';
+                boton.disabled = false;
+                renderizar_publicaciones_mapa('avistamientos');
+                renderizar_publicaciones_mapa('perdidos');
+                renderizar_publicaciones_mapa('publicaciones');
+            });
+ 
+            mapa.on('locationerror', function(e) {
+                alert("Error al obtener la ubicación: " + e.message);
+                boton.textContent = 'Buscar por mi Zona';
+                boton.disabled = false;
+            });
+ 
+            mapaInicializado = true;
+        }
+ 
+        setTimeout(() => {
+            mapa.invalidateSize();
+            mapa.locate({ setView: true, maxZoom: 16, enableHighAccuracy: true, timeout: 10000 });
+        }, 10); // Pequeño retraso para asegurar que el contenedor es visible
     });
 }
 
@@ -400,46 +415,4 @@ function mapa_interactivo_index(avistamientos, perdidos, publicaciones) {
     // Funciones
     inicializar_filtro_rango('rango-km', 'rango-valor');
     mostrar_ubicacion_usuario('ver-mi-ubicacion');
-}
-
-/**
- * Orquesta la creación y población del mapa de avistamientos en la página principal.
- * @param {Array} avistamientos - Array de datos de avistamientos.
- * @param {Array} perdidos - Array de datos de animales perdidos.
- * @param {Array} publicaciones - Array de datos de publicaciones.
- */
-
-/**
- * Configura un botón para obtener la ubicación del usuario y rellenar campos de un formulario.
- * @param {string} buttonId - El ID del botón que inicia la geolocalización.
- * @param {string} latInputId - El ID del input para la latitud.
- * @param {string} lonInputId - El ID del input para la longitud.
- * @param {string} submitButtonId - El ID del botón de envío que se habilitará.
- * @param {string} messageDivId - El ID del div donde se mostrarán los mensajes de estado.
- */
-
-
-function obtener_ubicacion_para_formulario(buttonId, latInputId, lonInputId, submitButtonId, messageDivId) {
-    const botonObtener = document.getElementById(buttonId);
-    const mensajeDiv = document.getElementById(messageDivId);
-
-    if (botonObtener) {
-        botonObtener.addEventListener('click', function() {
-            if (mensajeDiv) mensajeDiv.textContent = 'Buscando tu ubicación...';
-            this.disabled = true;
-
-            EXITO = function(position) {
-                document.getElementById(latInputId).value = position.coords.latitude;
-                document.getElementById(lonInputId).value = position.coords.longitude;
-                if (mensajeDiv) mensajeDiv.textContent = '¡Ubicación obtenida con éxito! Ya puedes enviar el reporte.';
-                document.getElementById(submitButtonId).disabled = false;
-            };
-            ERROR = function(error) {
-                alert("Error al obtener la ubicación: " + error.message);
-                if (mensajeDiv) mensajeDiv.textContent = 'Error al obtener ubicación.';
-                botonObtener.disabled = false;
-            };
-            OBTENER_POSICION_ACTUAL();
-        });
-    }
 }

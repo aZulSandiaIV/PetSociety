@@ -30,6 +30,7 @@
                 <ul class="nav-menu">
                     <?php if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true): ?>
                         <li><a href="index.php">Inicio</a></li>
+                        <li><a href="mapa.php">Mapa</a></li>
                         <li><a href="refugios.php">Refugios</a></li>
                         <li><a href="buzon.php">Mensajes</a></li>
                         <?php if (isset($_SESSION['is_admin']) && $_SESSION['is_admin'] == 1): ?>
@@ -49,6 +50,7 @@
                         <?php endif; ?>
                     <?php else: ?>
                         <li><a href="index.php">Inicio</a></li>
+                        <li><a href="mapa.php">Mapa</a></li>
                         <li><a href="refugios.php">Refugios</a></li>
                         <li><a href="login.php">Iniciar Sesión</a></li>
                         <li><a href="registro.php">Registrarse</a></li>
@@ -168,30 +170,11 @@
         }
     }
     </script>
-    </div> <!-- Cierre de .main-content-wrapper -->
-        <!-- SECCIÓN DEL MAPA DE AVISTAMIENTOS -->
-        <div style="margin-bottom: 30px; margin-top: 40px;">
-            <h2>¿Has visto a un animal perdido?</h2>
-            <p>Explora el mapa para ver los últimos avistamientos y animales perdidos en tu zona. Cada marcador te muestra información importante para ayudar a reunirlos con sus familias.</p>
-            <div style="display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap;">
-                <button id="ver-mi-ubicacion" class="btn" style="width: auto;">Buscar por mi Zona</button>
-                <a href="reportar_avistamiento_mapa.php" class="btn" style="width: auto; background-color: #7A9BA8;">Reportar Callejero</a>
-            </div>
-            <div style="display:flex; gap:8px; align-items:center; margin-bottom:10px;">
-                <label for="rango-km" style="margin:0;">Rango (km):</label>
-                <input id="rango-km" type="range" min="1" max="200" value="1" />
-                <span id="rango-valor">1 km</span>
-            </div>
-            <div id="mapa-avistamientos"></div>
-        </div>
+    </div> <!-- Cierre de .main-content-wrapper -->    
 </div> <!-- Cierre de .container -->
 
 
     <?php include 'footer.php'; ?>
-
-    <!-- Scripts para el mapa -->
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script src="Geolocalizacion.js"></script>
 
     <script src="js/CargaAsync.js"></script>
     <script src="funciones_js.js"></script>
@@ -264,19 +247,11 @@
     </script>
     
     <script>
-        // --- Lógica del Mapa ---
         // Llama a la función para la interactividad de los menús
         interactividad_menus();
         
         // Llama a la función para ocultar/mostrar filtros
         ocultar_mostrar_filtros();
-
-        // Llama a la nueva función para inicializar el mapa
-        mapa_interactivo_index(
-            <?php echo $avistamientos_json; ?>,
-            <?php echo $perdidos_json; ?>,
-            <?php echo $publicaciones_json; ?>
-        );
 
         // Si hay un hash en la URL, hacer scroll a esa sección
         window.addEventListener('load', function() {

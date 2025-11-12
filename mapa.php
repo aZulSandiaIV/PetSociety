@@ -1,10 +1,18 @@
 <?php
-session_start();
+session_start(); // Asegurarse de que la sesión esté iniciada
 require_once "config.php";
-require_once "funciones.php";
 
-// --- Obtener todos los refugios usando la nueva función ---
-$refugios = obtener_refugios($conexion);
+// --- LÓGICA PARA EL MAPA ---
+// 1. Obtener todas las publicaciones activas (Adopción, Hogar Temporal).
+$publicaciones = obtener_publicaciones($conexion);
+
+// 2. Obtener los datos de avistamientos y perdidos.
+$map_data = mapa_avistamientos($conexion, $publicaciones, 'mapa.php');
+$avistamientos_json = $map_data['avistamientos_json'];
+$perdidos_json = $map_data['perdidos_json'];
+
+// 3. Preparar las publicaciones de adopción/hogar temporal para el mapa.
+$publicaciones_json = mapa_publicaciones($publicaciones);
 
 $conexion->close();
 ?>
@@ -13,16 +21,28 @@ $conexion->close();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Refugios - PetSociety</title>
+    <title>Mapa de Avistamientos - PetSociety</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
     <link rel="stylesheet" href="estilos.css">
-    <link rel="stylesheet" href="refugio.css">
     <?php if (isset($_SESSION['is_admin']) && $_SESSION['is_admin'] == 1): ?>
         <link rel="stylesheet" href="admin/admin.css">
     <?php endif; ?>
-    
-    <script src="js/CargaAsync.js"></script>
+    <style>
+        /* Estilos para que el mapa ocupe un buen espacio */
+        #mapa-avistamientos {
+            height: 600px; /* Altura del mapa */
+            width: 100%;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .map-section-container {
+            padding-top: 20px;
+            padding-bottom: 40px;
+        }
+    </style>
 </head>
 <body>
+
     <header>
         <div class="container">
             <div id="branding">
@@ -77,32 +97,31 @@ $conexion->close();
         </div>
     </header>
 
-    <div class="container">
-        <h2>Refugios de Animales</h2>
-        <p>Estos son los refugios que colaboran con nosotros. Puedes contactarlos o ver los animales que tienen en adopción.</p>
-
-        <div id="refugios-container" class="refugios-container">
-            <!-- Las tarjetas de refugios se cargarán aquí dinámicamente -->
-            
-        </div>
+    <div class="container map-section-container">
+        <h2>Mapa General de Avistamientos</h2>
+        <p>Explora el mapa para ver los últimos avistamientos de animales callejeros y mascotas perdidas reportadas por la comunidad.</p>
         
-        <div>
-            <button id="cargar-mas-btn" class="btn load-more-btn">Cargar Más</button>
-        </div> 
-
+        <div style="display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap;">
+            <button id="ver-mi-ubicacion" class="btn" style="width: auto;">Buscar por mi Zona</button>
+            <a href="reportar_avistamiento_mapa.php" class="btn" style="width: auto; background-color: #7A9BA8;">Reportar Callejero</a>
+        </div>
+        <div style="display:flex; gap:8px; align-items:center; margin-bottom:10px;">
+            <label for="rango-km" style="margin:0;">Rango (km):</label>
+            <input id="rango-km" type="range" min="1" max="200" value="1" />
+            <span id="rango-valor">1 km</span>
+        </div>
+        <div id="mapa-avistamientos"></div>
     </div>
 
-    
-    <script src="js/refugios.js"></script>
+    <?php include 'footer.php'; ?>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="Geolocalizacion.js"></script>
     <script src="funciones_js.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Llama a la función para la interactividad de los menús
-            interactividad_menus();
-        });
+        interactividad_menus();
+        mapa_interactivo_index(<?php echo $avistamientos_json; ?>, <?php echo $perdidos_json; ?>, <?php echo $publicaciones_json; ?>);
     </script>
-
-    <?php include 'footer.php'; ?>
 
 </body>
 </html>

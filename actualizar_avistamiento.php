@@ -9,10 +9,11 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
 }
 
 // 2. Validar los parámetros de entrada
-if (!isset($_GET['id']) || !isset($_GET['accion'])) {
+if (!isset($_GET['id']) || !isset($_GET['accion']) || !isset($_GET['redirect'])) {
     die("Error: Faltan parámetros.");
 }
 
+$redirect_page = $_GET['redirect'];
 $id_avistamiento = intval($_GET['id']);
 $accion = $_GET['accion'];
 
@@ -34,8 +35,8 @@ if ($stmt = $conexion->prepare($sql)) {
     $stmt->bind_param("i", $id_avistamiento);
     
     if ($stmt->execute()) {
-        // Redirigir de vuelta al index con un mensaje de éxito (opcional)
-        header("location: index.php?reporte=exito");
+        // Redirigir a la página de origen
+        header("location: " . $redirect_page . "?reporte=exito");
     } else {
         echo "Error al actualizar el reporte.";
     }
