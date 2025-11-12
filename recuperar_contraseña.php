@@ -64,7 +64,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         $mail->AltBody = "Hola,\n\nHemos recibido una solicitud para restablecer tu contraseña. Copia y pega el siguiente enlace en tu navegador para continuar:\n\n{$reset_link}\n\nSi no solicitaste esto, puedes ignorar este correo.\n\nSaludos,\nEl equipo de PetSociety";
 
                         $mail->send();
-                        $feedback_message = "Si tu email está en nuestra base de datos, recibirás un enlace para restablecer tu contraseña.";
+                        $feedback_message = "Revise su mail {$email}, en breve le estara llegando un link de recuperacion";
 
                     } catch (Exception $e) {
                         $feedback_message = "No se pudo enviar el mensaje. Error de Mailer: {$mail->ErrorInfo}";
@@ -72,7 +72,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 }
             } else {
                 // Email no encontrado, mostramos el mismo mensaje por seguridad
-                $feedback_message = "Si tu email está en nuestra base de datos, recibirás un enlace para restablecer tu contraseña.";
+                $feedback_message = "El mail {$email} no esta registrado.";
             }
             $stmt->close();
         }
