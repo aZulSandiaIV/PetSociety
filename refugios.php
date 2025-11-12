@@ -51,9 +51,10 @@ $conexion->close();
                             </li>
                         <?php endif; ?>
                     <?php else: ?>
+                        <li><a href="index.php">Inicio</a></li>
+                        <li><a href="refugios.php">Refugios</a></li>
                         <li><a href="login.php">Iniciar Sesión</a></li>
                         <li><a href="registro.php">Registrarse</a></li>
-                        <li><a href="refugios.php">Refugios</a></li>
                     <?php endif; ?>
                     <?php if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true): ?>
                         <li class="user-menu mobile-user-menu">

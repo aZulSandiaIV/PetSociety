@@ -40,7 +40,7 @@ if (isset($_GET['reply_to']) && !empty($_GET['reply_to'])) {
 // CASO 2: Es un mensaje nuevo desde una publicación
 } elseif (isset($_GET['id_publicacion']) && !empty($_GET['id_publicacion'])) {
     $id_publicacion = intval($_GET['id_publicacion']);
-    $sql = "SELECT p.titulo, p.id_usuario_publicador, a.nombre AS nombre_animal, u.nombre AS nombre_publicador
+    $sql = "SELECT p.titulo, p.id_usuario_publicador, a.    nombre AS nombre_animal, u.nombre AS nombre_publicador
             FROM publicaciones p
             JOIN animales a ON p.id_animal = a.id_animal
             JOIN usuarios u ON p.id_usuario_publicador = u.id_usuario
@@ -99,6 +99,9 @@ if ($destinatario_id == $_SESSION['id_usuario']) {
     <meta charset="UTF-8">
     <title>Enviar Mensaje - PetSociety</title>
     <link rel="stylesheet" href="estilos.css">
+    <?php if (isset($_SESSION['is_admin']) && $_SESSION['is_admin'] == 1): ?>
+        <link rel="stylesheet" href="admin/admin.css">
+    <?php endif; ?>
 </head>
 <body>
     <header>
@@ -117,10 +120,22 @@ if ($destinatario_id == $_SESSION['id_usuario']) {
                         <li><a href="index.php">Inicio</a></li>
                         <li><a href="refugios.php">Refugios</a></li>
                         <li><a href="buzon.php">Mensajes</a></li>
+                        <?php if (isset($_SESSION['is_admin']) && $_SESSION['is_admin'] == 1): ?>
+                            <li class="admin-panel-dropdown">
+                                <span class="admin-panel-trigger">Panel de Administrador</span>
+                                <div class="admin-submenu">
+                                    <ul>
+                                        <li><a href="admin/statistics.php">Estadísticas</a></li>
+                                        <li><a href="admin/manage_publications.php">Administrar Publicaciones</a></li>
+                                    </ul>
+                                </div>
+                            </li>
+                        <?php endif; ?>
                     <?php else: ?>
+                        <li><a href="index.php">Inicio</a></li>
+                        <li><a href="refugios.php">Refugios</a></li>
                         <li><a href="login.php">Iniciar Sesión</a></li>
                         <li><a href="registro.php">Registrarse</a></li>
-                        <li><a href="refugios.php">Refugios</a></li>
                     <?php endif; ?>
                     <?php if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true): ?>
                         <li class="user-menu mobile-user-menu">
@@ -130,9 +145,6 @@ if ($destinatario_id == $_SESSION['id_usuario']) {
                             </span>
                             <div class="dropdown-menu">
                                 <ul>
-                                    <?php if (isset($_SESSION['is_admin']) && $_SESSION['is_admin'] == 1): ?>
-                                        <li><a href="admin/index.php" class="admin-panel-link">Panel Admin</a></li>
-                                    <?php endif; ?>
                                     <li><a href="mi_perfil.php">Mi Perfil</a></li>
                                     <li><a href="logout.php">Cerrar Sesión</a></li>
                                 </ul>

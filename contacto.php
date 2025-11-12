@@ -10,6 +10,9 @@ $email_sugerido = (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === tru
     <title>Contacto - PetSociety</title>
     <link rel="stylesheet" href="estilos.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <?php if (isset($_SESSION['is_admin']) && $_SESSION['is_admin'] == 1): ?>
+        <link rel="stylesheet" href="admin/admin.css">
+    <?php endif; ?>
 </head>
 <body>
     <header>
@@ -24,14 +27,40 @@ $email_sugerido = (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === tru
                     <span></span>
                 </button>
                 <ul class="nav-menu">
-                    <li><a href="index.php">Inicio</a></li>
-                    <li><a href="refugios.php">Refugios</a></li>
                     <?php if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true): ?>
+                        <li><a href="index.php">Inicio</a></li>
+                        <li><a href="refugios.php">Refugios</a></li>
                         <li><a href="buzon.php">Mensajes</a></li>
-                        <li><a href="logout.php">Cerrar Sesión</a></li>
+                        <?php if (isset($_SESSION['is_admin']) && $_SESSION['is_admin'] == 1): ?>
+                            <li class="admin-panel-dropdown">
+                                <span class="admin-panel-trigger">Panel de Administrador</span>
+                                <div class="admin-submenu">
+                                    <ul>
+                                        <li><a href="admin/statistics.php">Estadísticas</a></li>
+                                        <li><a href="admin/manage_publications.php">Administrar Publicaciones</a></li>
+                                    </ul>
+                                </div>
+                            </li>
+                        <?php endif; ?>
                     <?php else: ?>
+                        <li><a href="index.php">Inicio</a></li>
+                        <li><a href="refugios.php">Refugios</a></li>
                         <li><a href="login.php">Iniciar Sesión</a></li>
                         <li><a href="registro.php">Registrarse</a></li>
+                    <?php endif; ?>
+                    <?php if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true): ?>
+                        <li class="user-menu mobile-user-menu">
+                            <span class="user-menu-trigger">
+                                <span class="user-icon"></span>
+                                <span class="user-name"><?php echo htmlspecialchars($_SESSION["nombre"]); ?></span>
+                            </span>
+                            <div class="dropdown-menu">
+                                <ul>
+                                    <li><a href="mi_perfil.php">Mi Perfil</a></li>
+                                    <li><a href="logout.php">Cerrar Sesión</a></li>
+                                </ul>
+                            </div>
+                        </li>
                     <?php endif; ?>
                 </ul>
             </nav>
