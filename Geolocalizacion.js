@@ -274,9 +274,9 @@ function usar_ubicacion_actual(mapaInfo) {
  * @param {string} buttonId - El ID del botón que activa la geolocalización.
  */
 
-function mostrar_ubicacion_usuario(buttonId, avistamientos, perdidos, publicaciones) {
+function mostrar_ubicacion_usuario(buttonId) {
     const boton = document.getElementById(buttonId);
-    if (!boton) {
+    if (!boton || typeof mapa === 'undefined') {
         console.warn("El botón de ubicación no está disponible.");
         return;
     }
@@ -284,51 +284,35 @@ function mostrar_ubicacion_usuario(buttonId, avistamientos, perdidos, publicacio
     boton.addEventListener('click', function() {
         this.textContent = 'Buscando...';
         this.disabled = true;
- 
-        // Hacemos visible el contenedor del mapa
-        const mapaContainer = document.getElementById('mapa-container');
-        if (mapaContainer) {
-            mapaContainer.style.display = 'block';
-        }
- 
-        // Si el mapa no ha sido inicializado, lo creamos ahora.
-        if (!mapaInicializado) {
-            console.log("Inicializando el mapa por primera vez...");
-            mapa = L.map('mapa-avistamientos').setView([-34.60, -58.38], 12);
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            }).addTo(mapa);
- 
-            creacion_marcadores_mapa(avistamientos, perdidos, publicaciones);
+
+        mapa.locate({ setView: true, maxZoom: 16, enableHighAccuracy: true, timeout: 10000 });
+
+        mapa.on('locationfound', function(e) {
+            // Guardar la posición para que la use `buscar_por_zona`
+            window.pos = { coords: { latitude: e.latlng.lat, longitude: e.latlng.lng } };
+
+            if (marcadorUsuario) {
+                mapa.removeLayer(marcadorUsuario);
+            }
+            marcadorUsuario = L.marker(e.latlng).addTo(mapa)
+                .bindPopup(`<b>¡Estás aquí!</b><br>Precisión: ${Math.round(e.accuracy)} metros.`)
+                .openPopup();
+
+            boton.textContent = 'Buscar por mi Zona';
+            boton.disabled = false;
+
+            // Re-renderizar los marcadores con la nueva ubicación de referencia
             renderizar_publicaciones_mapa('avistamientos');
             renderizar_publicaciones_mapa('perdidos');
             renderizar_publicaciones_mapa('publicaciones');
-            inicializar_filtro_rango('rango-km', 'rango-valor');
- 
-            mapa.on('locationfound', function(e) {
-                window.pos = { coords: { latitude: e.latlng.lat, longitude: e.latlng.lng } };
-                if (marcadorUsuario) mapa.removeLayer(marcadorUsuario);
-                marcadorUsuario = L.marker(e.latlng).addTo(mapa).bindPopup(`<b>¡Estás aquí!</b>`).openPopup();
-                boton.textContent = 'Buscar por mi Zona';
-                boton.disabled = false;
-                renderizar_publicaciones_mapa('avistamientos');
-                renderizar_publicaciones_mapa('perdidos');
-                renderizar_publicaciones_mapa('publicaciones');
-            });
- 
-            mapa.on('locationerror', function(e) {
-                alert("Error al obtener la ubicación: " + e.message);
-                boton.textContent = 'Buscar por mi Zona';
-                boton.disabled = false;
-            });
- 
-            mapaInicializado = true;
-        }
- 
-        setTimeout(() => {
-            mapa.invalidateSize();
-            mapa.locate({ setView: true, maxZoom: 16, enableHighAccuracy: true, timeout: 10000 });
-        }, 10); // Pequeño retraso para asegurar que el contenedor es visible
+        });
+
+        mapa.on('locationerror', function(e) {
+            alert("Error al obtener la ubicación: " + e.message);
+            boton.textContent = 'Buscar por mi Zona';
+            boton.disabled = false;
+            console.error("Error de geolocalización:", e.message);
+        });
     });
 }
 
