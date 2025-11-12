@@ -111,5 +111,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <p><a href="login.php">Volver a Iniciar Sesión</a></p>
         </form>
     </div>
+
+    <?php include 'footer.php'; ?>
 </body>
 </html>

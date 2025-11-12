@@ -98,5 +98,7 @@ if ($stmt = $conexion->prepare($sql_interesados)) {
         // Llama a la función para la interactividad de los menús
         interactividad_menus();
     </script>
+
+    <?php include 'footer.php'; ?>
 </body>
 </html>
