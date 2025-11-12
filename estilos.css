@@ -825,7 +825,8 @@ header #branding h1 {
 /* Estilos para el botón (el "ojito") */
 #boton-ojito,
 #passwordToggle,
-#secondPasswordToggle {
+#secondPasswordToggle 
+{
     position: absolute;
     top: 50%;
     right: 10px;
@@ -844,14 +845,15 @@ header #branding h1 {
     line-height: 1;
     width: auto; /* Anulamos el width: 70% de .btn */
 }
-}
+
 
 /* --- Estilos para el toggle de contraseña --- */
 .password-wrapper {
   position: relative;
 }
 
-.password-wrapper .toggle-password {
+.password-wrapper .toggle-password 
+{
   position: absolute;
   top: 50%;
   right: 15px;
@@ -863,10 +865,11 @@ header #branding h1 {
   z-index: 2;
 }
   
-  .footer {
+  .footer 
+  {
     padding: 30px 0 15px 0;
   }
-}
+
 
 /* Estilos responsivos para el footer */
 @media (max-width: 768px) {

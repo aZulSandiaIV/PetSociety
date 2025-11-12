@@ -28,6 +28,7 @@ session_start(); // Iniciamos sesión para saber si el usuario está logueado
                 <ul class="nav-menu">
                     <?php if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true): ?>
                         <li><a href="index.php">Inicio</a></li>
+                        <li><a href="mapa.php">Mapa</a></li>
                         <li><a href="refugios.php">Refugios</a></li>
                         <li><a href="buzon.php">Mensajes</a></li>
                         <?php if (isset($_SESSION['is_admin']) && $_SESSION['is_admin'] == 1): ?>
@@ -43,6 +44,7 @@ session_start(); // Iniciamos sesión para saber si el usuario está logueado
                         <?php endif; ?>
                     <?php else: ?>
                         <li><a href="index.php">Inicio</a></li>
+                        <li><a href="mapa.php">Mapa</a></li>
                         <li><a href="refugios.php">Refugios</a></li>
                         <li><a href="login.php">Iniciar Sesión</a></li>
                         <li><a href="registro.php">Registrarse</a></li>
