@@ -812,6 +812,56 @@ header #branding h1 {
     gap: 20px;
     text-align: center;
   }
+}
+
+/* --- Estilos para el botón de mostrar/ocultar contraseña --- */
+
+/* Hacemos que el contenedor del input y el botón sea relativo */
+.form-group > div,
+.password > .password {
+    position: relative;
+}
+
+/* Estilos para el botón (el "ojito") */
+#boton-ojito,
+#passwordToggle,
+#secondPasswordToggle {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+    
+    /* Reseteamos estilos de botón para que parezca un ícono */
+    background: none;
+    border: none;
+    padding: 0;
+    margin: 0;
+    cursor: pointer;
+    
+    /* Estilos del texto/emoji */
+    font-size: 1.4rem;
+    color: #8c8c8c;
+    line-height: 1;
+    width: auto; /* Anulamos el width: 70% de .btn */
+}
+}
+
+/* --- Estilos para el toggle de contraseña --- */
+.password-wrapper {
+  position: relative;
+}
+
+.password-wrapper .toggle-password {
+  position: absolute;
+  top: 50%;
+  right: 15px;
+  transform: translateY(25%); /* Ajuste para centrar verticalmente con el input */
+  cursor: pointer;
+  user-select: none; /* Evita que el texto del ícono se seleccione */
+  color: #8c8c8c;
+  font-size: 1.2rem;
+  z-index: 2;
+}
   
   .footer {
     padding: 30px 0 15px 0;
@@ -825,4 +875,9 @@ header #branding h1 {
     gap: 20px;
     text-align: center;
   }
+}
+
+/* Agrega un espacio superior al botón de login para separarlo del campo de contraseña */
+.login-submit-group {
+    margin-top: 2rem; /* Aproximadamente 32px, puedes ajustarlo */
 }
