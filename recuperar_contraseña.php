@@ -59,7 +59,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         // Contenido del correo
                         $mail->isHTML(true);
                         $mail->Subject = 'Restablece tu contraseña de PetSociety';
-                        $reset_link = "http://localhost/PetSociety/restablecer_contraseña.php?token=" . $token;
+                        $reset_link = ROOT_URL . "restablecer_contraseña.php?token=" . $token;
                         $mail->Body    = "Hola,<br><br>Hemos recibido una solicitud para restablecer tu contraseña. Haz clic en el siguiente enlace para continuar:<br><br><a href='{$reset_link}'>Restablecer Contraseña</a><br><br>Si no solicitaste esto, puedes ignorar este correo.<br><br>Saludos,<br>El equipo de PetSociety";
                         $mail->AltBody = "Hola,\n\nHemos recibido una solicitud para restablecer tu contraseña. Copia y pega el siguiente enlace en tu navegador para continuar:\n\n{$reset_link}\n\nSi no solicitaste esto, puedes ignorar este correo.\n\nSaludos,\nEl equipo de PetSociety";
 

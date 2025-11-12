@@ -9,6 +9,11 @@ define('DB_USERNAME', 'root');
 define('DB_PASSWORD', '');         
 define('DB_NAME', 'petsociety');
 
+// URL base de la aplicación
+define('ROOT_URL', 'http://localhost/Petsociety/');
+
+
+
 /* Intenta conectar a la base de datos MySQL */
 $conexion = new mysqli(DB_SERVER, DB_USERNAME, DB_PASSWORD, DB_NAME);
 
