@@ -105,7 +105,9 @@ class CardGestor {
     }
 
     async load() {
-        const filtroQuery = this.filtro + `&cargar_apartir=${this.cargar_apartir}&cargar_cantidad=${this.cargar_cantidad}`;
+
+        const base = `?cargar_apartir=${this.cargar_apartir}&cargar_cantidad=${this.cargar_cantidad}`;
+        const filtroQuery = this.filtro ? base + '&' + this.filtro : base;
         const hasMore = await mostrar_publicaciones(this.directorio, this.renderCard, this.container, filtroQuery);
 
         if (hasMore) {
