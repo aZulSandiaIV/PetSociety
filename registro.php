@@ -15,27 +15,7 @@ if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true) {
     <link rel="stylesheet" href="estilos.css">
 </head>
 <body>
-    <header>
-        <div class="container">
-            <div id="branding">
-                <h1><a href="index.php"><img src="img/logo1.png" alt="PetSociety Logo" class="header-logo"></a><a href="index.php">PetSociety</a></h1>
-            </div>
-            <nav>
-                <button class="mobile-menu-toggle" aria-label="Toggle menu">
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                </button>
-                <ul class="nav-menu">
-                    <li><a href="index.php">Inicio</a></li>
-                    <li><a href="mapa.php">Mapa</a></li>
-                    <li><a href="refugios.php">Refugios</a></li>
-                    <li><a href="login.php">Iniciar Sesión</a></li>
-                    <li><a href="registro.php">Registrarse</a></li>
-                </ul>
-            </nav>
-        </div>
-    </header>
+    <?php include 'header_estandar.php'; ?>
 
     <div class="form-container">
         <h2>Crear una Cuenta</h2>
