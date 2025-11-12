@@ -8,6 +8,15 @@ body {
   line-height: 1.6;
 }
 
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Inter', sans-serif;
+}
+
+button, .btn, a.button {
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+}
+
 .container {
   width: 80%;
   margin: auto;
@@ -140,6 +149,10 @@ header nav ul.nav-menu li {
 header nav ul.nav-menu li.user-menu {
   position: relative;
   z-index: 102;
+}
+
+header nav ul.nav-menu li {
+    white-space: nowrap;
 }
 
 header nav ul.nav-menu li.user-menu .user-menu-trigger {

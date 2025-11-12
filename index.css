@@ -188,21 +188,6 @@
                 height: 300px !important;
         }
 }
- h1, h2, h3, h4, h5, h6
- {
-     font-family: 'Inter', sans-serif;
- }
-
-button, .btn, a.button
-{
-    font-family: 'Inter', sans-serif;
-    font-weight: 600;
-}
-
-
-header nav ul.nav-menu li {
-    white-space: nowrap;
-}
 
 /* Estilos para el botón de ocultar/mostrar filtros */
 .btn-toggle-filters {
