@@ -65,7 +65,7 @@ if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true) {
                 </div>
                 
             </div>
-            <div class="form-group">
+            <div class="form-group login-submit-group">
                 <input type="submit" class="btn" value="Login">
             </div>
             <p style="text-align: center;"><a href="recuperar_contraseña.php">¿Olvidaste tu contraseña?</a></p>

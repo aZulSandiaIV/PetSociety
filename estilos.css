@@ -876,3 +876,8 @@ header #branding h1 {
     text-align: center;
   }
 }
+
+/* Agrega un espacio superior al botón de login para separarlo del campo de contraseña */
+.login-submit-group {
+    margin-top: 2rem; /* Aproximadamente 32px, puedes ajustarlo */
+}
