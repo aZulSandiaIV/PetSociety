@@ -381,7 +381,8 @@ function creacion_marcadores_mapa(avistamientos, perdidos, publicaciones) {
  */
 
 
-function mapa_interactivo_index(avistamientos, perdidos, publicaciones) {
+function mapa_interactivo_index(avistamientos, perdidos, publicaciones) 
+{
     // La variable 'mapa' ahora es global (declarada al inicio del archivo)
     mapa = L.map('mapa-avistamientos').setView([-34.60, -58.38], 12); // Zoom inicial más apropiado
     
