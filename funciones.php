@@ -157,7 +157,7 @@ function actualizarSesionAdmin(mysqli $conexion, int $id_usuario): void
  * @return array Un array con 'avistamientos_json', 'perdidos_json', y 'publicaciones_json'.
  */
 
-function mapa_avistamientos(mysqli $conexion, array $animales): array
+function mapa_avistamientos(mysqli $conexion, array $animales, string $redirect_page = 'index.php'): array
 {
     $map_data = [
         'avistamientos_json' => '[]',
@@ -179,8 +179,8 @@ function mapa_avistamientos(mysqli $conexion, array $animales): array
             if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true) {
                 $botones_avistamiento = "
                     <div style='margin-top:10px; display:flex; justify-content:space-around;'>
-                        <a href='actualizar_avistamiento.php?id={$row['id_avistamiento']}&accion=sigue_aqui' style='font-size:0.8em; padding: 4px 8px; background-color:#97BC62; color:white; text-decoration:none; border-radius:4px;'>Sigue Aquí</a>
-                        <a href='actualizar_avistamiento.php?id={$row['id_avistamiento']}&accion=no_esta' style='font-size:0.8em; padding: 4px 8px; background-color:#E57373; color:white; text-decoration:none; border-radius:4px;'>Ya no está</a>
+                        <a href='actualizar_avistamiento.php?id={$row['id_avistamiento']}&accion=sigue_aqui&redirect={$redirect_page}' style='font-size:0.8em; padding: 4px 8px; background-color:#97BC62; color:white; text-decoration:none; border-radius:4px;'>Sigue Aquí</a>
+                        <a href='actualizar_avistamiento.php?id={$row['id_avistamiento']}&accion=no_esta&redirect={$redirect_page}' style='font-size:0.8em; padding: 4px 8px; background-color:#E57373; color:white; text-decoration:none; border-radius:4px;'>Ya no está</a>
                     </div>";
             }
             $row['popup_html'] = "

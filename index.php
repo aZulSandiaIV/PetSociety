@@ -10,15 +10,6 @@ ob_start(); // Iniciar el búfer de salida
 // Pasamos los filtros desde $_GET a la función.
 $animales = obtener_publicaciones($conexion, $_GET);
 
-// --- LÓGICA PARA EL MAPA ---
-$map_data = mapa_avistamientos($conexion, $animales);
-$avistamientos_json = $map_data['avistamientos_json'];
-$perdidos_json = $map_data['perdidos_json'];
-
-// --- LÓGICA PARA EL MAPA DE PUBLICACIONES (ADOPCIÓN, HOGAR TEMPORAL, REFUGIOS) ---
-$publicaciones_json = mapa_publicaciones($animales);
-
-
 $conexion->close();
 
 // 3. Incluir la vista
