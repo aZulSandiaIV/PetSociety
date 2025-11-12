@@ -84,9 +84,9 @@ $conexion->close();
             
         </div>
         
-        <div>
+        <div class="load-more-container">
             <button id="cargar-mas-btn" class="btn load-more-btn">Cargar Más</button>
-        </div> 
+        </div>
 
     </div>
 

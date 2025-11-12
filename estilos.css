@@ -881,3 +881,9 @@ header #branding h1 {
 .login-submit-group {
     margin-top: 2rem; /* Aproximadamente 32px, puedes ajustarlo */
 }
+
+/* Contenedor para el botón "Cargar Más" para darle espaciado y centrarlo */
+.load-more-container {
+    margin-top: 2rem; /* Espacio superior para separarlo del contenido */
+    text-align: center; /* Centra el botón */
+}
