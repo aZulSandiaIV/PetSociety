@@ -31,6 +31,9 @@ $conexion->close();
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="estilos.css">
     <link rel="stylesheet" href="refugio.css">
+    <script>
+        const id_refugio = <?php echo $id_refugio; ?>
+    </script>
     <script src = "js/CargaAsync.js"></script>
 </head>
 <body>
@@ -126,43 +129,17 @@ $conexion->close();
                 <i class="fas fa-paw"></i>
                 Animales del Refugio
             </h2>
-            <?php if (!empty($publicaciones)): ?>
-                <div class="feed-container">
-                    <?php foreach ($publicaciones as $pub): ?>
-                        <div class="animal-card" style="position: relative;">
-                            <span class="refugio-tag">REFUGIO</span>
-                            <img src="<?php echo $pub['imagen']; ?>" alt="Foto de <?php echo $pub['nombre']; ?>">
-                            <div class="animal-card-content" style="display: flex; flex-direction: column; flex-grow: 1;">
-                                <h3><?php echo $pub['titulo']; ?></h3>
-                                <p class="details"><strong><?php echo $pub['nombre']; ?></strong> - <?php echo $pub['especie']; ?> (<?php echo $pub['raza']; ?>)</p>
-                                <p><?php echo $pub['contenido_corto']; ?>...</p>                                
-                                <?php
-                                    // Preparamos el objeto de datos para el modal
-                                    $animal_data = json_encode($pub, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP);
-                                ?>
-                                <a href="#" class="btn details-btn" onclick='ver_detalles(<?php echo $animal_data; ?>)'>Ver detalles</a>
 
-                                <?php if ($pub['estado'] == 'Perdido'): ?>
-                                    <a href="reportar_avistamiento.php?id_animal=<?php echo $pub['id_animal']; ?>" class="btn contact-btn" style="background-color: #E57373;">Reportar Avistamiento</a>
-                                <?php else: ?>
-                                    <?php if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true && intval($_SESSION['id_usuario']) === intval($id_refugio)): ?>
-                                        <span class="btn own-post-indicator">Es tu publicación</span>
-                                    <?php elseif (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true): ?>
-                                        <a href="enviar_mensaje.php?id_publicacion=<?php echo $pub['id_publicacion']; ?>" class="btn contact-btn">Contactar al Publicador</a>
-                                    <?php else: ?>
-                                        <a href="login.php" class="btn contact-btn">Inicia sesión para contactar</a>
-                                    <?php endif; ?>
-                                <?php endif; ?>
-                            </div>
-                        </div>
-                    <?php endforeach; ?>
-                </div>
-            <?php else: ?>
+            <div id="feed-container" class="feed-container">
+                <!-- Aca cargo de forma dinamica -->
+            </div>
+            <!--
                 <div class="no-publications">
                     <i class="fas fa-info-circle"></i>
                     <p>Este refugio aún no tiene publicaciones.</p>
                 </div>
-            <?php endif; ?>
+                    -->
+            <button id = "cargar-mas-btn">Cargar mas</button>
         </div>
     </div>
 
@@ -211,14 +188,15 @@ $conexion->close();
             color: #202020;
         }
     </style>
-
+    
+    <script src="funciones_js.js"></script>
     <script>
         // Llama a la función para la interactividad de los menús
         interactividad_menus();
     </script>
 
     <!-- Scripts para el modal -->
-    <script src="funciones_js.js"></script>
+    
     <script>
         // Cerrar el modal si se hace clic fuera de él
         window.onclick = function(event) {
@@ -228,6 +206,7 @@ $conexion->close();
             }
         }
     </script>
+    <script src = "js/perfil_refugio.js"></script>
     
     <?php include 'footer.php'; ?>
 </body>

@@ -51,6 +51,10 @@
         $filtro_usuario = (int)$_GET['user_id'];
         $where_clauses[] = "p.id_usuario_publicador = {$filtro_usuario} ";
     }
+    if (isset($_GET['animal_id']) && is_numeric($_GET['animal_id'])) {
+        $filtro_animal = (int)$_GET['animal_id'];
+        $where_clauses[] = "p.id_animal = {$filtro_animal} ";
+    }
 
     if (isset($_GET['date']) && is_numeric($_GET['date'])) {
         $date = (int)$_GET['date'];

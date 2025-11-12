@@ -43,25 +43,26 @@ async function cargar_datos(directorio ,filtro = '') {
 }
 
 // Ahora recibir una función 'renderCard'
-function mostrar_publicaciones(directorio, renderCard, container, filtro = '') {
+/**
+ * 
+ * @param {string} directorio 
+ * @param {function} renderCard 
+ * @param {HTMLElement} container 
+ * @param {string} filtro 
+ * @returns {boolean}
+ */
+async function mostrar_publicaciones(directorio, renderCard, container, filtro = '') {
 
-    cargar_datos(directorio, filtro).then(data => {
+    const data = await cargar_datos(directorio, filtro);
 
-        console.log('Datos cargados:', data);
-        if (!data || data.length === 0){
-            if(directorio == 'publicaciones')
-                button.innerHTML = 'No hay más publicaciones';
-            else if (directorio == 'refugios')
-                button.innerHTML = 'No hay más refugios';
-            button.disabled = true;
-            return false;
-        }
+    console.log('Datos cargados:', data);
+    if (!data || data.length === 0){
+        return false;
+    }
 
-        data.forEach(item => {
-            // Usar concatenación segura en lugar de asumir que container siempre existe
-            container.innerHTML += renderCard(item);
-        });
-
+    data.forEach(item => {
+        // Usar concatenación segura en lugar de asumir que container siempre exista
+        container.innerHTML += renderCard(item);
     });
 
     return true;
@@ -75,12 +76,14 @@ function mostrar_publicaciones(directorio, renderCard, container, filtro = '') {
  * @param {function} renderCard - La función para renderizar una tarjeta.
  * @param {HTMLElement} container - El contenedor de las publicaciones.
  * @param {HTMLElement} button - El botón "Cargar Más".
- * @param {number} CargarIncremento - La cantidad a cargar.
+ * @param {number} Cargar_cantidad - La cantidad a cargar.
+ * @param {string} noMoreDataMenssage - Cuando no hallan mas cartas remplazar con esto. 
  */
 
 
 class CardGestor {
-    constructor({ directorio, renderCard, container, button, cargar_cantidad = 5, filtro = '', noMoroDataMenssage = ''}) {
+
+    constructor(directorio, renderCard, container, button, cargar_cantidad = 5, filtro = '', noMoreDataMenssage = '') {
         this.directorio = directorio;
         this.renderCard = renderCard;
         this.container = container;
@@ -89,35 +92,33 @@ class CardGestor {
         //filtro
         this.cargar_cantidad = cargar_cantidad;
         this.filtro = filtro;
-        cargar_apartir = 0;
+        this.cargar_apartir = 0;
 
         //limpieza
         this.container.innerHTML = '';
 
-        //Setear segun convenga
-        this.noMoroDataMenssage = noMoroDataMenssage;
+        this.noMoreDataMenssage = noMoreDataMenssage;
         
+        button.addEventListener("click", () => this.load());
+
         this.load();
     }
 
-    //Pese a que los estan y los acepto, preferiblemente todo seteado desde el inicio
-    set filtro(filtroRecibido) {
-        this.filtro = filtroRecibido;
-    }
+    async load() {
+        const filtroQuery = this.filtro + `&cargar_apartir=${this.cargar_apartir}&cargar_cantidad=${this.cargar_cantidad}`;
+        const hasMore = await mostrar_publicaciones(this.directorio, this.renderCard, this.container, filtroQuery);
 
-    set cargar_cantidad (cantidad){
-        this.cargar_cantidad = cantidad;
-    }
+        if (hasMore) {
+            this.cargar_apartir += this.cargar_cantidad;
+        } else {
 
-    set noMoroDataMenssage (message = ''){
-        this.noMoroDataMenssage = message;
-    }
-
-    load() {
-        if (mostrar_publicaciones(this.directorio, this.renderCard, this.container, filtro + `&cargar_desde=${this.cargar_apartir}&cargar_cantidad=${this.cargar_cantidad}`)){
-            this.noMoroDataMenssage ?? (this.button.innerHTML = this.noMoroDataMenssage);
             this.button.disabled = true;
+
+            this.button.textContent = this.noMoreDataMenssage;
+  
         }
-        this.cargar_apartir += this.cargar_cantidad;
+
+        return hasMore;
     }
+
 }
