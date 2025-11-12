@@ -56,9 +56,14 @@ if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true) {
                 <input type="email" name="email" value="<?php echo isset($_SESSION['login_email']) ? htmlspecialchars($_SESSION['login_email']) : ''; ?>" required>
                 <?php if (isset($_SESSION['login_email'])) unset($_SESSION['login_email']); ?>
             </div>    
-            <div class="form-group">
+            <div class="password">
+
                 <label>Contraseña</label>
-                <input type="password" name="password" required>
+                <div class="password">
+                    <input id="password" type="password" name="password" required>
+                    <button id='boton-ojito' type="button">ojito</button>
+                </div>
+                
             </div>
             <div class="form-group">
                 <input type="submit" class="btn" value="Login">
@@ -74,6 +79,19 @@ if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true) {
     <script>
         // Activar funcionalidad del menú hamburguesa
         interactividad_menus();
+    </script>
+    <script>
+        const passwordToggle = document.getElementById('boton-ojito');
+        const password = document.getElementById('password');
+
+        passwordToggle.addEventListener('click', function(){
+            if(password.type == "password"){
+                password.type = "text";
+            }else{
+                password.type = "password";
+            }
+        });
+
     </script>
 </body>
 </html>
