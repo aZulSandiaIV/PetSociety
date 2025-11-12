@@ -138,7 +138,7 @@ session_start();
                         <i class="fas fa-user-plus"></i> Únete Ahora
                     </a>
                 <?php endif; ?>
-                <a href="contacto.php" class="btn" style="background-color: #404040; padding: 15px 30px; font-size: 1.1rem; margin-left: 10px;">
+                <a href="contacto.php" class="btn" style="background-color: #404040; padding: 15px 30px; font-size: 1.1rem; margin-top: 1.5rem;">
                     <i class="fas fa-envelope"></i> Contáctanos
                 </a>
             </div>
