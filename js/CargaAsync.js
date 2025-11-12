@@ -28,7 +28,7 @@ async function cargar_datos(directorio ,filtro = '') {
         const contentType = response.headers.get('content-type') || '';
         if (!contentType.includes('application/json')) {
             const txt = await response.text();
-            console.error('publicaciones.php returned non-JSON:', txt);
+            console.error(directorio, '.php returned non-JSON:', txt);
             return null;
         }
 
@@ -54,7 +54,7 @@ function mostrar_publicaciones(directorio, renderCard, container, filtro = '') {
             else if (directorio == 'refugios')
                 button.innerHTML = 'No hay más refugios';
             button.disabled = true;
-            return null;
+            return false;
         }
 
         data.forEach(item => {
@@ -66,16 +66,58 @@ function mostrar_publicaciones(directorio, renderCard, container, filtro = '') {
 
     return true;
 }
-/* // Clase para manejar la carga de publicaciones
-    // No pude implementarlo, pero la idea estuvo aquí
-class PublicacionLoader {
-    constructor({ directorio, renderCard, container }) {
+
+/**
+ * Clase para manejar la carga de cartas (publicaciones, refugios, etc...)
+ * Pensado para ser un prearmado funcional, facil de conectar y de usar.
+ * Limpia el contenedor y aplica los filtros seleccionados, reiniciando la paginación.
+ * @param {string} directorio - Tipo de solicitud de la que se obtendran los datos.
+ * @param {function} renderCard - La función para renderizar una tarjeta.
+ * @param {HTMLElement} container - El contenedor de las publicaciones.
+ * @param {HTMLElement} button - El botón "Cargar Más".
+ * @param {number} CargarIncremento - La cantidad a cargar.
+ */
+
+
+class CardGestor {
+    constructor({ directorio, renderCard, container, button, cargar_cantidad = 5, filtro = '', noMoroDataMenssage = ''}) {
         this.directorio = directorio;
         this.renderCard = renderCard;
         this.container = container;
+        this.button = button;
+
+        //filtro
+        this.cargar_cantidad = cargar_cantidad;
+        this.filtro = filtro;
+        cargar_apartir = 0;
+
+        //limpieza
+        this.container.innerHTML = '';
+
+        //Setear segun convenga
+        this.noMoroDataMenssage = noMoroDataMenssage;
+        
+        this.load();
     }
-    load(filtro = '') {
-        return mostrar_publicaciones(this.directorio, this.renderCard, this.container, filtro);
+
+    //Pese a que los estan y los acepto, preferiblemente todo seteado desde el inicio
+    set filtro(filtroRecibido) {
+        this.filtro = filtroRecibido;
+    }
+
+    set cargar_cantidad (cantidad){
+        this.cargar_cantidad = cantidad;
+    }
+
+    set noMoroDataMenssage (message = ''){
+        this.noMoroDataMenssage = message;
+    }
+
+    load() {
+        if (mostrar_publicaciones(this.directorio, this.renderCard, this.container, filtro + `&cargar_desde=${this.cargar_apartir}&cargar_cantidad=${this.cargar_cantidad}`)){
+            this.noMoroDataMenssage ?? (this.button.innerHTML = this.noMoroDataMenssage);
+            this.button.disabled = true;
+        }
+        this.cargar_apartir += this.cargar_cantidad;
     }
 }
-*/
