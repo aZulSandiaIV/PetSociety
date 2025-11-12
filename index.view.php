@@ -15,6 +15,7 @@
     <?php endif; ?>
 </head>
 <body>
+
 <?php include 'header_estandar.php'; ?>
 
 <div class="hero-section">
