@@ -75,23 +75,13 @@ if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true) {
     
     <?php include 'footer.php'; ?>
 
+    <script src="funciones_estilos.js"></script>
     <script src="funciones_js.js"></script>
     <script>
         // Activar funcionalidad del menú hamburguesa
         interactividad_menus();
-    </script>
-    <script>
-        const passwordToggle = document.getElementById('boton-ojito');
-        const password = document.getElementById('password');
-
-        passwordToggle.addEventListener('click', function(){
-            if(password.type == "password"){
-                password.type = "text";
-            }else{
-                password.type = "password";
-            }
-        });
-
+        // Asociar el botón 'boton-ojito' con el input 'password'
+        asociarToggleContraseña('boton-ojito', 'password');
     </script>
 </body>
 </html>
