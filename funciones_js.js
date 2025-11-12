@@ -11,13 +11,32 @@ function ver_detalles(animal) {
     document.getElementById('modal-color').textContent = animal.color || 'No especificado';
     document.getElementById('modal-descripcion').innerHTML = animal.descripcion; // Usamos innerHTML por si tiene saltos de línea
 
+    // Prevenir scroll del body
+    document.body.style.overflow = 'hidden';
+    
     // Mostrar el modal
     document.getElementById('modal-detalles').style.display = 'flex';
+    
+    // Agregar listener para cerrar con Escape
+    document.addEventListener('keydown', handleEscapeKey);
 }
 
-
 function cerrarModal() {
+    // Ocultar el modal
     document.getElementById('modal-detalles').style.display = 'none';
+    
+    // Restaurar scroll del body
+    document.body.style.overflow = 'auto';
+    
+    // Remover listener de Escape
+    document.removeEventListener('keydown', handleEscapeKey);
+}
+
+// Función para manejar la tecla Escape
+function handleEscapeKey(event) {
+    if (event.key === 'Escape') {
+        cerrarModal();
+    }
 }
 
 
