@@ -48,10 +48,32 @@ if ($publicacion['id_usuario_publicador'] !== $id_usuario_actual) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Editar Publicación - PetSociety</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
     <link rel="stylesheet" href="estilos.css">
     <?php if (isset($_SESSION['is_admin']) && $_SESSION['is_admin'] == 1): ?>
         <link rel="stylesheet" href="admin/admin.css">
     <?php endif; ?>
+    <style>
+        /* Estilos para los botones de acción del formulario */
+        .form-group.action-buttons {
+            display: flex;
+            gap: 15px; /* Aumenta el espacio entre los botones */
+            flex-wrap: wrap;
+        }
+        .form-group.action-buttons .btn {
+            flex-grow: 0; /* Evita que los botones se estiren */
+            padding: 10px 20px; /* Ajusta el tamaño del botón */
+            font-size: 1em; /* Mantiene el tamaño de fuente estándar */
+        }
+        .form-group.action-buttons .btn-secondary {
+            background-color: #6c757d; /* Color gris para 'Cancelar' */
+            color: #ffffff !important; /* Asegura que el texto sea blanco */
+        }
+        /* Estilo para el mapa en el formulario de edición */
+        #mapa-seleccion { 
+            height: 350px; margin-top: 15px; border-radius: 8px; z-index: 1; 
+        }
+    </style>
 </head>
 <body>
     <?php include 'header_estandar.php'; ?>
@@ -84,8 +106,14 @@ if ($publicacion['id_usuario_publicador'] !== $id_usuario_actual) {
             <!-- Campos específicos para 'Perdido' -->
             <?php if ($publicacion['tipo_publicacion'] == 'Perdido'): ?>
                 <div class="form-group">
-                    <label>Ubicación donde se perdió</label>
-                    <input type="text" name="ubicacion_texto" value="<?php echo htmlspecialchars($publicacion['ubicacion_texto'] ?? ''); ?>">
+                    <label>Ubicación donde se perdió (Mapa)</label>
+                    <input type="text" name="ubicacion_texto" id="ubicacion_texto" value="<?php echo htmlspecialchars($publicacion['ubicacion_texto'] ?? ''); ?>" placeholder="Arrastra el marcador en el mapa o usa el botón" required readonly>
+                    <button type="button" id="usar-ubicacion-actual" class="btn" style="width: auto; margin-top: 5px; background-color: #97BC62;">Usar mi ubicación actual</button>
+                    <!-- Campos ocultos para las coordenadas -->
+                    <input type="hidden" name="latitud" id="latitud" value="<?php echo htmlspecialchars($publicacion['latitud'] ?? ''); ?>">
+                    <input type="hidden" name="longitud" id="longitud" value="<?php echo htmlspecialchars($publicacion['longitud'] ?? ''); ?>">
+                    <!-- Contenedor para el mapa interactivo -->
+                    <div id="mapa-seleccion"></div>
                 </div>
                  <div class="form-group">
                     <label>Características distintivas</label>
@@ -142,11 +170,29 @@ if ($publicacion['id_usuario_publicador'] !== $id_usuario_actual) {
                 <label>Cambiar Foto (opcional)</label>
                 <input type="file" name="foto_animal" accept="image/jpeg, image/png, image/gif">
             </div>
-            <div class="form-group">
+            <div class="form-group action-buttons">
                 <input type="submit" class="btn" value="Guardar Cambios">
-                <a href="mi_perfil.php" class="btn btn-secondary" style="text-decoration: none; background-color: #6c757d; margin-left: 10px;">Cancelar</a>
+                <a href="mi_perfil.php" class="btn btn-secondary">Cancelar</a>
             </div>
         </form>
     </div>
+
+    <!-- Scripts de Leaflet y de la aplicación -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="Geolocalizacion.js"></script>
+    <script src="funciones_js.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Solo inicializar el mapa si existe el contenedor (para publicaciones de tipo 'Perdido')
+            if (document.getElementById('mapa-seleccion')) {
+                const latInicial = document.getElementById('latitud').value;
+                const lonInicial = document.getElementById('longitud').value;
+                
+                const mapaInfo = inicializarMapaDeSeleccion('mapa-seleccion', 'latitud', 'longitud', 'ubicacion_texto', latInicial, lonInicial);
+                usar_ubicacion_actual(mapaInfo);
+            }
+        });
+    </script>
 </body>
 </html>
