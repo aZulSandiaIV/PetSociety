@@ -27,12 +27,16 @@ function renderCard(pub){
     `;
 }
 
+sessionReady.then(() => {
+    
+});
+
 const refugioPublicaciones = new CardGestor(
-    'publicaciones',
-    renderCard,
-    document.getElementById("feed-container"),
-    document.getElementById("cargar-mas-btn"),
-    20,
-    `?user_id=${id_refugio}`,
-    "no hay mas publicaciones"
+        'publicaciones',
+        renderCard,
+        document.getElementById("feed-container"),
+        document.getElementById("cargar-mas-btn"),
+        20,
+        `user_id=${id_refugio}`,
+        "no hay mas publicaciones"
 );

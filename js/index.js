@@ -45,7 +45,7 @@ function chargeFeed(){
 
 }
 
-document.addEventListener('DOMContentLoaded', chargeFeed());
+sessionReady.then ( document.addEventListener('DOMContentLoaded', chargeFeed()) );
 
 const applyFiltersBtn = document.getElementById('apply-filters');
 if (applyFiltersBtn) {

@@ -1,9 +1,6 @@
 const button = document.getElementById('cargar-mas-btn');
 const container = document.getElementById('refugios-container');
 
-let cargar_apartir = 0;
-let cargar_cantidad = 20;
-
 function renderCard(refugio){
     foto_perfil = cargar_datos('foto_perfil', `?perfil=${refugio.foto_perfil_url}&nombre=${refugio.nombre}&id=${refugio.id_usuario}`);
     return `
@@ -33,18 +30,15 @@ function renderCard(refugio){
     `;
 }
 
-document.addEventListener('DOMContentLoaded', function() {
-
-    
-
-    let filtro = `?cargar_apartir=${cargar_apartir}&cargar_cantidad=${cargar_cantidad}`;
-    mostrar_publicaciones('refugios', renderCard, container, filtro);
-    cargar_apartir += cargar_cantidad;
-
-    button.addEventListener('click', function() {
-        filtro = `?cargar_apartir=${cargar_apartir}&cargar_cantidad=${cargar_cantidad}`;
-        mostrar_publicaciones('refugios', renderCard, container, filtro);
-        cargar_apartir += cargar_cantidad;
-    });
+sessionReady.then(() => {
+    const feed = new CardGestor(
+        "refugios",
+        renderCard,
+        container,
+        button,
+        20,
+        '',
+        "No hay mas refugios"
+    );
 
 });

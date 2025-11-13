@@ -17,6 +17,7 @@
         date: filtro por fecha de publicacion (en dias)
         search: filtro por texto en titulo, contenido o ubicacion
         user_id: filtro por id de usuario publicador
+        animal_id: filtro por id de animal publicado
         cargar_apartir: desde que registro cargar
         cargar_cantidad: cantidad de registros a cargar
     */

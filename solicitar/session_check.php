@@ -6,11 +6,16 @@ header('Content-Type: application/json; charset=utf-8');
 
 $response = [
     'loggedin' => false,
-    'user' => null
+    'user' => [
+        'id_usuario'  => null,
+        'nombre'      => null,
+        'email'      => null,
+        'es_refugio'  => 0,
+    ]
 ];
 
 if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
-    http_response_code(401); // Unauthorized
+    //http_response_code(401); // Unauthorized
     // limpiar buffer y registrar si hubo salida no esperada
     $buffer = ob_get_clean();
     if (trim($buffer) !== '') {

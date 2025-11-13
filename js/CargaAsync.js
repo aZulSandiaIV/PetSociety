@@ -1,5 +1,9 @@
 
 let sessionData = null;
+let sessionReadyResolve;
+const sessionReady = new Promise((resolve, reject) => {
+    sessionReadyResolve = resolve;
+});
 
 // Exportar en caso de que se necesite en otro módulo
 (async () => {
@@ -9,12 +13,17 @@ let sessionData = null;
         if (!contentType.includes('application/json')) {
             const txt = await res.text();
             console.error('session_check.php returned non-JSON:', txt);
+            // Resolver igualmente para no bloquear consumidores
+            sessionReadyResolve(null);
         } else {
             sessionData = await res.json();
+            sessionReadyResolve(sessionData);
         }
     } catch (err) {
         console.error('Error fetching session_check.php:', err);
+        sessionReadyResolve(null);
     }
+
 })();
 
 async function cargar_datos(directorio ,filtro = '') {
@@ -101,7 +110,7 @@ class CardGestor {
         
         button.addEventListener("click", () => this.load());
 
-        this.load();
+        sessionReady.then(() => this.load());
     }
 
     async load() {
