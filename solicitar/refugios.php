@@ -17,7 +17,7 @@
     if ($result = $conexion->query($sql)) {
         while ($row = $result->fetch_assoc()) {
             
-            if (!empty($row['foto']) && file_exists($row['foto'])) {
+            if (!empty($row['foto']) && file_exists("../" . $row['foto'])) {
                 $row['foto'] = [
                     'tipo' => 'foto',
                     'url' => $row['foto'],
