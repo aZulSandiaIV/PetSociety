@@ -111,5 +111,7 @@ $conexion->close();
             </form>
         <?php endif; ?>
     </div>
+
+    <?php include 'footer.php'; ?>
 </body>
 </html>
