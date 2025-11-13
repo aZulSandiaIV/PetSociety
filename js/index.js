@@ -8,25 +8,30 @@ function renderCard(animal) { // Esta función se mantiene aquí porque es espec
         ${animal.es_refugio == 1 ? '<span class="refugio-tag">REFUGIO</span>' : ''}
         <img src="${animal.imagen}" alt="Foto de ${animal.nombre}">
         <div class="animal-card-content" style="display: flex; flex-direction: column; flex-grow: 1;">
-            <h3>${animal.titulo}</h3>
-            <p class="details"><strong>${animal.nombre}</strong> - ${animal.especie} (${animal.raza})</p>
-            <p class="details">
-                ${animal.tamano ? animal.tamano : ''}
-                ${animal.tamano && animal.edad ? ' | ' : ''}
-                ${animal.edad ? animal.edad : ''}
-            </p>
-            <p>${animal.contenido_corto}...</p>`
+            <div>
+                <h3>${animal.titulo}</h3>
+                <p class="details"><strong>${animal.nombre}</strong> - ${animal.especie} (${animal.raza})</p>
+                <p class="details">
+                    ${animal.tamano ? animal.tamano : ''}
+                    ${animal.tamano && animal.edad ? ' | ' : ''}
+                    ${animal.edad ? animal.edad : ''}
+                </p>
+                <p>${animal.contenido_corto}...</p>
+            </div>
+            <div class="btn-container">`
             + `<a href="#" class="btn details-btn" onclick='ver_detalles(${JSON.stringify(animal)})'>Ver detalles</a>`
             +
             `
-            ${ (sessionData && sessionData.loggedin && sessionData.user && parseInt(sessionData.user.id_usuario) === parseInt(animal.id_publicador))
-                ? '<span class="btn own-post-indicator">Es tu publicación</span>'
-                : (animal.estado === 'Perdido'
-                    ? `<a href="reportar_avistamiento.php?id_animal=${animal.id_animal}" class="btn contact-btn report-btn">Reportar Avistamiento</a>`
-                    : (sessionData && sessionData.loggedin
-                        ? `<a href="enviar_mensaje.php?id_publicacion=${animal.id_publicacion}" class="btn contact-btn">Contactar al Publicador</a>`
-                        : `<a href="login.php" class="btn contact-btn">Inicia sesión para contactar</a>`))
-            }
+            
+                ${ (sessionData && sessionData.loggedin && sessionData.user && parseInt(sessionData.user.id_usuario) === parseInt(animal.id_publicador))
+                    ? '<span class="btn own-post-indicator">Es tu publicación</span>'
+                    : (animal.estado === 'Perdido'
+                        ? `<a href="reportar_avistamiento.php?id_animal=${animal.id_animal}" class="btn contact-btn report-btn">Reportar Avistamiento</a>`
+                        : (sessionData && sessionData.loggedin
+                            ? `<a href="enviar_mensaje.php?id_publicacion=${animal.id_publicacion}" class="btn contact-btn">Contactar al Publicador</a>`
+                            : `<a href="login.php" class="btn contact-btn">Inicia sesión para contactar</a>`))
+                }
+            </div>
         </div>
     </div>
     `;
