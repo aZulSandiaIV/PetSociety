@@ -1,8 +1,6 @@
 
 const container = document.getElementById('publications-section');
 const button = document.getElementById('cargar-mas-btn');
-let cargar_cantidad = 20;
-let cargar_desde = 0;
 
 function renderCard(pub) {
     const esc = (v) => String(v ?? '')
@@ -49,31 +47,17 @@ function renderCard(pub) {
 }
 // No hay equivalente a htmlspecialchars en JS, se asume que los datos ya están sanitizados al venir del servidor
 
-document.addEventListener('DOMContentLoaded', function() {
-    const container = document.getElementById('publications-section');
-    const button = document.getElementById('cargar-mas-btn');
-    //const eventSession = new EventSource("solicitar/session_check.php");
-    if (!container) {
-        console.warn('mi_perfil: contenedor "publications-section" no encontrado en el DOM.');
-        return;
-    }
-
-    //Window.onload espera a que TODO este cargado, eso incluye el session_check.php
-    
-    window.onload = function() {
-        mostrar_publicaciones('publicaciones', renderCard, container, `?cargar_cantidad=${cargar_cantidad}&cargar_apartir=${cargar_desde}&user_id=${sessionData['user']['id_usuario']}`);
-        cargar_desde += cargar_cantidad;
-    }
-    /*
-    eventSession.addEventListener("message", function(){
-        
-    });
-    */
+sessionReady.then(() => {
+    const misPublicaciones = new CardGestor(
+        "publicaciones",
+        renderCard,
+        container,
+        button,
+        10,
+        `user_id=${sessionData.user.id_usuario}`,
+        "No tienes mas publicaciones"
+    );
 });
 
-button.addEventListener('click', function() {
-    mostrar_publicaciones('publicaciones', renderCard, container, `?cargar_cantidad=${cargar_cantidad}&cargar_apartir=${cargar_desde}&user_id=${sessionData['user']['id_usuario']}`);
-    cargar_desde += cargar_cantidad;
-});
 
 
