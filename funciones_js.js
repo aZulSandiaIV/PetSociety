@@ -199,7 +199,8 @@ function getFilterQueryString() {
  */
 
 
-function construirFiltroParaCarga(CargarApartirDe, CargarIncremento) {
+function construirFiltroParaCarga(CargarApartirDe, CargarIncremento) 
+{
 
     const base = `?cargar_apartir=${CargarApartirDe}&cargar_cantidad=${CargarIncremento}`;
     const filtrosQuery = getFilterQueryString();
