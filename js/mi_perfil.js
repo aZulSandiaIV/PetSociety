@@ -24,6 +24,7 @@ function renderCard(pub) {
         </div>
         <div class="pub-actions">
             ${
+                // --- BLOQUE 1: Botones de Acción Principal (tu código original) ---
                 estado === 'En Adopción' ? `
                     <a href="gestionar_adopcion.php?id_pub=${encodeURIComponent(pub['id_publicacion'])}&id_animal=${encodeURIComponent(pub['id_animal'])}" class="btn">Gestionar Adopción</a>
                 ` :
@@ -42,6 +43,13 @@ function renderCard(pub) {
                 ` : `
                     <span>Gestión finalizada</span>
                 `
+            }
+
+            ${ 
+                // --- BLOQUE 2: Botón de Editar (NUEVO) ---
+                (estado !== 'Adoptado' && estado !== 'Encontrado') ? `
+                    <a href="editar_publicacion.php?id_pub=${encodeURIComponent(pub['id_publicacion'])}" class="btn" style="background-color: #f0ad4e; margin-left: 5px;">Editar</a>
+                ` : '' 
             }
         </div>
     </div>
