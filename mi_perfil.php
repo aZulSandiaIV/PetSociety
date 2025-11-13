@@ -180,7 +180,7 @@ $conexion->close();
         <div id="publications-section">
             <!-- Las publicaciones se cargarán aquí dinámicamente -->
         </div>
-        <div id="cargar-mas-btn">
+        <div id="cargar-mas-btn-section" style="display: flex; justify-content: space-evenly;">
             <button id="cargar-mas-btn" class="btn load-more-btn">Cargar Más</button>
         </div>                        
 

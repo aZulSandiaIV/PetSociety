@@ -139,7 +139,10 @@ $conexion->close();
                     <p>Este refugio aún no tiene publicaciones.</p>
                 </div>
                     -->
-            <button id = "cargar-mas-btn">Cargar mas</button>
+            <div style="display: flex; justify-content: space-evenly;">
+                <button id = "cargar-mas-btn" class = "btn">Cargar mas</button>
+            </div>
+            
         </div>
     </div>
 

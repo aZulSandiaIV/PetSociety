@@ -358,7 +358,11 @@
             </aside>
         <div class="feed-wrapper content-main"> <!-- Usamos un nuevo wrapper para el feed y el botón -->
             <div class="feed-container"></div>
-            <button id="cargar-mas" class="btn">Cargar Más</button> 
+
+            <div class="btn-container">
+                <button id="cargar-mas" class="btn">Cargar Más</button> 
+            </div>
+            
         </div>
 
     <!-- MODAL PARA VER DETALLES DEL ANIMAL -->

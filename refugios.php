@@ -34,7 +34,7 @@ $conexion->close();
             
         </div>
         
-        <div>
+        <div class="btn-container">
             <button id="cargar-mas-btn" class="btn load-more-btn">Cargar Más</button>
         </div> 
 
