@@ -29,15 +29,15 @@ if (!$es_dueño) {
 }
 
 // --- Obtener los reportes de avistamiento para este animal ---
-$sql = "SELECT r.ultima_ubicacion_vista, r.caracteristicas_distintivas, r.fecha_reporte, u.nombre AS nombre_reportador
+$sql = "SELECT r.id_usuario_reportador, r.ultima_ubicacion_vista, r.caracteristicas_distintivas, r.fecha_reporte, r.latitud, r.longitud, u.nombre AS nombre_reportador
         FROM reportes_perdidos r
         JOIN usuarios u ON r.id_usuario_reportador = u.id_usuario
-        WHERE r.id_animal = ?
+        WHERE r.id_animal = ? AND r.id_usuario_reportador != ?
         ORDER BY r.fecha_reporte DESC";
 
 $reportes = [];
 if ($stmt = $conexion->prepare($sql)) {
-    $stmt->bind_param("i", $id_animal);
+    $stmt->bind_param("ii", $id_animal, $id_usuario_actual);
     $stmt->execute();
     $result = $stmt->get_result();
     while ($row = $result->fetch_assoc()) {
@@ -51,7 +51,9 @@ $conexion->close();
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reportes de Avistamiento - PetSociety</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
     <link rel="stylesheet" href="estilos.css">
     <?php if (isset($_SESSION['is_admin']) && $_SESSION['is_admin'] == 1): ?>
         <link rel="stylesheet" href="admin/admin.css">
@@ -60,66 +62,20 @@ $conexion->close();
         .reporte-card { background: #fff; border: 1px solid #ddd; padding: 20px; margin-bottom: 20px; border-radius: 8px; }
         .reporte-header { border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 10px; }
         .reporte-header span { color: #777; font-size: 0.9em; }
+        .reporte-mapa { height: 250px; margin-top: 15px; border-radius: 8px; z-index: 1; }
+        .reporte-actions { margin-top: 15px; }
+        .back-button { display: inline-block; margin-bottom: 20px; background-color: #6c757d; }
     </style>
 </head>
 <body>
-    <header>
-        <div class="container">
-            <div id="branding">
-                <h1><a href="index.php"><img src="img/logo1.png" alt="PetSociety Logo" class="header-logo"></a><a href="index.php">PetSociety</a></h1>
-            </div>
-            <nav>
-                <button class="mobile-menu-toggle" aria-label="Toggle menu">
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                </button>
-                <ul class="nav-menu">
-                    <?php if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true): ?>
-                        <li><a href="index.php">Inicio</a></li>
-                        <li><a href="refugios.php">Refugios</a></li>
-                        <li><a href="buzon.php">Mensajes</a></li>
-                        <?php if (isset($_SESSION['is_admin']) && $_SESSION['is_admin'] == 1): ?>
-                            <li class="admin-panel-dropdown">
-                                <span class="admin-panel-trigger">Panel de Administrador</span>
-                                <div class="admin-submenu">
-                                    <ul>
-                                        <li><a href="admin/statistics.php">Estadísticas</a></li>
-                                        <li><a href="admin/manage_publications.php">Administrar Publicaciones</a></li>
-                                    </ul>
-                                </div>
-                            </li>
-                        <?php endif; ?>
-                    <?php else: ?>
-                        <li><a href="index.php">Inicio</a></li>
-                        <li><a href="refugios.php">Refugios</a></li>
-                        <li><a href="login.php">Iniciar Sesión</a></li>
-                        <li><a href="registro.php">Registrarse</a></li>
-                    <?php endif; ?>
-                    <?php if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true): ?>
-                        <li class="user-menu mobile-user-menu">
-                            <span class="user-menu-trigger">
-                                <span class="user-icon"></span>
-                                <span class="user-name"><?php echo htmlspecialchars($_SESSION["nombre"]); ?></span>
-                            </span>
-                            <div class="dropdown-menu">
-                                <ul>
-                                    <li><a href="mi_perfil.php">Mi Perfil</a></li>
-                                    <li><a href="logout.php">Cerrar Sesión</a></li>
-                                </ul>
-                            </div>
-                        </li>
-                    <?php endif; ?>
-                </ul>
-            </nav>
-        </div>
-    </header>
+    <?php include 'header_estandar.php'; ?>
 
     <div class="container">
         <h2>Reportes de Avistamiento</h2>
+        <a href="mi_perfil.php" class="btn back-button">Volver a Mi Perfil</a>
         <?php if (!empty($reportes)): ?>
-            <?php foreach ($reportes as $reporte): ?>
-                <div class="reporte-card">
+            <?php foreach ($reportes as $index => $reporte): ?>
+                <div class="reporte-card" id="reporte-<?php echo $index; ?>">
                     <div class="reporte-header">
                         <strong>Visto por:</strong> <?php echo htmlspecialchars($reporte['nombre_reportador']); ?><br>
                         <span><strong>Fecha del reporte:</strong> <?php echo date("d/m/Y H:i", strtotime($reporte['fecha_reporte'])); ?></span>
@@ -128,53 +84,52 @@ $conexion->close();
                     <?php if (!empty($reporte['caracteristicas_distintivas'])): ?>
                         <p><strong>Notas adicionales:</strong> <?php echo nl2br(htmlspecialchars($reporte['caracteristicas_distintivas'])); ?></p>
                     <?php endif; ?>
+                    
+                    <?php if (!empty($reporte['latitud']) && !empty($reporte['longitud'])): ?>
+                        <div id="mapa-<?php echo $index; ?>" class="reporte-mapa"></div>
+                    <?php endif; ?>
+
+                    <div class="reporte-actions">
+                        <a href="enviar_mensaje.php?id_destinatario=<?php echo $reporte['id_usuario_reportador']; ?>" class="btn">Contactar</a>
+                    </div>
                 </div>
             <?php endforeach; ?>
         <?php else: ?>
             <p>Aún no hay reportes de avistamiento para esta mascota.</p>
         <?php endif; ?>
     </div>
-
+    
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="funciones_js.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
-            const navMenu = document.querySelector('.nav-menu');
-            const mobileUserMenu = document.querySelector('.mobile-user-menu');
-            
-            if (mobileMenuToggle && navMenu) {
-                mobileMenuToggle.addEventListener('click', function(e) {
-                    e.stopPropagation();
-                    navMenu.classList.toggle('active');
-                    mobileMenuToggle.classList.toggle('active');
-                });
+            // Activar la interactividad de los menús
+            interactividad_menus();
 
-                document.addEventListener('click', function(event) {
-                    if (!navMenu.contains(event.target) && !mobileMenuToggle.contains(event.target)) {
-                        navMenu.classList.remove('active');
-                        mobileMenuToggle.classList.remove('active');
-                    }
-                });
-
-                const navLinks = navMenu.querySelectorAll('a');
-                navLinks.forEach(link => {
-                    link.addEventListener('click', function() {
-                        navMenu.classList.remove('active');
-                        mobileMenuToggle.classList.remove('active');
-                    });
-                });
-            }
-
-            if (mobileUserMenu) {
-                const userMenuTrigger = mobileUserMenu.querySelector('.user-menu-trigger');
-                if (userMenuTrigger) {
-                    userMenuTrigger.addEventListener('click', function(e) {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        mobileUserMenu.classList.toggle('active');
-                    });
-                }
-            }
+            // Inicializar los mapas para cada reporte
+            <?php foreach ($reportes as $index => $reporte): ?>
+                <?php if (!empty($reporte['latitud']) && !empty($reporte['longitud'])): ?>
+                    (function() {
+                        const lat = <?php echo $reporte['latitud']; ?>;
+                        const lon = <?php echo $reporte['longitud']; ?>;
+                        const mapId = 'mapa-<?php echo $index; ?>';
+                        
+                        if (document.getElementById(mapId)) {
+                            const mapa = L.map(mapId).setView([lat, lon], 15);
+                            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+                            }).addTo(mapa);
+                            
+                            L.marker([lat, lon]).addTo(mapa)
+                                .bindPopup('Avistamiento reportado aquí.')
+                                .openPopup();
+                        }
+                    })();
+                <?php endif; ?>
+            <?php endforeach; ?>
         });
     </script>
+
+    <?php include 'footer.php'; ?>
 </body>
 </html>
