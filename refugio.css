@@ -82,67 +82,39 @@
     gap: 8px;
 }
 
-/* Estilos específicos para botones de refugio con mayor especificidad */
-.refugios-container .refugio-card .refugio-actions .btn-ver-perfil {
-    background-color: #8fbc8f !important;
-    color: white !important;
-    border: 2px solid #8fbc8f !important;
-    width: auto !important;
-    min-width: 110px !important;
-    padding: 10px 15px !important;
-    flex: 1 !important;
-    max-width: 50% !important;
-}
-
-.refugios-container .refugio-card .refugio-actions .btn-ver-perfil:hover {
-    background-color: #669966 !important;
-    border-color: #669966 !important;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 8px rgba(143, 188, 143, 0.3);
-}
-
-.refugios-container .refugio-card .refugio-actions .btn-enviar-mensaje {
-    background-color: #5b9bd5 !important;
-    color: white !important;
-    border: 2px solid #5b9bd5 !important;
-    width: auto !important;
-    min-width: 110px !important;
-    padding: 10px 15px !important;
-    flex: 1 !important;
-    max-width: 50% !important;
-}
-
-.refugios-container .refugio-card .refugio-actions .btn-enviar-mensaje:hover {
-    background-color: #4285c4 !important;
-    border-color: #4285c4 !important;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 8px rgba(91, 155, 213, 0.3);
-}
-
-/* Botón Ver Perfil - Verde claro */
+/* Estilos específicos para botones de refugio */
 .refugio-actions .btn-ver-perfil {
-    background-color: #8fbc8f !important;
-    color: white !important;
-    border: 2px solid #8fbc8f !important;
+    background-color: #8fbc8f;
+    color: white;
+    border: 2px solid #8fbc8f;
+    width: auto;
+    min-width: 110px;
+    padding: 10px 15px;
+    flex: 1;
+    max-width: 50%;
 }
 
 .refugio-actions .btn-ver-perfil:hover {
-    background-color: #669966 !important;
-    border-color: #669966 !important;
+    background-color: #669966;
+    border-color: #669966;
     transform: translateY(-1px);
     box-shadow: 0 4px 8px rgba(143, 188, 143, 0.3);
 }
 
-/* Botón Enviar Mensaje - Azul clarito */
 .refugio-actions .btn-enviar-mensaje {
-    background-color: #5b9bd5 !important;
-    color: white !important;
-    border: 2px solid #5b9bd5 !important;
+    background-color: #5b9bd5;
+    color: white;
+    border: 2px solid #5b9bd5;
+    width: auto;
+    min-width: 110px;
+    padding: 10px 15px;
+    flex: 1;
+    max-width: 50%;
 }
 
 .refugio-actions .btn-enviar-mensaje:hover {
-    background-color: #4285c4 !important;
-    border-color: #4285c4 !important;
+    background-color: #4285c4;
+    border-color: #4285c4;
     transform: translateY(-1px);
     box-shadow: 0 4px 8px rgba(91, 155, 213, 0.3);
 }

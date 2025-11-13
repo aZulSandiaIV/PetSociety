@@ -54,5 +54,7 @@ session_start(); // Iniciamos sesión para saber si el usuario está logueado
             interactividad_menus();
         });
     </script>
+    
+    <?php include 'footer.php'; ?>
 </body>
 </html>

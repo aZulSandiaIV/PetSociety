@@ -37,14 +37,12 @@ if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true) {
                 <input type="email" name="email" value="<?php echo isset($_SESSION['login_email']) ? htmlspecialchars($_SESSION['login_email']) : ''; ?>" required>
                 <?php if (isset($_SESSION['login_email'])) unset($_SESSION['login_email']); ?>
             </div>    
-            <div class="password">
-
+            <div class="form-group">
                 <label>Contraseña</label>
                 <div class="password">
                     <input id="password" type="password" name="password" required>
                     <button id='boton-ojito' type="button">ojito</button>
                 </div>
-                
             </div>
             <div class="form-group login-submit-group">
                 <input type="submit" class="btn" value="Login">
