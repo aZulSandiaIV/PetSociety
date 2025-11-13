@@ -129,5 +129,7 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
         // Llama a la función para la interactividad de los menús
         interactividad_menus();
     </script>
+
+    <?php include 'footer.php'; ?>
 </body>
 </html>

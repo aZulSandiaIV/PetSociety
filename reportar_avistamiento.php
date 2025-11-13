@@ -79,5 +79,7 @@ if ($nombre_animal === null) {
             interactividad_menus();
         });
     </script>
+
+    <?php include 'footer.php'; ?>
 </body>
 </html>

@@ -125,5 +125,7 @@ if ($destinatario_id == $_SESSION['id_usuario']) {
         // Llama a la función para la interactividad de los menús
         interactividad_menus();
     </script>
+
+    <?php include 'footer.php'; ?>
 </body>
 </html>
