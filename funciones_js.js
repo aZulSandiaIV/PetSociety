@@ -7,7 +7,7 @@ function ver_detalles(animal) {
     document.getElementById('modal-raza').textContent = animal.raza || 'No especificada';
     document.getElementById('modal-genero').textContent = animal.genero || 'No especificado';
     document.getElementById('modal-edad').textContent = animal.edad || 'No especificada';
-    document.getElementById('modal-tamano').textContent = animal.tamano || 'No especificado';
+    document.getElementById('modal-tamano').textContent = animal.tamaño || 'No especificado';
     document.getElementById('modal-color').textContent = animal.color || 'No especificado';
     document.getElementById('modal-descripcion').innerHTML = animal.descripcion; // Usamos innerHTML por si tiene saltos de línea
 

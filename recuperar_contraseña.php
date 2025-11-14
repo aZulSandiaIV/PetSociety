@@ -89,6 +89,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <link rel="stylesheet" href="estilos.css">
 </head>
 <body>
+    <?php include 'header_estandar.php'; ?>
+
     <div class="form-container">
         <h2>Recuperar Contraseña</h2>
         <p>Ingresa tu dirección de email y te enviaremos un enlace para restablecer tu contraseña.</p>

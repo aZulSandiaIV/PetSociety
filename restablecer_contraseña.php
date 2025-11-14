@@ -92,6 +92,9 @@ $conexion->close();
     <link rel="stylesheet" href="estilos.css">
 </head>
 <body>
+
+    <?php include 'header_estandar.php'; ?>
+
     <div class="form-container">
         <h2>Restablecer Contraseña</h2>
 

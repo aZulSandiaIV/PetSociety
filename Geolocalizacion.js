@@ -401,3 +401,32 @@ function mapa_interactivo_index(avistamientos, perdidos, publicaciones)
     inicializar_filtro_rango('rango-km', 'rango-valor');
     mostrar_ubicacion_usuario('ver-mi-ubicacion');
 }
+
+/**
+ * Configura un botón para obtener la ubicación del usuario y rellenar campos de un formulario.
+ * @param {string} buttonId - El ID del botón que inicia la geolocalización.
+ * @param {string} latInputId - El ID del input para la latitud.
+ * @param {string} lonInputId - El ID del input para la longitud.
+ * @param {string} submitButtonId - El ID del botón de envío que se habilitará.
+ * @param {string} messageDivId - El ID del div donde se mostrarán los mensajes de estado.
+ */
+
+function obtener_ubicacion_para_formulario(buttonId, latInputId, lonInputId, submitButtonId, messageDivId) {
+    const botonObtener = document.getElementById(buttonId);
+    const mensajeDiv = document.getElementById(messageDivId);
+
+    if (botonObtener) {
+        botonObtener.addEventListener('click', function() {
+            if (mensajeDiv) mensajeDiv.textContent = 'Buscando tu ubicación...';
+            this.disabled = true;
+
+            EXITO = function(position) {
+                document.getElementById(latInputId).value = position.coords.latitude;
+                document.getElementById(lonInputId).value = position.coords.longitude;
+                if (mensajeDiv) mensajeDiv.textContent = '¡Ubicación obtenida con éxito! Ya puedes enviar el reporte.';
+                document.getElementById(submitButtonId).disabled = false;
+            };
+            OBTENER_POSICION_ACTUAL();
+        });
+    }
+}
