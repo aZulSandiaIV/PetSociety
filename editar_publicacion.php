@@ -57,8 +57,9 @@ if ($publicacion['id_usuario_publicador'] !== $id_usuario_actual) {
         /* Estilos para los botones de acción del formulario */
         .form-group.action-buttons {
             display: flex;
-            gap: 15px; /* Aumenta el espacio entre los botones */
-            flex-wrap: wrap;
+            gap: 15px;
+            flex-direction: column;
+            align-items: center;
         }
         .form-group.action-buttons .btn {
             flex-grow: 0; /* Evita que los botones se estiren */
@@ -68,6 +69,7 @@ if ($publicacion['id_usuario_publicador'] !== $id_usuario_actual) {
         .form-group.action-buttons .btn-secondary {
             background-color: #6c757d; /* Color gris para 'Cancelar' */
             color: #ffffff !important; /* Asegura que el texto sea blanco */
+            text-align: center;
         }
         /* Estilo para el mapa en el formulario de edición */
         #mapa-seleccion { 

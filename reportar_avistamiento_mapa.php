@@ -33,7 +33,7 @@ session_start(); // Iniciamos sesión para saber si el usuario está logueado
             <input type="hidden" name="latitud" id="latitud">
             <input type="hidden" name="longitud" id="longitud">
 
-            <div class="form-group">
+            <div class="btn-container">
                 <button type="button" id="obtener-ubicacion-btn" class="btn">1. Obtener mi Ubicación</button>
                 <input type="submit" id="enviar-reporte-btn" class="btn" value="2. Enviar Reporte" disabled style="background-color: #ccc;">
             </div>

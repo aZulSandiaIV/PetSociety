@@ -34,6 +34,9 @@ $conexion->close();
     <script>
         const id_refugio = <?php echo $id_refugio; ?>
     </script>
+    <?php if (isset($_SESSION['is_admin']) && $_SESSION['is_admin'] == 1): ?>
+        <link rel="stylesheet" href="admin/admin.css">
+    <?php endif; ?>
     <script src = "js/CargaAsync.js"></script>
 </head>
 <body>

@@ -22,6 +22,7 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
 </head>
 <body>
     <?php include 'header_estandar.php'; ?>
+
     <div class="form-container">
         <h2>Datos de la Publicación</h2>
         <form action="procesar_publicacion.php" method="post" enctype="multipart/form-data">
@@ -104,7 +105,7 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
                 <label>Foto del Animal</label>
                 <input type="file" name="foto_animal" accept="image/jpeg, image/png, image/gif">
             </div>
-            <div class="form-group">
+            <div class="btn-container">
                 <input type="submit" class="btn" value="Crear Publicación">
             </div>
         </form>

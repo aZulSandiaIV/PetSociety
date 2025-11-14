@@ -65,6 +65,7 @@ $conexion->close();
         .reporte-mapa { height: 250px; margin-top: 15px; border-radius: 8px; z-index: 1; }
         .reporte-actions { margin-top: 15px; }
         .back-button { display: inline-block; margin-bottom: 20px; background-color: #6c757d; }
+        .btn { width: auto; }
     </style>
 </head>
 <body>
