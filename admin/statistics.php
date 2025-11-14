@@ -19,6 +19,8 @@ $publicaciones_recientes = $conexion->query("SELECT COUNT(*) AS total FROM publi
 // Adopciones realizadas
 $total_adopciones = $conexion->query("SELECT COUNT(*) AS total FROM adopciones")->fetch_assoc()['total'];
 ?>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src= "../js/CargaAsync.js"></script>
 
 <div class="admin-cards">
     <div class="admin-card">
@@ -60,7 +62,7 @@ $total_adopciones = $conexion->query("SELECT COUNT(*) AS total FROM adopciones")
 
 <div class="admin-table-container">
     <h3>Animales por Estado</h3>
-    <table class="admin-table">
+    <table id = "animal-por-estado" class="admin-table">
         <thead>
             <tr>
                 <th>Estado</th>
@@ -94,7 +96,59 @@ $total_adopciones = $conexion->query("SELECT COUNT(*) AS total FROM adopciones")
             <?php endwhile; ?>
         </tbody>
     </table>
+
+    <canvas id="estadosStats"></canvas>
 </div>
+
+
+<script>
+const estadosStats = document.getElementById('estadosStats').getContext('2d');
+
+function getColor(alpha = 0.6) {
+    const r = Math.floor(Math.random() * 200) + 30;
+    const g = Math.floor(Math.random() * 200) + 30;
+    const b = Math.floor(Math.random() * 200) + 30;
+    return `rgba(${r},${g},${b},${alpha})`;
+}
+
+cargar_datos('estadisticas/estados')/* .then(data => console.log(data)); */
+.then(estados => {
+    let labels = [];
+    let valores = [];
+    let bgColors = [];
+    let borderColors = [];
+
+    estados.forEach(item => {
+        labels.push(item.estado);
+        valores.push(Number(item.total) || 0);
+        bgColors.push(getColor(0.6));
+        borderColors.push("rgba(0,0,0, 0.3)");
+    });
+
+    const data = {
+        labels: labels,
+        datasets: [{
+            label: 'Animales por estado',
+            data: valores,
+            backgroundColor: bgColors,
+            borderColor: borderColors,
+            borderWidth: 1
+        }]
+    };
+
+    const config = {
+        type: 'bar',
+        data: data,
+        options: {
+        }
+    };
+
+    new Chart(estadosStats, config);
+})
+.catch(err => {
+    console.error('Error cargando estados:', err);
+});
+</script>
 
 <div class="admin-table-container">
     <h3>Animales por Especie</h3>
@@ -120,6 +174,50 @@ $total_adopciones = $conexion->query("SELECT COUNT(*) AS total FROM adopciones")
             <?php endwhile; ?>
         </tbody>
     </table>
+    <canvas id= "especieStats"></canvas>
 </div>
+
+<script>
+const especieStats = document.getElementById('especieStats').getContext('2d');
+
+cargar_datos('estadisticas/especies')/* .then(data => console.log(data)); */
+.then(especies => {
+    let labels = [];
+    let valores = [];
+    let bgColors = [];
+    let borderColors = [];
+
+    especies.forEach(item => {
+        labels.push(item.especie);
+        valores.push(Number(item.total) || 0);
+        bgColors.push(getColor(0.6));
+        borderColors.push("rgba(0,0,0, 0.3)");
+    });
+
+    const data = {
+        labels: labels,
+        datasets: [{
+            label: 'Animales por estado',
+            data: valores,
+            backgroundColor: bgColors,
+            borderColor: borderColors,
+            borderWidth: 1
+        }]
+    };
+
+    const config = {
+        type: 'bar',
+        data: data,
+        options: {
+        }
+    };
+
+    new Chart(especieStats, config);
+})
+.catch(err => {
+    console.error('Error cargando especies:', err);
+});
+</script>
+
 
 <?php include 'admin_footer.php'; ?>

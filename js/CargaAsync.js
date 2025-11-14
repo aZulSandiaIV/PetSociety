@@ -1,4 +1,6 @@
 
+const ROOT_URL = "http://localhost/Petsociety/";
+// De aca hacia arriba a de ser configurado antes de cambiar de host
 let sessionData = null;
 let sessionReadyResolve;
 const sessionReady = new Promise((resolve, reject) => {
@@ -8,7 +10,7 @@ const sessionReady = new Promise((resolve, reject) => {
 // Exportar en caso de que se necesite en otro módulo
 (async () => {
     try {
-        const res = await fetch('solicitar/session_check.php', { credentials: 'same-origin' });
+        const res = await fetch(ROOT_URL+'solicitar/session_check.php', { credentials: 'same-origin' });
         const contentType = res.headers.get('content-type') || '';
         if (!contentType.includes('application/json')) {
             const txt = await res.text();
@@ -28,7 +30,7 @@ const sessionReady = new Promise((resolve, reject) => {
 
 async function cargar_datos(directorio ,filtro = '') {
     try {
-        const response = await fetch(`solicitar/${directorio}.php${filtro}`);
+        const response = await fetch(`${ROOT_URL}solicitar/${directorio}.php${filtro}`);
         
         if (response.status === 204) {
             return null;
