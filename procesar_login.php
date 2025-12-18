@@ -28,7 +28,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     // Si no hay errores, verificar credenciales
     if (empty($email_err) && empty($password_err)) {
-        $sql = "SELECT id_usuario, nombre, email, password_hash, es_refugio, is_admin FROM usuarios WHERE email = ?";
+        $sql = "SELECT id_usuario, nombre, email, password_hash, es_refugio, is_admin, is_active FROM usuarios WHERE email = ?";
 
         if ($stmt = $conexion->prepare($sql)) {
             $stmt->bind_param("s", $param_email);
@@ -38,8 +38,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $stmt->store_result();
 
                 if ($stmt->num_rows == 1) {
-                    $stmt->bind_result($id, $nombre, $email_db, $hashed_password, $es_refugio, $is_admin);
+                    $stmt->bind_result($id, $nombre, $email_db, $hashed_password, $es_refugio, $is_admin, $is_active);
                     if ($stmt->fetch()) {
+                        // Verificación adicional: el usuario debe estar activo
+                        if ($is_active != 1) {
+                            $_SESSION['login_error'] = "Esta cuenta ha sido desactivada.";
+                            $_SESSION['login_email'] = $email;
+                            header("location: login.php");
+                            exit;
+                        }
+
                         if (password_verify($password, $hashed_password)) {
                             // Contraseña correcta, iniciar sesión
                             session_start();

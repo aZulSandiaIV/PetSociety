@@ -39,10 +39,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_id'])) {
 // Consulta para obtener todas las publicaciones con información adicional
 $sql = "SELECT p.id_publicacion, p.titulo, p.fecha_publicacion, p.tipo_publicacion,
                u.nombre AS autor, u.es_refugio,
-               a.nombre AS animal, a.especie, a.estado
+               a.nombre AS animal, a.especie, a.estado, u.is_active
         FROM publicaciones p 
         JOIN usuarios u ON p.id_usuario_publicador = u.id_usuario 
         JOIN animales a ON p.id_animal = a.id_animal 
+        WHERE u.is_active = 1
         ORDER BY p.fecha_publicacion DESC";
 $result = $conexion->query($sql);
 $total_publicaciones = $result->num_rows;

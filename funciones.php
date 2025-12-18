@@ -290,7 +290,8 @@ function obtener_publicaciones(mysqli $conexion, array $filtros = []): array
         'size'   => ['Pequeño', 'Mediano', 'Grande']
     ];
 
-    $where_clauses = ["a.estado NOT IN ('Adoptado', 'Encontrado')"];
+    // Condiciones base: no mostrar adoptados/encontrados y solo de usuarios activos.
+    $where_clauses = ["a.estado NOT IN ('Adoptado', 'Encontrado')", "u.is_active = 1"];
 
     // Filtro por estado
     if (isset($filtros['status']) && in_array($filtros['status'], $allowed_filters['status'], true)) {

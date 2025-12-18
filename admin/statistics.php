@@ -2,13 +2,21 @@
 include 'admin_header.php';
 
 // Consultas para estadísticas
-$total_usuarios = $conexion->query("SELECT COUNT(*) AS total FROM usuarios")->fetch_assoc()['total'];
-$total_refugios = $conexion->query("SELECT COUNT(*) AS total FROM usuarios WHERE es_refugio = 1")->fetch_assoc()['total'];
-$total_publicaciones = $conexion->query("SELECT COUNT(*) AS total FROM publicaciones")->fetch_assoc()['total'];
-$total_animales = $conexion->query("SELECT COUNT(*) AS total FROM animales")->fetch_assoc()['total'];
+$total_usuarios = $conexion->query("SELECT COUNT(*) AS total FROM usuarios WHERE is_active = 1")->fetch_assoc()['total'];
+$total_refugios = $conexion->query("SELECT COUNT(*) AS total FROM usuarios WHERE es_refugio = 1 AND is_active = 1")->fetch_assoc()['total'];
+
+// Contar solo publicaciones de usuarios activos
+$total_publicaciones = $conexion->query("SELECT COUNT(p.id_publicacion) AS total FROM publicaciones p JOIN usuarios u ON p.id_usuario_publicador = u.id_usuario WHERE u.is_active = 1")->fetch_assoc()['total'];
+
+// Contar solo animales de publicaciones de usuarios activos
+$total_animales = $conexion->query("SELECT COUNT(a.id_animal) AS total FROM animales a JOIN publicaciones p ON a.id_animal = p.id_animal JOIN usuarios u ON p.id_usuario_publicador = u.id_usuario WHERE u.is_active = 1")->fetch_assoc()['total'];
 
 // Estadísticas por estado de animales
-$animales_por_estado = $conexion->query("SELECT estado, COUNT(*) as total FROM animales GROUP BY estado");
+$animales_por_estado = $conexion->query("SELECT a.estado, COUNT(a.id_animal) as total 
+                                          FROM animales a 
+                                          JOIN publicaciones p ON a.id_animal = p.id_animal 
+                                          JOIN usuarios u ON p.id_usuario_publicador = u.id_usuario 
+                                          WHERE u.is_active = 1 GROUP BY a.estado");
 
 // Estadísticas por especie
 $animales_por_especie = $conexion->query("SELECT especie, COUNT(*) as total FROM animales GROUP BY especie");
