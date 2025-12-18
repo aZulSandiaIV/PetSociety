@@ -43,6 +43,7 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true ||
                             <ul>
                                 <li><a href="statistics.php">Estadísticas</a></li>
                                 <li><a href="manage_publications.php">Administrar Publicaciones</a></li>
+                                <li><a href="manage_users.php">Administrar Usuarios</a></li>
                             </ul>
                         </div>
                     </li>
@@ -75,5 +76,8 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true ||
             </a>
             <a href="manage_publications.php" class="admin-nav-tab <?php echo basename($_SERVER['PHP_SELF']) == 'manage_publications.php' ? 'active' : ''; ?>">
                 📝 Administrar Publicaciones
+            </a>
+            <a href="manage_users.php" class="admin-nav-tab <?php echo basename($_SERVER['PHP_SELF']) == 'manage_users.php' ? 'active' : ''; ?>">
+                👥 Administrar Usuarios
             </a>
         </div>

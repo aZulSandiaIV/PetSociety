@@ -25,6 +25,7 @@
                             <div class="admin-submenu">
                                 <ul>
                                     <li><a href="admin/statistics.php">Estadísticas</a></li>
+                                    <li><a href="admin/manage_users.php">Administrar Usuarios</a></li>
                                     <li><a href="admin/manage_publications.php">Administrar Publicaciones</a></li>
                                 </ul>
                             </div>
